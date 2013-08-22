@@ -18,13 +18,14 @@
 	UINavigationController *navController;
 
 	BOOL scaleWidth;
-	
-	UIView *topToolbar;
+
 	WCSliderToolbar *bottomToolbar;
 	
 	UIButton *libraryButton;
 	UIButton *wifiButton;
 	UIButton *infoButton;
+	
+	BOOL toolbarHidden;
 }
 
 @property (nonatomic, strong) WCComic *comic;

@@ -1,6 +1,6 @@
 /**
  * @class WCScrollView
- * @author Nik S Dyonin <nik@brite-apps.com>
+ * @author Nik S Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCScrollView.h"

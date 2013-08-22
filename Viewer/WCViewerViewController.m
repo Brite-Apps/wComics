@@ -1,6 +1,6 @@
 /**
  * @class WCViewerViewController
- * @author Nik S Dyonin <nik@brite-apps.com>
+ * @author Nik S Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCViewerViewController.h"
@@ -8,7 +8,6 @@
 #import "WCLibraryViewController.h"
 #import "WCServerViewController.h"
 #import "WCInfoViewController.h"
-#import "WToast.h"
 #import "WCAppDelegate.h"
 
 @implementation WCViewerViewController
@@ -20,10 +19,6 @@
 	[alert addButtonWithTitle:@"OK"];
 	alert.cancelButtonIndex = 0;
 	[alert show];
-}
-
-- (void)close:(id)sender {
-	self.comic = nil;
 }
 
 - (void)setComic:(WCComic *)aComic {
@@ -68,7 +63,7 @@
 	}
 }
 
-- (void)showInfo:(UIBarButtonItem *)sender {
+- (void)showInfo {
 	WCInfoViewController *v = [[WCInfoViewController alloc] init];
 	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:v];
 
@@ -76,13 +71,13 @@
 	nav.modalPresentationStyle = UIModalPresentationFormSheet;
 	nav.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 
-	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(hideInfo:)];
+	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(hideInfo)];
 	v.navigationItem.rightBarButtonItem = closeItem;
 	
 	[self presentViewController:nav animated:YES completion:NULL];
 }
 
-- (void)hideInfo:(id)sender {
+- (void)hideInfo {
 	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -98,25 +93,25 @@
 	}
 }
 
-- (void)showLibrary:(UIBarButtonItem *)sender {
+- (void)showLibrary {
 	if (!navController) {
 		WCLibraryViewController *libraryViewController = [[WCLibraryViewController alloc] initWithStyle:UITableViewStylePlain];
 		libraryViewController.dataSource = [WCLibraryDataSource sharedInstance].library;
 		libraryViewController.title = NSLocalizedString(@"LIBRARY", @"Library");
 		libraryViewController.preferredContentSize = CGSizeMake(500.0f, 650.0f);
-
 		libraryViewController.target = self;
 		libraryViewController.selector = @selector(libraryItemSelected:);
 
 		navController = [[UINavigationController alloc] initWithRootViewController:libraryViewController];
-		
+
 		[[NSNotificationCenter defaultCenter] addObserver:navController selector:@selector(popToRootViewControllerAnimated:) name:LIBRARY_UPDATED_NOTIFICATION object:nil];
 	}
+	
+	CGRect sourceRect = [self.view convertRect:libraryButton.frame fromView:bottomToolbar];
 
 	currentPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
 	currentPopover.delegate = self;
-	CGRect sourceRect = libraryButton.frame;
-	[currentPopover presentPopoverFromRect:sourceRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+	[currentPopover presentPopoverFromRect:sourceRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
 }
 
 - (void)dismissPopover {
@@ -159,39 +154,43 @@
 	[super viewDidLoad];
 	
 	self.view.backgroundColor = RGB(0, 0, 0);
+	
+	toolbarHidden = YES;
 
-	topToolbar = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width, 44.0f)];
-	topToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
-	[self.view addSubview:topToolbar];
+	CGRect frame;
+	frame.origin.x = 0.0f;
+	frame.origin.y = self.view.bounds.size.height;
+	frame.size.width = self.view.bounds.size.width;
+	frame.size.height = 100.0f;
+	
+	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
+	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
+	bottomToolbar.target = self;
+	bottomToolbar.selector = @selector(progressChanged:);
+	[self.view addSubview:bottomToolbar];
 	
 	libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	[libraryButton setBackgroundImage:[UIImage imageNamed:@"library"] forState:UIControlStateNormal];
 	[libraryButton sizeToFit];
-	[topToolbar addSubview:libraryButton];
-	[libraryButton addTarget:self action:@selector(showLibrary:) forControlEvents:UIControlEventTouchUpInside];
+	[bottomToolbar addSubview:libraryButton];
+	[libraryButton addTarget:self action:@selector(showLibrary) forControlEvents:UIControlEventTouchUpInside];
 	
 	wifiButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	[wifiButton setBackgroundImage:[UIImage imageNamed:@"wifi"] forState:UIControlStateNormal];
 	[wifiButton sizeToFit];
-	[topToolbar addSubview:wifiButton];
+	[bottomToolbar addSubview:wifiButton];
 	[wifiButton addTarget:self action:@selector(showServerViewController:) forControlEvents:UIControlEventTouchUpInside];
 	
 	infoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	[infoButton setBackgroundImage:[UIImage imageNamed:@"info"] forState:UIControlStateNormal];
 	[infoButton sizeToFit];
-	[topToolbar addSubview:infoButton];
-	[infoButton addTarget:self action:@selector(showInfo:) forControlEvents:UIControlEventTouchUpInside];
-	
-	
-	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:topToolbar.frame];
-	bottomToolbar.target = self;
-	bottomToolbar.selector = @selector(progressChanged:);
-	[self.view addSubview:bottomToolbar];
-	
+	[bottomToolbar addSubview:infoButton];
+	[infoButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
+
 	bottomToolbar.pageNumber = -1;
 
 	pagesScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-	[self.view insertSubview:pagesScrollView belowSubview:topToolbar];
+	[self.view insertSubview:pagesScrollView belowSubview:bottomToolbar];
 
 	pagesScrollView.pagingEnabled = YES;
 	pagesScrollView.bounces = NO;
@@ -224,32 +223,22 @@
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
-	BOOL hidden = (topToolbar.frame.origin.y < 0);
+	toolbarHidden = !toolbarHidden;
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:YES];
-	
-	if (hidden) {
-		[UIView animateWithDuration:0.4f
+	if (toolbarHidden) {
+		[UIView animateWithDuration:0.3
 						 animations:^{
-							 CGRect tmpRect = topToolbar.frame;
-							 tmpRect.origin.y = 0.0f;
-							 topToolbar.frame = tmpRect;
-							 
-							 tmpRect = bottomToolbar.frame;
-							 tmpRect.origin.y = self.view.bounds.size.height - tmpRect.size.height;
+							 CGRect tmpRect = bottomToolbar.frame;
+							 tmpRect.origin.y = self.view.bounds.size.height;
 							 bottomToolbar.frame = tmpRect;
 						 }
 		 ];
 	}
 	else {
-		[UIView animateWithDuration:0.4f
+		[UIView animateWithDuration:0.3
 						 animations:^{
-							 CGRect tmpRect = topToolbar.frame;
-							 tmpRect.origin.y = -tmpRect.size.height;
-							 topToolbar.frame = tmpRect;
-							 
-							 tmpRect = bottomToolbar.frame;
-							 tmpRect.origin.y = self.view.bounds.size.height;
+							 CGRect tmpRect = bottomToolbar.frame;
+							 tmpRect.origin.y = self.view.bounds.size.height - tmpRect.size.height;
 							 bottomToolbar.frame = tmpRect;
 						 }
 		 ];
@@ -288,34 +277,30 @@
 		CGRect screenFrame = self.view.bounds;
 
 		[UIView setAnimationsEnabled:NO];
-		
-		CGRect tmpRect = topToolbar.frame;
+
+		CGRect tmpRect = bottomToolbar.frame;
 		tmpRect.size.width = screenFrame.size.width;
-		topToolbar.frame = tmpRect;
-		
-		tmpRect = bottomToolbar.frame;
-		tmpRect.size.width = screenFrame.size.width;
-		if (topToolbar.frame.origin.y < 0) {
-			tmpRect.origin.y = self.view.bounds.size.height;
+		if (toolbarHidden) {
+			tmpRect.origin.y = screenFrame.size.height;
 		}
 		else {
-			tmpRect.origin.y = self.view.bounds.size.height - tmpRect.size.height;
+			tmpRect.origin.y = screenFrame.size.height - tmpRect.size.height;
 		}
 		bottomToolbar.frame = tmpRect;
 		
 		tmpRect = libraryButton.frame;
-		tmpRect.origin.x = 10.0f;
-		tmpRect.origin.y = floorf((topToolbar.frame.size.height - tmpRect.size.height) / 2.0f);
+		tmpRect.origin.x = 20.0f;
+		tmpRect.origin.y = 10.0f;
 		libraryButton.frame = tmpRect;
 		
 		tmpRect = wifiButton.frame;
-		tmpRect.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 5.0f;
-		tmpRect.origin.y = floorf((topToolbar.frame.size.height - tmpRect.size.height) / 2.0f);
+		tmpRect.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0f;
+		tmpRect.origin.y = libraryButton.frame.origin.y;
 		wifiButton.frame = tmpRect;
 		
 		tmpRect = infoButton.frame;
-		tmpRect.origin.x = topToolbar.frame.size.width - tmpRect.size.width - 5.0f;
-		tmpRect.origin.y = floorf((topToolbar.frame.size.height - tmpRect.size.height) / 2.0f);
+		tmpRect.origin.x = bottomToolbar.frame.size.width - tmpRect.size.width - 20.0f;
+		tmpRect.origin.y = libraryButton.frame.origin.y;
 		infoButton.frame = tmpRect;
 		
 		screenFrame.origin = CGPointZero;
@@ -495,9 +480,6 @@
 			}
 		}
 		animating = NO;
-		if (currentPageNumber == totalPagesNumber - 1) {
-			[WToast showWithText:NSLocalizedString(@"LAST_PAGE_TOAST", @"Last page")];
-		}
 	}
 }
 

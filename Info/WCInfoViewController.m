@@ -1,6 +1,6 @@
 /**
  * @class WCInfoViewController
- * @author Nik S Dyonin <nik@brite-apps.com>
+ * @author Nik S Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCInfoViewController.h"

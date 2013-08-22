@@ -1,6 +1,6 @@
 /**
  * @class WCSliderToolbar
- * @author Nik S Dyonin <nik@brite-apps.com>
+ * @author Nik S Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCSliderToolbar.h"
@@ -10,53 +10,46 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame]) != nil) {
-		whiteProgress = [[UIView alloc] init];
-		whiteProgress.backgroundColor = RGBA(255, 255, 255, 0.8f);
-		[self addSubview:whiteProgress];
-		whiteProgress.layer.masksToBounds = YES;
+		pageLabel = [[UILabel alloc] init];
+		pageLabel.backgroundColor = [UIColor clearColor];
+		pageLabel.numberOfLines = 1;
+		pageLabel.font = [UIFont boldSystemFontOfSize:16];
+		pageLabel.textColor = RGB(255, 255, 255);
+		[self addSubview:pageLabel];
 		
-		blackProgress = [[UIView alloc] init];
-		blackProgress.backgroundColor = RGBA(0, 0, 0, 0.8f);
-		[self addSubview:blackProgress];
-		blackProgress.layer.masksToBounds = YES;
-		
-		pageLabelWhite = [[UILabel alloc] init];
-		pageLabelWhite.backgroundColor = [UIColor clearColor];
-		pageLabelWhite.numberOfLines = 1;
-		pageLabelWhite.font = [UIFont boldSystemFontOfSize:18];
-		pageLabelWhite.textColor = RGB(255, 255, 255);
-		[blackProgress addSubview:pageLabelWhite];
-		
-		pageLabelBlack = [[UILabel alloc] init];
-		pageLabelBlack.backgroundColor = [UIColor clearColor];
-		pageLabelBlack.numberOfLines = 1;
-		pageLabelBlack.font = [UIFont boldSystemFontOfSize:18];
-		pageLabelBlack.textColor = RGB(0, 0, 0);
-		[whiteProgress addSubview:pageLabelBlack];
+		slider = [[UISlider alloc] initWithFrame:CGRectZero];
+		slider.minimumTrackTintColor = [UIColor darkGrayColor];
+		slider.maximumTrackTintColor = [UIColor whiteColor];
+		slider.continuous = NO;
+		slider.minimumValue = 0.0f;
+		slider.maximumValue = 1.0f;
+		[slider sizeToFit];
+		[slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+		[self addSubview:slider];
 	}
 	return self;
 }
 
 - (void)redrawFrames {
-	CGRect tmpRect = self.frame;
 	float progress = ((float)_pageNumber - 1) / ((float)_totalPages - 1);
-	if (_pageNumber == -1) {
-		progress = 0;
-		pageLabelBlack.text = nil;
-		pageLabelWhite.text = nil;
-	}
-	tmpRect.origin = CGPointZero;
-	tmpRect.size.width = self.frame.size.width * progress;
-	whiteProgress.frame = CGRectIntegral(tmpRect);
 
-	tmpRect.size.width = self.frame.size.width - whiteProgress.frame.size.width;
-	tmpRect.origin.x = whiteProgress.frame.size.width;
-	blackProgress.frame = CGRectIntegral(tmpRect);
+	if (_pageNumber == -1) {
+		progress = 0.0f;
+		pageLabel.text = nil;
+	}
+	
+	slider.value = progress;
 }
 
 - (void)setFrame:(CGRect)frame {
 	[super setFrame:frame];
 	[self redrawFrames];
+	
+	CGRect tmpRect = slider.bounds;
+	tmpRect.origin.x = 20.0f;
+	tmpRect.size.width = frame.size.width - 20.0f * 2.0f;
+	tmpRect.origin.y = frame.size.height - tmpRect.size.height - 10.0f;
+	slider.frame = tmpRect;
 }
 
 - (void)setPageNumber:(NSInteger)p {
@@ -65,85 +58,42 @@
 	[self redrawFrames];
 
 	NSString *text = [[NSString alloc] initWithFormat:NSLocalizedString(@"PAGE_X_OF_Y", @"Page %d / %d"), _pageNumber, _totalPages];
-	pageLabelBlack.text = pageLabelWhite.text = text;
+	pageLabel.text = text;
 	
-	[pageLabelBlack sizeToFit], [pageLabelWhite sizeToFit];
+	[pageLabel sizeToFit];
 	
-	CGRect tmpRect = pageLabelBlack.frame;
-	tmpRect.origin.x = floorf((self.frame.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = floorf((self.frame.size.height - tmpRect.size.height) / 2.0f);
-	pageLabelBlack.frame = tmpRect;
-
-	tmpRect.origin.x = pageLabelBlack.frame.origin.x - blackProgress.frame.origin.x;
-	pageLabelWhite.frame = tmpRect;
-
+	CGRect tmpRect = pageLabel.frame;
+	tmpRect.origin.x = floorf((self.bounds.size.width - tmpRect.size.width) / 2.0f);
+	tmpRect.origin.y = 5.0f;
+	pageLabel.frame = tmpRect;
+	
 	if (_pageNumber == -1) {
-		pageLabelBlack.text = nil;
-		pageLabelWhite.text = nil;
+		pageLabel.hidden = YES;
+		slider.enabled = NO;
+	}
+	else {
+		pageLabel.hidden = NO;
+		slider.enabled = YES;
 	}
 }
 
-- (void)changeProgress:(float)progress {
-	CGRect tmpRect = self.frame;
-	tmpRect.origin = CGPointZero;
-	tmpRect.size.width = self.frame.size.width * progress;
-	whiteProgress.frame = CGRectIntegral(tmpRect);
-
-	tmpRect.size.width = self.frame.size.width - whiteProgress.frame.size.width;
-	tmpRect.origin.x = whiteProgress.frame.size.width;
-	blackProgress.frame = CGRectIntegral(tmpRect);
+- (void)setTotalPages:(NSInteger)totalPages {
+	_totalPages = totalPages;
 	
-	NSInteger pNum = _totalPages * progress + 1;
-	
-	NSString *text = [[NSString alloc] initWithFormat:NSLocalizedString(@"PAGE_X_OF_Y", @"Page %d / %d"), pNum, _totalPages];
-	pageLabelBlack.text = pageLabelWhite.text = text;
-	
-	[pageLabelBlack sizeToFit], [pageLabelWhite sizeToFit];
-	
-	tmpRect = pageLabelBlack.frame;
-	tmpRect.origin.x = floorf((self.frame.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = floorf((self.frame.size.height - tmpRect.size.height) / 2.0f);
-	pageLabelBlack.frame = tmpRect;
-	
-	tmpRect.origin.x = pageLabelBlack.frame.origin.x - blackProgress.frame.origin.x;
-	pageLabelWhite.frame = tmpRect;
+	slider.maximumValue = 1.0f - (1.0f / (float)totalPages);
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	processTouch = YES;
-	UITouch *touch = [touches anyObject];
-	CGPoint p = [touch locationInView:self];
-	float progress = p.x / self.frame.size.width;
-	[self changeProgress:progress];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (processTouch) {
-		UITouch *touch = [touches anyObject];
-		CGPoint p = [touch locationInView:self];
-		float progress = p.x / self.frame.size.width;
-		[self changeProgress:progress];
-	}
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (processTouch) {
-		UITouch *touch = [touches anyObject];
-		CGPoint p = [touch locationInView:self];
-		float progress = p.x / self.frame.size.width;
-
-		@try {
-			if ([_target respondsToSelector:_selector]) {
+- (void)sliderValueChanged:(UISlider *)sender {
+	@try {
+		if ([_target respondsToSelector:_selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-				[_target performSelector:_selector withObject:@(progress)];
+			[_target performSelector:_selector withObject:@(sender.value)];
 #pragma clang diagnostic pop
-			}
-		}
-		@catch (NSException *exception) {
 		}
 	}
-	processTouch = NO;
+	@catch (NSException *exception) {
+	}
 }
 
 @end

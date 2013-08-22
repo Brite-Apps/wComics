@@ -35,7 +35,6 @@
 		AF9B6C9217A033B90046F92A /* FtpServer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BD517A033B90046F92A /* FtpServer.m */; };
 		AF9B6C9417A033B90046F92A /* list.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BD817A033B90046F92A /* list.m */; };
 		AF9B6C9517A033B90046F92A /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BDA17A033B90046F92A /* NetworkController.m */; };
-		AF9B6CE017A033B90046F92A /* WToast.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6C6617A033B90046F92A /* WToast.m */; };
 		AF9B6CE117A033B90046F92A /* GMAppleDouble+ZKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6C6917A033B90046F92A /* GMAppleDouble+ZKAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AF9B6CE217A033B90046F92A /* GMAppleDouble.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6C6C17A033B90046F92A /* GMAppleDouble.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AF9B6CE317A033B90046F92A /* NSData+ZKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6C6E17A033B90046F92A /* NSData+ZKAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -136,8 +135,6 @@
 		AF9B6BD817A033B90046F92A /* list.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = list.m; sourceTree = "<group>"; };
 		AF9B6BD917A033B90046F92A /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
 		AF9B6BDA17A033B90046F92A /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
-		AF9B6C6517A033B90046F92A /* WToast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WToast.h; sourceTree = "<group>"; };
-		AF9B6C6617A033B90046F92A /* WToast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WToast.m; sourceTree = "<group>"; };
 		AF9B6C6817A033B90046F92A /* GMAppleDouble+ZKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GMAppleDouble+ZKAdditions.h"; sourceTree = "<group>"; };
 		AF9B6C6917A033B90046F92A /* GMAppleDouble+ZKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GMAppleDouble+ZKAdditions.m"; sourceTree = "<group>"; };
 		AF9B6C6B17A033B90046F92A /* GMAppleDouble.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMAppleDouble.h; sourceTree = "<group>"; };
@@ -340,7 +337,6 @@
 			children = (
 				AF9B6BCA17A033B90046F92A /* ios-ftp-server */,
 				AF9B6CF617A033CD0046F92A /* Unrar4iOS.xcodeproj */,
-				AF9B6C6417A033B90046F92A /* WToast */,
 				AF9B6C6717A033B90046F92A /* ZipKit */,
 			);
 			path = Libraries;
@@ -365,15 +361,6 @@
 				AF9B6BDA17A033B90046F92A /* NetworkController.m */,
 			);
 			path = "ios-ftp-server";
-			sourceTree = "<group>";
-		};
-		AF9B6C6417A033B90046F92A /* WToast */ = {
-			isa = PBXGroup;
-			children = (
-				AF9B6C6517A033B90046F92A /* WToast.h */,
-				AF9B6C6617A033B90046F92A /* WToast.m */,
-			);
-			path = WToast;
 			sourceTree = "<group>";
 		};
 		AF9B6C6717A033B90046F92A /* ZipKit */ = {
@@ -591,7 +578,6 @@
 				AF9B6BA417A0329C0046F92A /* WCInfoViewController.m in Sources */,
 				AF9B6CE317A033B90046F92A /* NSData+ZKAdditions.m in Sources */,
 				AF9B6CE817A033B90046F92A /* NSString+ZKAdditions.m in Sources */,
-				AF9B6CE017A033B90046F92A /* WToast.m in Sources */,
 				AF9B6BBF17A033A40046F92A /* WCViewerViewController.m in Sources */,
 				AF9B6C9517A033B90046F92A /* NetworkController.m in Sources */,
 				AF9B6C8D17A033B90046F92A /* AsyncSocket.m in Sources */,

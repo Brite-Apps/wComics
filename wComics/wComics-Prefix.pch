@@ -31,4 +31,3 @@
 #import "WCComic.h"
 #import "WCSettingsStorage.h"
 #import "WCLibraryDataSource.h"
-#import "WToast.h"
