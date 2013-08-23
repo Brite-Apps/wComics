@@ -3,7 +3,7 @@
 //  wComics
 //
 //  Created by Nik S Dyonin on 24.07.13.
-//  Copyright (c) 2013 Brite Apps. All rights reserved.
+//  Copyright (c) 2013 Nik S Dyonin. All rights reserved.
 //
 
 #import "WCAppDelegate.h"

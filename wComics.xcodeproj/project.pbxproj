@@ -473,7 +473,7 @@
 			attributes = {
 				CLASSPREFIX = WC;
 				LastUpgradeCheck = 0500;
-				ORGANIZATIONNAME = "Brite Apps";
+				ORGANIZATIONNAME = "Nik S Dyonin";
 			};
 			buildConfigurationList = AF9B6B6317A032570046F92A /* Build configuration list for PBXProject "wComics" */;
 			compatibilityVersion = "Xcode 3.2";

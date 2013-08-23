@@ -11,27 +11,27 @@
 #import "Unrar4iOS.h"
 #import "Unrar4iOSAdditions.h"
 
-UIImage* cropImage(UIImage *imageToCrop, CGRect cropRect) {
-	UIGraphicsBeginImageContext(cropRect.size);
-	CGContextRef currentContext = UIGraphicsGetCurrentContext();
-
-	CGRect clippedRect = CGRectMake(0, 0, cropRect.size.width, cropRect.size.height);
-	CGContextClipToRect(currentContext, clippedRect);
-
-	CGRect drawRect = CGRectMake(cropRect.origin.x * -1,
-								 cropRect.origin.y * -1,
-								 imageToCrop.size.width,
-								 imageToCrop.size.height);
-	
-	CGContextTranslateCTM(currentContext, 0, drawRect.size.height);
-	CGContextScaleCTM(currentContext, 1.0, -1.0);
-	CGContextDrawImage(currentContext, drawRect, imageToCrop.CGImage);
-
-	UIImage *cropped = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-
-	return cropped;
-}
+//UIImage* cropImage(UIImage *imageToCrop, CGRect cropRect) {
+//	UIGraphicsBeginImageContextWithOptions(cropRect.size, YES, [UIScreen mainScreen].scale);
+//	CGContextRef currentContext = UIGraphicsGetCurrentContext();
+//
+//	CGRect clippedRect = CGRectMake(0.0f, 0.0f, cropRect.size.width, cropRect.size.height);
+//	CGContextClipToRect(currentContext, clippedRect);
+//
+//	CGRect drawRect = CGRectMake(cropRect.origin.x * -1.0f,
+//								 cropRect.origin.y * -1.0f,
+//								 imageToCrop.size.width,
+//								 imageToCrop.size.height);
+//	
+//	CGContextTranslateCTM(currentContext, 0, drawRect.size.height);
+//	CGContextScaleCTM(currentContext, 1.0f, -1.0f);
+//	CGContextDrawImage(currentContext, drawRect, imageToCrop.CGImage);
+//
+//	UIImage *cropped = UIGraphicsGetImageFromCurrentImageContext();
+//	UIGraphicsEndImageContext();
+//
+//	return cropped;
+//}
 
 @implementation WCComic
 
@@ -51,17 +51,25 @@ UIImage* cropImage(UIImage *imageToCrop, CGRect cropRect) {
 						continue;
 					}
 					else {
-						float c = 31.0f / cover.size.width;
+						CGFloat c = 31.0f / cover.size.width;
 						CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
-						UIGraphicsBeginImageContext(newSize);
+						
+						if (newSize.width > 31.0f) {
+							c = 31.0f / newSize.width;
+							newSize.width = 31.0f;
+							newSize.height *= c;
+						}
+						
+						if (newSize.height > 40.0f) {
+							c = 40.0f / newSize.height;
+							newSize.height = 40.0f;
+							newSize.width *= c;
+						}
+						
+						UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
 						[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
 						UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
 						UIGraphicsEndImageContext();
-						
-						if (newSize.height > 40.0f) {
-							newImage = cropImage(newImage, CGRectMake(0.0f, 0.0f, 31.0f, 40.0f));
-						}
-						
 						NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.9f);
 						
 						NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
@@ -87,17 +95,27 @@ UIImage* cropImage(UIImage *imageToCrop, CGRect cropRect) {
 							continue;
 						}
 						else {
-							float c = 31.0f / cover.size.width;
+							CGFloat c = 31.0f / cover.size.width;
 							CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
-							UIGraphicsBeginImageContext(newSize);
+							
+							if (newSize.width > 31.0f) {
+								c = 31.0f / newSize.width;
+								newSize.width = 31.0f;
+								newSize.height *= c;
+							}
+							
+							if (newSize.height > 40.0f) {
+								c = 40.0f / newSize.height;
+								newSize.height = 40.0f;
+								newSize.width *= c;
+							}
+							
+							TRACE(@"New size: %@", NSStringFromCGSize(newSize));
+							
+							UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
 							[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
 							UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
 							UIGraphicsEndImageContext();
-							
-							if (newSize.height > 40.0f) {
-								newImage = cropImage(newImage, CGRectMake(0.0f, 0.0f, 31.0f, 40.0f));
-							}
-							
 							NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.9f);
 							
 							NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
