@@ -4,8 +4,8 @@
 
 @interface WCLibraryViewController : UITableViewController
 
-@property (nonatomic, assign) id target;
+@property (nonatomic, weak) id target;
 @property (nonatomic, assign) SEL selector;
-@property (nonatomic, assign) NSMutableArray *dataSource;
+@property (nonatomic, weak) NSMutableArray *dataSource;
 
 @end

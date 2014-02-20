@@ -1,11 +1,13 @@
 /**
  * @class WCLibraryViewController
- * @author Nik S Dyonin <wolf.step@gmail.com>
+ * @author Nik Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCLibraryViewController.h"
 #import "WCViewerViewController.h"
 #import "WCItemCell.h"
+#import "WCComic.h"
+#import "WCSettingsStorage.h"
 
 @implementation WCLibraryViewController
 
@@ -87,6 +89,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSDictionary *item = _dataSource[indexPath.row];
+
 	if ([item[@"dir"] boolValue]) {
 		WCLibraryViewController *lvc = [[WCLibraryViewController alloc] init];
 		lvc.dataSource = item[@"children"];
@@ -100,11 +103,11 @@
 		[self.navigationController pushViewController:lvc animated:YES];
 	}
 	else {
-		@try {
-			[_target performSelectorOnMainThread:_selector withObject:item waitUntilDone:NO];
-		}
-		@catch (NSException *e) {
-			TRACE(@"WCLibraryViewController (-tableView:didSelectRowAtIndexPath:) caught exception: %@", e);
+		if ([_target respondsToSelector:_selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+			[_target performSelector:_selector withObject:item];
+#pragma clang diagnostic pop
 		}
 	}
 }

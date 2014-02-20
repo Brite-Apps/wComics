@@ -1,6 +1,6 @@
 /**
  * @class WCSettingsStorage
- * @author Nik S Dyonin <wolf.step@gmail.com>
+ * @author Nik Dyonin <wolf.step@gmail.com>
  */
 
 static NSString *settingsMutex = @"settingsMutex";

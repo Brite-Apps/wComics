@@ -2,15 +2,16 @@
  * @class WCViewerViewController
  */
 
-#import <QuartzCore/QuartzCore.h>
+@import QuartzCore;
 #import "WCSliderToolbar.h"
 
 @class WCScrollView;
+@class WCComic;
 
 @interface WCViewerViewController : UIViewController <UIScrollViewDelegate, UIPopoverControllerDelegate> {
 	UIScrollView *pagesScrollView;
-	int currentPageNumber;
-	int totalPagesNumber;
+	NSInteger currentPageNumber;
+	NSInteger totalPagesNumber;
 
 	BOOL animating;
 	
@@ -19,7 +20,8 @@
 
 	BOOL scaleWidth;
 
-	WCSliderToolbar *bottomToolbar;
+	UILabel *topLabel;
+	__block WCSliderToolbar *bottomToolbar;
 	
 	UIButton *libraryButton;
 	UIButton *wifiButton;
@@ -31,9 +33,6 @@
 @property (nonatomic, strong) WCComic *comic;
 @property (nonatomic, strong) UIView *updateIndicator;
 
-- (void)redrawInterface;
-- (void)displayPage:(int)pageNum;
-- (void)updateZoomParams:(int)pageNum;
 - (void)dismissPopover;
 - (void)comicRemoved:(NSDictionary *)item;
 

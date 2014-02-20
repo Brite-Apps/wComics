@@ -2,8 +2,8 @@
 //  WCAppDelegate.h
 //  wComics
 //
-//  Created by Nik S Dyonin on 24.07.13.
-//  Copyright (c) 2013 Nik S Dyonin. All rights reserved.
+//  Created by Nik Dyonin on 24.07.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
 //
 
 @class WCViewerViewController;
@@ -16,5 +16,6 @@
 }
 
 - (void)showIndicator;
+- (void)updateLibrary;
 
 @end

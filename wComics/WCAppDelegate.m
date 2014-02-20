@@ -2,13 +2,15 @@
 //  WCAppDelegate.m
 //  wComics
 //
-//  Created by Nik S Dyonin on 24.07.13.
-//  Copyright (c) 2013 Nik S Dyonin. All rights reserved.
+//  Created by Nik Dyonin on 24.07.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
 //
 
 #import "WCAppDelegate.h"
 #import "WCViewerViewController.h"
 #import "WCLibraryDataSource.h"
+#import "WCComic.h"
+#import "WCSettingsStorage.h"
 
 void uncaughtExceptionHandler(NSException *exception) {
 	TRACE(@"CRASH: %@", exception);
@@ -24,76 +26,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 	
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	window.rootViewController = viewController;
-	[window makeKeyAndVisible];
 	
-	[self run];
-	
-	justStarted = YES;
-	[self performSelectorInBackground:@selector(updateLibrary) withObject:nil];
-	
-	return YES;
-}
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-	if (url) {
-		WCComic *comic = [[WCComic alloc] initWithFile:[url path]];
-		viewController.comic = comic;
-	}
-	
-	return YES;
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-	[viewController dismissPopover];
-	[[WCSettingsStorage sharedInstance] setLastDocument:viewController.comic.file];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-	[self showIndicator];
-	[self performSelectorInBackground:@selector(updateLibrary) withObject:nil];
-}
-
-- (void)checkOpen {
-	NSString *lastDocument = [[WCSettingsStorage sharedInstance] lastDocument];
-	if (lastDocument) {
-		[self showIndicator];
-		WCComic *comic = [[WCComic alloc] initWithFile:lastDocument];
-		viewController.comic = comic;
-		[self hideIndicator];
-	}
-}
-
-- (void)updateLibrary {
-	@autoreleasepool {
-		[[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-		NSString *coverDir = [DOCPATH stringByAppendingPathComponent:@"covers"];
-		[[NSFileManager defaultManager] createDirectoryAtPath:coverDir withIntermediateDirectories:YES attributes:nil error:nil];
-		
-		[[WCLibraryDataSource sharedInstance] updateLibrary];
-		[self hideIndicator];
-		[[UIApplication sharedApplication] endIgnoringInteractionEvents];
-		
-		if (justStarted) {
-			justStarted = NO;
-			[self checkOpen];
-		}
-	}
-}
-
-
-- (void)showIndicator {
-	[viewController.view addSubview:updateIndicator];
-	CGRect tmpRect = updateIndicator.frame;
-	tmpRect.origin.x = floorf((viewController.view.bounds.size.width - tmpRect.size.width) * 0.5f);
-	tmpRect.origin.y = floorf((viewController.view.bounds.size.height - tmpRect.size.height) * 0.5f);
-	updateIndicator.frame = tmpRect;
-}
-
-- (void)hideIndicator {
-	[updateIndicator removeFromSuperview];
-}
-
-- (void)run {
 	updateIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 300.0f, 300.0f)];
 	updateIndicator.backgroundColor = RGBA(0, 0, 0, 0.8);
 	CALayer *layer = updateIndicator.layer;
@@ -123,14 +56,80 @@ void uncaughtExceptionHandler(NSException *exception) {
 	[updateIndicator addSubview:textLabel];
 	
 	viewController.updateIndicator = updateIndicator;
+
+	[window makeKeyAndVisible];
 	
-	[self showIndicator];
+	justStarted = YES;
+	
+	[self updateLibrary];
+	
+	return YES;
 }
 
-- (void)dealloc {
-	viewController = nil;
-	updateIndicator = nil;
-	window = nil;
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+	if (url) {
+		WCComic *comic = [[WCComic alloc] initWithFile:[url path]];
+		viewController.comic = comic;
+	}
+	
+	return YES;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+	[viewController dismissPopover];
+	[[WCSettingsStorage sharedInstance] setLastDocument:viewController.comic.file];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+	[self updateLibrary];
+}
+
+- (void)checkOpen {
+	NSString *lastDocument = [[WCSettingsStorage sharedInstance] lastDocument];
+
+	if (lastDocument) {
+		[self showIndicator];
+		WCComic *comic = [[WCComic alloc] initWithFile:lastDocument];
+		viewController.comic = comic;
+		[self hideIndicator];
+	}
+}
+
+- (void)updateLibrary {
+	[self showIndicator];
+
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+		@autoreleasepool {
+			[[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+
+			NSString *coverDir = [DOCPATH stringByAppendingPathComponent:@"covers"];
+			[[NSFileManager defaultManager] createDirectoryAtPath:coverDir withIntermediateDirectories:YES attributes:nil error:nil];
+			[[WCLibraryDataSource sharedInstance] updateLibrary];
+
+			[[UIApplication sharedApplication] endIgnoringInteractionEvents];
+
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self hideIndicator];
+				
+				if (justStarted) {
+					justStarted = NO;
+					[self checkOpen];
+				}
+			});
+		}
+	});
+}
+
+- (void)showIndicator {
+	[viewController.view addSubview:updateIndicator];
+	CGRect tmpRect = updateIndicator.frame;
+	tmpRect.origin.x = floorf((viewController.view.bounds.size.width - tmpRect.size.width) * 0.5f);
+	tmpRect.origin.y = floorf((viewController.view.bounds.size.height - tmpRect.size.height) * 0.5f);
+	updateIndicator.frame = tmpRect;
+}
+
+- (void)hideIndicator {
+	[updateIndicator removeFromSuperview];
 }
 
 @end

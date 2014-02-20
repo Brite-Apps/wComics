@@ -1,13 +1,14 @@
 /**
  * @class WCLibraryDataSource
- * @author Nik S Dyonin <wolf.step@gmail.com>
+ * @author Nik Dyonin <wolf.step@gmail.com>
  */
 
 static NSString *libraryMutex = @"libraryMutex";
 
 #import "WCLibraryDataSource.h"
 #import "ZKDataArchive.h"
-#import <MobileCoreServices/MobileCoreServices.h>
+#import "WCComic.h"
+@import MobileCoreServices;
 
 NSComparisonResult compareItems(NSDictionary *item1, NSDictionary *item2, void *context) {
 	NSString *name1 = [[item1 objectForKey:@"path"] lastPathComponent];

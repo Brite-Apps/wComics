@@ -1,6 +1,6 @@
 /**
  * @class WCSliderToolbar
- * @author Nik S Dyonin <wolf.step@gmail.com>
+ * @author Nik Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCSliderToolbar.h"
@@ -84,15 +84,11 @@
 }
 
 - (void)sliderValueChanged:(UISlider *)sender {
-	@try {
-		if ([_target respondsToSelector:_selector]) {
+	if ([_target respondsToSelector:_selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-			[_target performSelector:_selector withObject:@(sender.value)];
+		[_target performSelector:_selector withObject:@(sender.value)];
 #pragma clang diagnostic pop
-		}
-	}
-	@catch (NSException *exception) {
 	}
 }
 

@@ -1,6 +1,6 @@
 /**
  * @class WCServerViewController
- * @author Nik S Dyonin <wolf.step@gmail.com>
+ * @author Nik Dyonin <wolf.step@gmail.com>
  */
 
 #import "WCServerViewController.h"
