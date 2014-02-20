@@ -9,7 +9,6 @@
 
 #define FTP_PORT 12345
 
-
 @implementation WCServerViewController
 
 - (void)redrawInterface {
@@ -55,6 +54,7 @@
 	else {
 		urlLabel.text = NSLocalizedString(@"ERROR_STARTING_SERVER", @"");
 	}
+
 	[urlLabel sizeToFit];
 	
 	[self.view addSubview:urlLabel];

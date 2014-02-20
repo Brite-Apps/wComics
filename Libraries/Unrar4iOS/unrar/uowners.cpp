@@ -43,8 +43,8 @@ void ExtractUnixOwner(Archive &Arc,char *FileName)
 void ExtractUnixOwnerNew(Archive &Arc,char *FileName)
 {
   char *OwnerName=(char *)&Arc.SubHead.SubData[0];
-  int OwnerSize=strlen(OwnerName)+1;
-  int GroupSize=Arc.SubHead.SubData.Size()-OwnerSize;
+  int OwnerSize=(int)strlen(OwnerName)+1;
+  int GroupSize=(int)Arc.SubHead.SubData.Size()-OwnerSize;
   char GroupName[NM];
   strncpy(GroupName,(char *)&Arc.SubHead.SubData[OwnerSize],GroupSize);
   GroupName[GroupSize]=0;

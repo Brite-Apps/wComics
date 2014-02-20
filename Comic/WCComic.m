@@ -174,7 +174,7 @@
 	archType = WCNone;
 }
 
-- (UIImage *)imageAtIndex:(int)index {
+- (UIImage *)imageAtIndex:(NSInteger)index {
 	UIImage *img = nil;
 	
 	if (archType == WCZipFile) {

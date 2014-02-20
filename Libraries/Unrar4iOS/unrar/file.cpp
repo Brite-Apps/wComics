@@ -316,7 +316,7 @@ void File::Write(const void *Data,size_t Size)
 		else
 			Success=WriteFile(hFile,Data,(DWORD)Size,&Written,NULL)==TRUE;
 #else
-		int Written=fwrite(Data,1,Size,hFile);
+		int Written=(int)fwrite(Data,1,Size,hFile);
 		Success=Written==Size && !ferror(hFile);
 #endif
 		if (!Success && AllowExceptions && HandleType==FILE_HANDLENORMAL)

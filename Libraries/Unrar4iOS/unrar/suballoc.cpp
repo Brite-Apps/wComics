@@ -116,7 +116,7 @@ void SubAllocator::InitSubAllocator()
 
   // Size2 is (HiUnit-LoUnit) memory area size to allocate as originally
   // supposed by compression algorithm. It is 7/8 of total allocated size.
-  uint Size2=FIXED_UNIT_SIZE*(SubAllocatorSize/8/FIXED_UNIT_SIZE*7);
+  uint Size2=(uint)(FIXED_UNIT_SIZE*(SubAllocatorSize/8/FIXED_UNIT_SIZE*7));
 
   // RealSize2 is the real adjusted size of (HiUnit-LoUnit) memory taking
   // into account that our UNIT_SIZE can be larger than FIXED_UNIT_SIZE.
@@ -125,7 +125,7 @@ void SubAllocator::InitSubAllocator()
   // Size1 is the size of memory area from HeapStart to FakeUnitsStart
   // as originally supposed by compression algorithm. This area can contain
   // different data types, both single symbols and structures.
-  uint Size1=SubAllocatorSize-Size2;
+  uint Size1=(uint)(SubAllocatorSize-Size2);
 
   // Real size of this area. We correct it according to UNIT_SIZE vs
   // FIXED_UNIT_SIZE difference. Also we add one more UNIT_SIZE

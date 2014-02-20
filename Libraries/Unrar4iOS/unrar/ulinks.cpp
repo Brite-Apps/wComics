@@ -24,7 +24,7 @@ int ExtractLink(ComprDataIO &DataIO,Archive &Arc,char *DestName,uint &LinkCRC,bo
 				}
 			}
 		}
-		int NameSize=Min(DataSize,strlen(FileName));
+		int NameSize=(int)Min(DataSize,strlen(FileName));
 		LinkCRC=CRC(0xffffffff,FileName,NameSize);
 		return(1);
 	}

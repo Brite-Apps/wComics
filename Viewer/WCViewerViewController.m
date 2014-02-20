@@ -31,9 +31,14 @@
 		_comic = nil;
 		[[WCSettingsStorage sharedInstance] setLastDocument:nil];
 		pagesScrollView.contentSize = CGSizeZero;
-		self.title = @"wComics";
 		bottomToolbar.pageNumber = -1;
 		topLabel.text = nil;
+		
+		topLabel.text = @"wComics";
+		
+		if (toolbarHidden) {
+			[self handleSingleTap:nil];
+		}
 	}
 	else {
 		if (![_comic isEqual:aComic]) {
@@ -60,8 +65,7 @@
 			[self redrawInterface];
 
 			[[WCSettingsStorage sharedInstance] setLastDocument:_comic.file];
-			
-			self.title = _comic.title;
+
 			topLabel.text = _comic.title;
 		}
 	}
@@ -180,6 +184,7 @@
 	topLabel.font = [UIFont boldSystemFontOfSize:16];
 	topLabel.textColor = RGB(255, 255, 255);
 	topLabel.textAlignment = NSTextAlignmentCenter;
+	topLabel.text = @"wComics";
 	[self.view addSubview:topLabel];
 	
 	libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -211,8 +216,6 @@
 	pagesScrollView.showsHorizontalScrollIndicator = NO;
 	pagesScrollView.delegate = self;
 	
-	self.title = @"wComics";
-	
 	scaleWidth = NO;
 	
 	UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
@@ -236,6 +239,10 @@
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
+	if (!_comic && !toolbarHidden) {
+		return;
+	}
+	
 	toolbarHidden = !toolbarHidden;
 	
 	__weak typeof(self) weakSelf = self;
@@ -416,14 +423,14 @@
 	[self updateZoomParams:currentPageNumber];
 }
 
-- (void)updateZoomParams:(int)pageNum {
+- (void)updateZoomParams:(NSInteger)pageNum {
 	WCScrollView *scrollView = (WCScrollView *)[pagesScrollView viewWithTag:pageNum + 1];
 	CGSize imageSize = scrollView.pageRect.size;
 
-	float nScaleWidth = scrollView.frame.size.width / imageSize.width;
-	float nScaleHeight = scrollView.frame.size.height / imageSize.height;
+	CGFloat nScaleWidth = scrollView.frame.size.width / imageSize.width;
+	CGFloat nScaleHeight = scrollView.frame.size.height / imageSize.height;
 
-	float minimumZoom = MIN(nScaleWidth, nScaleHeight);
+	CGFloat minimumZoom = MIN(nScaleWidth, nScaleHeight);
 	scrollView.minimumZoomScale = minimumZoom;
 
 	if (scaleWidth) {
@@ -437,12 +444,8 @@
 	[scrollView scrollRectToVisible:CGRectMake(0.0f, 0.0f, 1.0f, 1.0f) animated:NO];
 }
 
-- (void)displayPage:(int)pageNum {
-	if (_comic) {
-		self.title = _comic.title;
-	}
-	else {
-		self.title = @"wComics";
+- (void)displayPage:(NSInteger)pageNum {
+	if (!_comic) {
 		bottomToolbar.pageNumber = -1;
 	}
 
@@ -533,13 +536,6 @@
 	}
 }
 
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:navController];
-	self.comic = nil;
-	navController = nil;
-	self.updateIndicator = nil;
-}
-
 - (void)didReceiveMemoryWarning {
 	for (NSInteger i = 1; i <= totalPagesNumber; i++) {
 		if (i != currentPageNumber + 1) {
@@ -556,6 +552,13 @@
 
 - (BOOL)prefersStatusBarHidden {
 	return YES;
+}
+
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:navController];
+	self.comic = nil;
+	navController = nil;
+	self.updateIndicator = nil;
 }
 
 @end

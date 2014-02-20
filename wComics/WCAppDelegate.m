@@ -93,6 +93,9 @@ void uncaughtExceptionHandler(NSException *exception) {
 		viewController.comic = comic;
 		[self hideIndicator];
 	}
+	else {
+		viewController.comic = nil;
+	}
 }
 
 - (void)updateLibrary {

@@ -33,7 +33,7 @@ static NSString *settingsMutex = @"settingsMutex";
 	return [[[settings objectForKey:@"states"] objectForKey:file] unsignedIntValue];
 }
 
-- (void)saveCurrentPage:(unsigned int)page forFile:(NSString *)file {
+- (void)saveCurrentPage:(NSInteger)page forFile:(NSString *)file {
 	@try {
 		NSMutableDictionary *states = [[NSMutableDictionary alloc] initWithDictionary:[settings objectForKey:@"states"]];
 		NSNumber *num = @(page);

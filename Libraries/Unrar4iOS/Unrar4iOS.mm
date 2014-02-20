@@ -52,7 +52,7 @@ int CALLBACK CallbackProc(UINT msg, long UserData, long P1, long P2) {
 	strcpy(flags->ArcName, filenameData);
 	flags->ArcNameW = NULL;
 	flags->CmtBuf = NULL;
-	flags->OpenMode = mode;
+	flags->OpenMode = (unsigned int)mode;
 	
 	_rarFile = RAROpenArchiveEx(flags);
 	if (flags->OpenResult != 0) 

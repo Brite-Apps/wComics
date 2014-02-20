@@ -484,6 +484,11 @@
 				CLASSPREFIX = WC;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Nik S Dyonin";
+				TargetAttributes = {
+					AF9B6B6717A032570046F92A = {
+						DevelopmentTeam = U7BT5RC2Y6;
+					};
+				};
 			};
 			buildConfigurationList = AF9B6B6317A032570046F92A /* Build configuration list for PBXProject "wComics" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -684,8 +689,10 @@
 		AF9B6B9517A032570046F92A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "wComics/wComics-Prefix.pch";
 				HEADER_SEARCH_PATHS = "";
@@ -700,8 +707,10 @@
 		AF9B6B9617A032570046F92A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "wComics/wComics-Prefix.pch";
 				HEADER_SEARCH_PATHS = "";

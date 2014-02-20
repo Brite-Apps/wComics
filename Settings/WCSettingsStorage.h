@@ -10,7 +10,7 @@
 
 + (WCSettingsStorage *)sharedInstance;
 - (unsigned int)currentPageForFile:(NSString *)file;
-- (void)saveCurrentPage:(unsigned int)page forFile:(NSString *)file;
+- (void)saveCurrentPage:(NSInteger)page forFile:(NSString *)file;
 - (void)removeSettingsForFile:(NSString *)file;
 
 @end

@@ -1257,7 +1257,7 @@ bool CommandData::IsSwitch(int Ch)
 uint CommandData::GetExclAttr(char *Str)
 {
   if (IsDigit(*Str))
-    return(strtol(Str,NULL,0));
+    return((uint)strtol(Str,NULL,0));
   else
   {
     uint Attr;

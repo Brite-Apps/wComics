@@ -11,6 +11,7 @@
 	[super viewDidLoad];
 
 	webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+	webView.backgroundColor = RGB(255, 255, 255);
 	self.view = webView;
 	webView.dataDetectorTypes = UIDataDetectorTypeNone;
 	webView.scalesPageToFit = YES;

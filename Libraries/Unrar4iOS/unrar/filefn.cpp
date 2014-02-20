@@ -465,7 +465,7 @@ char *MkTemp(char *Name)
   size_t Length=strlen(Name);
   if (Length<=6)
     return(NULL);
-  int Random=clock();
+  int Random=(int)clock();
   for (int Attempt=0;;Attempt++)
   {
     sprintf(Name+Length-6,"%06u",(Random+Attempt)%1000000);

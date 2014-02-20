@@ -157,7 +157,6 @@
 		48F210991288B38C002745F2 /* headers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = headers.hpp; sourceTree = "<group>"; };
 		48F2109A1288B38C002745F2 /* isnt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = isnt.cpp; sourceTree = "<group>"; };
 		48F2109B1288B38C002745F2 /* isnt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = isnt.hpp; sourceTree = "<group>"; };
-		48F2109C1288B38C002745F2 /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		48F2109D1288B38C002745F2 /* list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = list.cpp; sourceTree = "<group>"; };
 		48F2109E1288B38C002745F2 /* list.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = list.hpp; sourceTree = "<group>"; };
 		48F2109F1288B38C002745F2 /* loclang.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = loclang.hpp; sourceTree = "<group>"; };
@@ -193,8 +192,6 @@
 		48F210BD1288B38C002745F2 /* rawread.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rawread.hpp; sourceTree = "<group>"; };
 		48F210BE1288B38C002745F2 /* rdwrfn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rdwrfn.cpp; sourceTree = "<group>"; };
 		48F210BF1288B38C002745F2 /* rdwrfn.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rdwrfn.hpp; sourceTree = "<group>"; };
-		48F210C01288B38C002745F2 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		48F210C11288B38C002745F2 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
 		48F210C21288B38C002745F2 /* recvol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = recvol.cpp; sourceTree = "<group>"; };
 		48F210C31288B38C002745F2 /* recvol.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = recvol.hpp; sourceTree = "<group>"; };
 		48F210C41288B38C002745F2 /* resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resource.cpp; sourceTree = "<group>"; };
@@ -230,8 +227,6 @@
 		48F210E21288B38C002745F2 /* unpack.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = unpack.hpp; sourceTree = "<group>"; };
 		48F210E31288B38C002745F2 /* unpack15.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unpack15.cpp; sourceTree = "<group>"; };
 		48F210E41288B38C002745F2 /* unpack20.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unpack20.cpp; sourceTree = "<group>"; };
-		48F210E51288B38C002745F2 /* UnRAR.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = UnRAR.vcproj; sourceTree = "<group>"; };
-		48F210E61288B38C002745F2 /* UnRARDll.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = UnRARDll.vcproj; sourceTree = "<group>"; };
 		48F210E71288B38C002745F2 /* uowners.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uowners.cpp; sourceTree = "<group>"; };
 		48F210E81288B38C002745F2 /* version.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
 		48F210E91288B38C002745F2 /* volume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = volume.cpp; sourceTree = "<group>"; };
@@ -347,7 +342,6 @@
 				48F210991288B38C002745F2 /* headers.hpp */,
 				48F2109A1288B38C002745F2 /* isnt.cpp */,
 				48F2109B1288B38C002745F2 /* isnt.hpp */,
-				48F2109C1288B38C002745F2 /* license.txt */,
 				48F2109D1288B38C002745F2 /* list.cpp */,
 				48F2109E1288B38C002745F2 /* list.hpp */,
 				48F2109F1288B38C002745F2 /* loclang.hpp */,
@@ -383,8 +377,6 @@
 				48F210BD1288B38C002745F2 /* rawread.hpp */,
 				48F210BE1288B38C002745F2 /* rdwrfn.cpp */,
 				48F210BF1288B38C002745F2 /* rdwrfn.hpp */,
-				48F210C01288B38C002745F2 /* README */,
-				48F210C11288B38C002745F2 /* readme.txt */,
 				48F210C21288B38C002745F2 /* recvol.cpp */,
 				48F210C31288B38C002745F2 /* recvol.hpp */,
 				48F210C41288B38C002745F2 /* resource.cpp */,
@@ -420,8 +412,6 @@
 				48F210E21288B38C002745F2 /* unpack.hpp */,
 				48F210E31288B38C002745F2 /* unpack15.cpp */,
 				48F210E41288B38C002745F2 /* unpack20.cpp */,
-				48F210E51288B38C002745F2 /* UnRAR.vcproj */,
-				48F210E61288B38C002745F2 /* UnRARDll.vcproj */,
 				48F210E71288B38C002745F2 /* uowners.cpp */,
 				48F210E81288B38C002745F2 /* version.hpp */,
 				48F210E91288B38C002745F2 /* volume.cpp */,
@@ -620,6 +610,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/Unrar4iOS.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -638,6 +629,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				DSTROOT = /tmp/Unrar4iOS.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

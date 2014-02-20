@@ -390,7 +390,7 @@ bool RarVM::ExecuteCode(VM_PreparedCommand *PreparedCode,uint CodeSize)
         break;
       case VM_CALL:
         R[7]-=4;
-        SET_VALUE(false,(uint *)&Mem[R[7]&VM_MEMMASK],Cmd-PreparedCode+1);
+        SET_VALUE(false,(uint *)&Mem[R[7]&VM_MEMMASK], (uint)(Cmd - PreparedCode + 1));
         SET_IP(GET_VALUE(false,Op1));
         continue;
       case VM_NOT:

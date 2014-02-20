@@ -23,7 +23,7 @@ typedef enum {
 
 + (void)createCoverImageForFile:(NSString *)path;
 - (id)initWithFile:(NSString *)aFile;
-- (UIImage *)imageAtIndex:(int)index;
+- (UIImage *)imageAtIndex:(NSInteger)index;
 - (void)close;
 - (BOOL)somewhereInSubdir:(NSString *)dir;
 

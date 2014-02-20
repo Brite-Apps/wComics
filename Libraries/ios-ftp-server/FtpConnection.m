@@ -939,8 +939,7 @@
 			[ sender sendMessage:@"250 RNTO command successful." ];
 		}
 		else{
-			NSString *errorString = [error localizedDescription];
-			TRACE( @"RNTO failed %@", errorString );
+			TRACE( @"RNTO failed %@", [error localizedDescription]);
 			[ sender sendMessage:@"550 RNTO command failed." ];
 		}
 //		[rnfrFilename release];
@@ -1096,7 +1095,7 @@
 	
 	if ( server.changeRoot )											// if root changed, to basedir
 	{
-		int alength = [server.baseDir length ];							// length of basedir
+		int alength = (int)[server.baseDir length ];							// length of basedir
 		
 		TRACE(@"Length is %u", alength );								
 		NSString *aString = [ currentDir substringFromIndex:alength ];	// get the bit after basedir
