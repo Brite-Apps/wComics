@@ -9,9 +9,9 @@
 
 @implementation NSDate (ZKAdditions)
 
-+ (NSDate *)zk_dateWithDosDate : (NSUInteger)dosDate {
++ (NSDate *) zk_dateWithDosDate:(NSUInteger)dosDate {
 	NSUInteger date = (NSUInteger)(dosDate >> 16);
-	NSDateComponents *comps = [[NSDateComponents new] autorelease];
+	NSDateComponents *comps = [NSDateComponents new];
 	comps.year = ((date & 0x0FE00) / 0x0200) + 1980;
 	comps.month = (date & 0x1E0) / 0x20;
 	comps.day = date & 0x1f;
@@ -21,11 +21,11 @@
 	return [[NSCalendar currentCalendar] dateFromComponents:comps];
 }
 
-- (NSUInteger) zk_dosDate {
+- (UInt32) zk_dosDate {
 	NSUInteger options = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit |
-	NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
+    NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit;
 	NSDateComponents *comps = [[NSCalendar currentCalendar] components:options fromDate:self];
-	return ((comps.day + 32 * comps.month + 512 * (comps.year - 1980)) << 16) | (comps.second / 2 + 32 * comps.minute + 2048 * comps.hour);
+	return ((UInt32)(comps.day + 32 * comps.month + 512 * (comps.year - 1980)) << 16) | (UInt32)(comps.second / 2 + 32 * comps.minute + 2048 * comps.hour);
 }
 
 @end

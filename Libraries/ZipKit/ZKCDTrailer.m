@@ -16,7 +16,7 @@
 - (id) init {
 	if (self = [super init]) {
 		[self addObserver:self forKeyPath:@"comment" options:NSKeyValueObservingOptionNew context:nil];
-
+        
 		self.magicNumber = ZKCDTrailerMagicNumber;
 		self.thisDiskNumber = 0;
 		self.diskNumberWithStartOfCentralDirectory = 0;
@@ -33,28 +33,21 @@
 	[self removeObserver:self forKeyPath:@"comment"];
 }
 
-- (void) finalize {
-	[self removeObservers];
-	[super finalize];
-}
 
 - (void) dealloc {
 	[self removeObservers];
-	self.comment = nil;
-	[super dealloc];
 }
 
 
-- (void) observeValueForKeyPath:(NSString *) keyPath ofObject:(id) object change:(NSDictionary *) change context:(void *) context {
-	if ([keyPath isEqualToString:@"comment"] && self.commentLength < 1) {
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	if ([keyPath isEqualToString:@"comment"] && self.commentLength < 1)
 		self.commentLength = [self.comment zk_precomposedUTF8Length];
-	}
 }
 
-+ (ZKCDTrailer *) recordWithData:(NSData *)data atOffset:(NSUInteger) offset {
++ (ZKCDTrailer *) recordWithData:(NSData *)data atOffset:(UInt64)offset {
 	NSUInteger mn = [data zk_hostInt32OffsetBy:&offset];
 	if (mn != ZKCDTrailerMagicNumber) return nil;
-	ZKCDTrailer *record = [[ZKCDTrailer new] autorelease];
+	ZKCDTrailer *record = [ZKCDTrailer new];
 	record.magicNumber = mn;
 	record.thisDiskNumber = [data zk_hostInt16OffsetBy:&offset];
 	record.diskNumberWithStartOfCentralDirectory = [data zk_hostInt16OffsetBy:&offset];
@@ -74,7 +67,7 @@
 	UInt32 trailerCheck = 0;
 	NSInteger offset = [data length] - sizeof(trailerCheck);
 	while (trailerCheck != ZKCDTrailerMagicNumber && offset > 0) {
-		NSUInteger o = offset;
+		UInt64 o = offset;
 		trailerCheck = [data zk_hostInt32OffsetBy:&o];
 		offset--;
 	}
@@ -100,7 +93,7 @@
 	[file seekToFileOffset:fileOffset];
 	NSData *data = [file readDataToEndOfFile];
 	[file closeFile];
-	ZKCDTrailer *record = [self recordWithData:data atOffset:(NSUInteger) 0];
+	ZKCDTrailer *record = [self recordWithData:data atOffset:(NSUInteger)0];
 	return record;
 }
 
@@ -114,8 +107,8 @@
 		[data zk_appendLittleInt32:0xFFFFFFFF];
 		[data zk_appendLittleInt32:0xFFFFFFFF];
 	} else {
-		[data zk_appendLittleInt32:self.sizeOfCentralDirectory];
-		[data zk_appendLittleInt32:self.offsetOfStartOfCentralDirectory];
+		[data zk_appendLittleInt32:(UInt32)self.sizeOfCentralDirectory];
+		[data zk_appendLittleInt32:(UInt32)self.offsetOfStartOfCentralDirectory];
 	}
 	[data zk_appendLittleInt16:[self.comment zk_precomposedUTF8Length]];
 	[data zk_appendPrecomposedUTF8String:self.comment];
@@ -132,11 +125,9 @@
 
 - (NSString *) description {
 	return [NSString stringWithFormat:@"%u entries (%qu bytes) @: %qu",
-			self.totalNumberOfCentralDirectoryEntries,
-			self.sizeOfCentralDirectory,
-			self.offsetOfStartOfCentralDirectory];
+	        (unsigned int)self.totalNumberOfCentralDirectoryEntries,
+	        self.sizeOfCentralDirectory,
+	        self.offsetOfStartOfCentralDirectory];
 }
-
-@synthesize magicNumber, thisDiskNumber, diskNumberWithStartOfCentralDirectory, numberOfCentralDirectoryEntriesOnThisDisk, totalNumberOfCentralDirectoryEntries, sizeOfCentralDirectory, offsetOfStartOfCentralDirectory, commentLength, comment;
 
 @end

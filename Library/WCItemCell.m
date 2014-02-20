@@ -34,6 +34,7 @@
 				self.accessoryType = UITableViewCellAccessoryNone;
 				
 				NSString *coverFile = [[NSString alloc] initWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [itemPath lastPathComponent]];
+
 				if ([[NSFileManager defaultManager] fileExistsAtPath:coverFile]) {
 					UIImage *cover = [[UIImage alloc] initWithData:[NSData dataWithContentsOfFile:coverFile] scale:[UIScreen mainScreen].scale];
 
@@ -47,13 +48,17 @@
 				else {
 					self.imageView.image = [UIImage imageNamed:@"document"];
 				}
+
 				[self.imageView sizeToFit];
 			}
-
-			NSMutableString *titleStr = [[NSMutableString alloc] initWithString:[[_item[@"path"] componentsSeparatedByString:@"/"] lastObject]];
-			[titleStr replaceOccurrencesOfString:@".cbz" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [titleStr length])];
-			[titleStr replaceOccurrencesOfString:@".cbr" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [titleStr length])];
-			self.textLabel.text = titleStr;
+			
+			NSString *title = [_item[@"path"] lastPathComponent];
+			
+			if (!isDir) {
+				title = [title stringByDeletingPathExtension];
+			}
+			
+			self.textLabel.text = title;
 		}
 	}
 }

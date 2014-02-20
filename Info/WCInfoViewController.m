@@ -21,10 +21,13 @@
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	if (EQUAL_STR([[request URL] scheme], @"http")) {
+	NSString *scheme = [[request URL] scheme];
+	
+	if (EQUAL_STR(scheme, @"http") || EQUAL_STR(scheme, @"https") || EQUAL_STR(scheme, @"mailto")) {
 		[[UIApplication sharedApplication] openURL:[request URL]];
 		return NO;
 	}
+
 	return YES;
 }
 

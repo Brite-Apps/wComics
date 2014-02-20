@@ -17,24 +17,27 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 
 @implementation  NSFileManager (ZKAdditions)
 
-- (BOOL) zk_isSymLinkAtPath:(NSString *) path {
+- (BOOL) zk_isSymLinkAtPath:(NSString *)path {
 	return [[[self attributesOfItemAtPath:path error:nil] fileType] isEqualToString:NSFileTypeSymbolicLink];
 }
 
-- (BOOL) zk_isDirAtPath:(NSString *) path {
+- (BOOL) zk_isDirAtPath:(NSString *)path {
 	BOOL isDir;
 	BOOL pathExists = [self fileExistsAtPath:path isDirectory:&isDir];
 	return pathExists && isDir;
 }
 
-- (unsigned long long) zk_dataSizeAtFilePath:(NSString *) path {
+- (UInt64) zk_dataSizeAtFilePath:(NSString *)path {
 	return [[self attributesOfItemAtPath:path error:nil] fileSize];
 }
 
+// pragmas to suppress deprecation warnings about FS*() functions deprecated in 10.8
+
 #if ZK_TARGET_OS_MAC
-- (void) totalsAtDirectoryFSRef:(FSRef*) fsRef usingResourceFork:(BOOL) rfFlag
-					  totalSize:(unsigned long long *) size
-					  itemCount:(unsigned long long *) count {
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+- (void)	totalsAtDirectoryFSRef	:(FSRef *)fsRef usingResourceFork:(BOOL)rfFlag
+                     totalSize		:(UInt64 *)size
+                     itemCount		:(UInt64 *)count {
 	FSIterator iterator;
 	OSErr fsErr = FSOpenIterator(fsRef, kFSIterateFlat, &iterator);
 	if (fsErr == noErr) {
@@ -43,8 +46,8 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 		FSCatalogInfo fetchedInfos[ZKMaxEntriesPerFetch];
 		while (fsErr == noErr) {
 			fsErr = FSGetCatalogInfoBulk(iterator, ZKMaxEntriesPerFetch, &actualFetched, NULL,
-										 kFSCatInfoDataSizes | kFSCatInfoRsrcSizes | kFSCatInfoNodeFlags,
-										 fetchedInfos, fetchedRefs, NULL, NULL);
+			                             kFSCatInfoDataSizes | kFSCatInfoRsrcSizes | kFSCatInfoNodeFlags,
+			                             fetchedInfos, fetchedRefs, NULL, NULL);
 			if ((fsErr == noErr) || (fsErr == errFSNoMoreItems)) {
 				(*count) += actualFetched;
 				for (ItemCount i = 0; i < actualFetched; i++) {
@@ -57,28 +60,31 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 		}
 		FSCloseIterator(iterator);
 	}
-	return ;
+	return;
 }
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
 #endif
 
-- (NSDictionary *) zkTotalSizeAndItemCountAtPath:(NSString *) path usingResourceFork:(BOOL) rfFlag {
+- (NSDictionary *) zkTotalSizeAndItemCountAtPath:(NSString *)path usingResourceFork:(BOOL)rfFlag {
 	unsigned long long size = 0;
 	unsigned long long count = 0;
 #if ZK_TARGET_OS_MAC
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	FSRef fsRef;
 	Boolean isDirectory;
-	OSStatus status = FSPathMakeRef((const unsigned char*)[path fileSystemRepresentation], &fsRef, &isDirectory);
+	OSStatus status = FSPathMakeRef((const unsigned char *)[path fileSystemRepresentation], &fsRef, &isDirectory);
 	if (status != noErr)
 		return nil;
-	if (isDirectory) {
+	if (isDirectory)
 		[self totalsAtDirectoryFSRef:&fsRef usingResourceFork:rfFlag totalSize:&size itemCount:&count];
-	} else {
+	else {
 		count = 1;
 		FSCatalogInfo info;
 		OSErr fsErr = FSGetCatalogInfo(&fsRef, kFSCatInfoDataSizes | kFSCatInfoRsrcSizes, &info, NULL, NULL, NULL);
 		if (fsErr == noErr)
 			size = info.dataLogicalSize + (rfFlag ? info.rsrcLogicalSize : 0);
 	}
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
 #else
 	// TODO: maybe fix this for non-Mac targets
 	size = 0;
@@ -88,7 +94,7 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 }
 
 #if ZK_TARGET_OS_MAC
-- (void) zk_combineAppleDoubleInDirectory:(NSString *) path {
+- (void) zk_combineAppleDoubleInDirectory:(NSString *)path {
 	if (![self zk_isDirAtPath:path])
 		return;
 	NSArray *dirContents = [self contentsOfDirectoryAtPath:path error:nil];
@@ -105,8 +111,8 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 					NSRange ZKDotUnderscoreRange = [fileName rangeOfString:ZKDotUnderscore];
 					if (ZKDotUnderscoreRange.location == 0 && ZKDotUnderscoreRange.length == 2) {
 						NSMutableArray *pathComponents =
-						(NSMutableArray *)[[[subPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:
-											[fileName substringFromIndex:2]] pathComponents];
+                        (NSMutableArray *)[[[subPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:
+                                            [fileName substringFromIndex:2]] pathComponents];
 						for (NSString *pathComponent in pathComponents) {
 							if ([ZKMacOSXDirectory isEqualToString:pathComponent]) {
 								[pathComponents removeObject:pathComponent];
@@ -123,40 +129,40 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 }
 #endif
 
-- (NSDate *) zk_modificationDateForPath:(NSString *) path {
+- (NSDate *) zk_modificationDateForPath:(NSString *)path {
 	return [[self attributesOfItemAtPath:path error:nil] fileModificationDate];
 }
 
-- (NSUInteger) zk_posixPermissionsAtPath:(NSString *) path {
+- (NSUInteger) zk_posixPermissionsAtPath:(NSString *)path {
 	return [[self attributesOfItemAtPath:path error:nil] filePosixPermissions];
 }
 
-- (NSUInteger) zk_externalFileAttributesAtPath:(NSString *) path {
+- (NSUInteger) zk_externalFileAttributesAtPath:(NSString *)path {
 	return [self zk_externalFileAttributesFor:[self attributesOfItemAtPath:path error:nil]];
 }
 
-- (NSUInteger) zk_externalFileAttributesFor:(NSDictionary *) fileAttributes {
+- (NSUInteger) zk_externalFileAttributesFor:(NSDictionary *)fileAttributes {
 	NSUInteger externalFileAttributes = 0;
 	@try {
 		BOOL isSymLink = [[fileAttributes fileType] isEqualToString:NSFileTypeSymbolicLink];
 		BOOL isDir = [[fileAttributes fileType] isEqualToString:NSFileTypeDirectory];
 		NSUInteger posixPermissions = [fileAttributes filePosixPermissions];
 		externalFileAttributes = posixPermissions << 16 | (isSymLink ? 0xA0004000 : (isDir ? 0x40004000 : 0x80004000));
-	} @catch(NSException * e) {
+	} @catch (NSException *e) {
 		externalFileAttributes = 0;
 	}
 	return externalFileAttributes;
 }
 
-- (NSUInteger) zk_crcForPath:(NSString *) path {
+- (NSUInteger) zk_crcForPath:(NSString *)path {
 	return [self zk_crcForPath:path invoker:nil throttleThreadSleepTime:0.0];
 }
 
-- (NSUInteger) zk_crcForPath:(NSString *) path invoker:(id)invoker {
+- (NSUInteger) zk_crcForPath:(NSString *)path invoker:(id)invoker {
 	return [self zk_crcForPath:path invoker:invoker throttleThreadSleepTime:0.0];
 }
 
-- (NSUInteger) zk_crcForPath:(NSString *)path invoker:(id)invoker throttleThreadSleepTime:(NSTimeInterval) throttleThreadSleepTime {
+- (NSUInteger) zk_crcForPath:(NSString *)path invoker:(id)invoker throttleThreadSleepTime:(NSTimeInterval)throttleThreadSleepTime {
 	NSUInteger crc32 = 0;
 	path = [path stringByExpandingTildeInPath];
 	BOOL isDirectory;
@@ -164,7 +170,7 @@ const NSUInteger ZKMaxEntriesPerFetch = 40;
 		BOOL irtsIsCancelled = [invoker respondsToSelector:@selector(isCancelled)];
 		const NSUInteger crcBlockSize = 1048576;
 		NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
-		NSData *block = [fileHandle readDataOfLength:crcBlockSize] ;
+		NSData *block = [fileHandle readDataOfLength:crcBlockSize];
 		while ([block length] > 0) {
 			crc32 = [block zk_crc32:crc32];
 			if (irtsIsCancelled) {

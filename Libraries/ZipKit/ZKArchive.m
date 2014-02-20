@@ -11,21 +11,6 @@
 #import "ZKCDTrailer.h"
 #import "ZKDefs.h"
 
-@interface NSObject (ZipKitDelegate)
-- (void) onZKArchiveDidBeginZip:(ZKArchive *) archive;
-- (void) onZKArchiveDidBeginUnzip:(ZKArchive *) archive;
-- (void) onZKArchive:(ZKArchive *) archive willZipPath:(NSString *) path;
-- (void) onZKArchive:(ZKArchive *) archive willUnzipPath:(NSString *) path;
-- (void) onZKArchive:(ZKArchive *) archive didUpdateTotalSize:(unsigned long long) size;
-- (void) onZKArchive:(ZKArchive *) archive didUpdateTotalCount:(unsigned long long) count;
-- (void) onZKArchive:(ZKArchive *) archive didUpdateBytesWritten:(unsigned long long) byteCount;
-- (void) onZKArchiveDidEndZip:(ZKArchive *) archive;
-- (void) onZKArchiveDidEndUnzip:(ZKArchive *) archive;
-- (void) onZKArchiveDidCancel:(ZKArchive *) archive;
-- (void) onZKArchiveDidFail:(ZKArchive *) archive;
-- (BOOL) zkDelegateWantsSizes;
-@end
-
 #pragma mark -
 
 @implementation ZKArchive
@@ -33,38 +18,38 @@
 #pragma mark -
 #pragma mark Utility
 
-+ (BOOL) validArchiveAtPath:(NSString *) path {
++ (BOOL) validArchiveAtPath:(NSString *)path {
 	// check that the first few bytes of the file are a local file header
 	NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
 	NSData *fileHeader = [fileHandle readDataOfLength:4];
 	[fileHandle closeFile];
 	UInt32 headerValue;
 	[fileHeader getBytes:&headerValue];
-	return (CFSwapInt32LittleToHost(headerValue) == ZKLFHeaderMagicNumber);
+	return CFSwapInt32LittleToHost(headerValue) == ZKLFHeaderMagicNumber;
 }
 
-+ (NSString *) uniquify:(NSString *) path {
++ (NSString *) uniquify:(NSString *)path {
 	// avoid name collisions by adding a sequence number if needed
-	NSString * uniquePath = [NSString stringWithString:path];
+	NSString *uniquePath = [NSString stringWithString:path];
 	NSString *dir = [path stringByDeletingLastPathComponent];
 	NSString *fileNameBase = [[path lastPathComponent] stringByDeletingPathExtension];
 	NSString *ext = [path pathExtension];
 	NSUInteger i = 2;
-	NSFileManager *fm = [[NSFileManager new] autorelease];
+	NSFileManager *fm = [NSFileManager new];
 	while ([fm fileExistsAtPath:uniquePath]) {
-		uniquePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %u", fileNameBase, i++]];
+		uniquePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %lu", fileNameBase, (unsigned long)i++]];
 		if (ext && [ext length] > 0)
 			uniquePath = [uniquePath stringByAppendingPathExtension:ext];
 	}
 	return uniquePath;
 }
 
-- (void) calculateSizeAndItemCount:(NSDictionary *) userInfo {
-	NSArray *paths = [userInfo objectForKey:ZKPathsKey];
-	BOOL rfFlag = [[userInfo objectForKey:ZKusingResourceForkKey] boolValue];
+- (void) calculateSizeAndItemCount:(NSDictionary *)userInfo {
+	NSArray *paths = userInfo[ZKPathsKey];
+	BOOL rfFlag = [userInfo[ZKusingResourceForkKey] boolValue];
 	unsigned long long size = 0;
 	unsigned long long count = 0;
-	NSFileManager *fmgr = [[NSFileManager new] autorelease];
+	NSFileManager *fmgr = [NSFileManager new];
 	NSDictionary *dict = nil;
 	for (NSString *path in paths) {
 		dict = [fmgr zkTotalSizeAndItemCountAtPath:path usingResourceFork:rfFlag];
@@ -72,22 +57,21 @@
 		count += [dict zk_itemCount];
 	}
 	[self performSelectorOnMainThread:@selector(didUpdateTotalSize:)
-						   withObject:[NSNumber numberWithUnsignedLongLong:size] waitUntilDone:NO];
+                           withObject:@(size) waitUntilDone:NO];
 	[self performSelectorOnMainThread:@selector(didUpdateTotalCount:)
-						   withObject:[NSNumber numberWithUnsignedLongLong:count] waitUntilDone:NO];
+                           withObject:@(count) waitUntilDone:NO];
 }
 
-- (NSString *) uniqueExpansionDirectoryIn:(NSString *) enclosingFolder {
+- (NSString *) uniqueExpansionDirectoryIn:(NSString *)enclosingFolder {
 	NSString *expansionDirectory = [enclosingFolder stringByAppendingPathComponent:ZKExpansionDirectoryName];
 	NSUInteger i = 1;
-	while ([self.fileManager fileExistsAtPath:expansionDirectory]) {
+	while ([self.fileManager fileExistsAtPath:expansionDirectory])
 		expansionDirectory = [enclosingFolder stringByAppendingPathComponent:
-							  [NSString stringWithFormat:@"%@ %u", ZKExpansionDirectoryName, i++]];
-	}
+		                      [NSString stringWithFormat:@"%@ %lu", ZKExpansionDirectoryName, (unsigned long)i++]];
 	return expansionDirectory;
 }
 
-- (void) cleanUpExpansionDirectory:(NSString *) expansionDirectory {
+- (void) cleanUpExpansionDirectory:(NSString *)expansionDirectory {
 	NSString *enclosingFolder = [expansionDirectory stringByDeletingLastPathComponent];
 	NSArray *dirContents = [self.fileManager contentsOfDirectoryAtPath:expansionDirectory error:nil];
 	for (NSString *item in dirContents) {
@@ -97,8 +81,8 @@
 			NSUInteger i = 2;
 			while ([self.fileManager fileExistsAtPath:dest]) {
 				NSString *ext = [item pathExtension];
-				dest = [enclosingFolder stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %u",
-																		[item stringByDeletingPathExtension], i++]];
+				dest = [enclosingFolder stringByAppendingPathComponent:[NSString stringWithFormat:@"%@ %lu",
+				                                                        [item stringByDeletingPathExtension], (unsigned long)i++]];
 				if (ext && [ext length] > 0)
 					dest = [dest stringByAppendingPathExtension:ext];
 			}
@@ -106,7 +90,7 @@
 		}
 	}
 	[self.fileManager removeItemAtPath:expansionDirectory error:nil];
-
+    
 }
 
 #pragma mark -
@@ -124,11 +108,10 @@
 
 - (void) setInvoker:(id)i {
 	_invoker = i;
-	if (_invoker) {
+	if (_invoker)
 		irtsIsCancelled = [self.invoker respondsToSelector:@selector(isCancelled)];
-	} else {
+	else
 		irtsIsCancelled = NO;
-	}
 }
 
 - (void) setDelegate:(id)d {
@@ -164,9 +147,8 @@
 
 - (BOOL) delegateWantsSizes {
 	BOOL delegateWantsSizes = NO;
-	if (drtsDelegateWantsSizes) {
+	if (drtsDelegateWantsSizes)
 		delegateWantsSizes = [self.delegate zkDelegateWantsSizes];
-	}
 	return delegateWantsSizes;
 }
 
@@ -180,12 +162,12 @@
 		[self.delegate onZKArchiveDidBeginUnzip:self];
 }
 
-- (void) willZipPath:(NSString *) path {
+- (void) willZipPath:(NSString *)path {
 	if (drtsWillZipPath)
 		[self.delegate onZKArchive:self willZipPath:path];
 }
 
-- (void) willUnzipPath:(NSString *) path {
+- (void) willUnzipPath:(NSString *)path {
 	if (drtsWillUnzipPath)
 		[self.delegate onZKArchive:self willUnzipPath:path];
 }
@@ -210,17 +192,17 @@
 		[self.delegate onZKArchiveDidFail:self];
 }
 
-- (void) didUpdateTotalSize:(NSNumber *) size {
+- (void) didUpdateTotalSize:(NSNumber *)size {
 	if (drtsDidUpdateTotalSize)
 		[self.delegate onZKArchive:self didUpdateTotalSize:[size unsignedLongLongValue]];
 }
 
-- (void) didUpdateTotalCount:(NSNumber *) count {
+- (void) didUpdateTotalCount:(NSNumber *)count {
 	if (drtsDidUpdateTotalCount)
 		[self.delegate onZKArchive:self didUpdateTotalCount:[count unsignedLongLongValue]];
 }
 
-- (void) didUpdateBytesWritten:(NSNumber *) byteCount {
+- (void) didUpdateBytesWritten:(NSNumber *)byteCount {
 	if (drtsDidUpdateBytesWritten)
 		[self.delegate onZKArchive:self didUpdateBytesWritten:[byteCount unsignedLongLongValue]];
 }
@@ -234,8 +216,8 @@
 		self.delegate = nil;
 		self.archivePath = nil;
 		self.centralDirectory = [NSMutableArray array];
-		self.fileManager = [[NSFileManager new] autorelease];
-		self.cdTrailer = [[ZKCDTrailer new] autorelease];
+		self.fileManager = [NSFileManager new];
+		self.cdTrailer = [ZKCDTrailer new];
 		self.throttleThreadSleepTime = 0.0;
 	}
 	return self;
@@ -244,18 +226,12 @@
 - (void) dealloc {
 	self.invoker = nil;
 	self.delegate = nil;
-	self.archivePath = nil;
-	self.centralDirectory = nil;
-	self.fileManager = nil;
-	self.cdTrailer = nil;
-	[super dealloc];
 }
 
 - (NSString *) description {
-	return [NSString stringWithFormat: @"%@\n\ttrailer:%@\n\tcentral directory:%@", self.archivePath, self.cdTrailer, self.centralDirectory];
+	return [NSString stringWithFormat:@"%@\n\ttrailer:%@\n\tcentral directory:%@", self.archivePath, self.cdTrailer, self.centralDirectory];
 }
 
-@synthesize invoker = _invoker, delegate = _delegate, archivePath = _archivePath, centralDirectory = _centralDirectory, fileManager = _fileManager, cdTrailer = _cdTrailer, throttleThreadSleepTime = _throttleThreadSleepTime;
 @dynamic comment;
 
 @end

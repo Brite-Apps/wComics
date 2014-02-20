@@ -7,19 +7,19 @@
 
 #import "ZKDefs.h"
 
-NSString* const ZKArchiveFileExtension = @"zip";
-NSString* const ZKMacOSXDirectory = @"__MACOSX";
-NSString* const ZKDotUnderscore = @"._";
-NSString* const ZKExpansionDirectoryName = @".ZipKit";
+NSString *const ZKArchiveFileExtension = @"zip";
+NSString *const ZKMacOSXDirectory = @"__MACOSX";
+NSString *const ZKDotUnderscore = @"._";
+NSString *const ZKExpansionDirectoryName = @".ZipKit";
 
-NSString* const ZKPathsKey = @"paths";
-NSString* const ZKusingResourceForkKey = @"usingResourceFork";
+NSString *const ZKPathsKey = @"paths";
+NSString *const ZKusingResourceForkKey = @"usingResourceFork";
 
-NSString* const ZKFileDataKey = @"fileData";
-NSString* const ZKFileAttributesKey = @"fileAttributes";
-NSString* const ZKPathKey = @"path";
+NSString *const ZKFileDataKey = @"fileData";
+NSString *const ZKFileAttributesKey = @"fileAttributes";
+NSString *const ZKPathKey = @"path";
 
-const NSUInteger ZKZipBlockSize = 262144;
+const unsigned long long ZKZipBlockSize = 262144;
 const NSUInteger ZKNotificationIterations = 100;
 
 const NSUInteger ZKCDHeaderMagicNumber = 0x02014B50;

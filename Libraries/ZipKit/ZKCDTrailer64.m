@@ -23,11 +23,11 @@
 	return self;
 }
 
-+ (ZKCDTrailer64 *) recordWithData:(NSData *)data atOffset:(NSUInteger)offset {
++ (ZKCDTrailer64 *) recordWithData:(NSData *)data atOffset:(UInt64)offset {
 	if (!data) return nil;
 	NSUInteger mn = [data zk_hostInt32OffsetBy:&offset];
 	if (mn != ZKCDTrailer64MagicNumber) return nil;
-	ZKCDTrailer64 *record = [[ZKCDTrailer64 new] autorelease];
+	ZKCDTrailer64 *record = [ZKCDTrailer64 new];
 	record.magicNumber = mn;
 	record.sizeOfTrailer = [data zk_hostInt64OffsetBy:&offset];
 	record.versionMadeBy = [data zk_hostInt16OffsetBy:&offset];
@@ -41,7 +41,7 @@
 	return record;
 }
 
-+ (ZKCDTrailer64 *) recordWithArchivePath:(NSString *)path atOffset:(unsigned long long)offset {
++ (ZKCDTrailer64 *) recordWithArchivePath:(NSString *)path atOffset:(UInt64)offset {
 	NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
 	[file seekToFileOffset:offset];
 	NSData *data = [file readDataOfLength:ZKCDTrailer64FixedDataLength];
@@ -70,11 +70,9 @@
 
 - (NSString *) description {
 	return [NSString stringWithFormat:@"%qu entries @ offset of CD: %qu (%qu bytes)",
-			self.numberOfCentralDirectoryEntriesOnThisDisk,
-			self.offsetOfStartOfCentralDirectory,
-			self.sizeOfCentralDirectory];
+	        self.numberOfCentralDirectoryEntriesOnThisDisk,
+	        self.offsetOfStartOfCentralDirectory,
+	        self.sizeOfCentralDirectory];
 }
-
-@synthesize magicNumber, sizeOfTrailer, versionMadeBy, versionNeededToExtract, thisDiskNumber, diskNumberWithStartOfCentralDirectory, numberOfCentralDirectoryEntriesOnThisDisk, totalNumberOfCentralDirectoryEntries, sizeOfCentralDirectory, offsetOfStartOfCentralDirectory;
 
 @end

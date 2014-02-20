@@ -34,7 +34,7 @@
 		self.localHeaderOffset = 0;
 		self.extraField = nil;
 		self.comment = nil;
-
+        
 		[self addObserver:self forKeyPath:@"compressedSize" options:NSKeyValueObservingOptionNew context:nil];
 		[self addObserver:self forKeyPath:@"uncompressedSize" options:NSKeyValueObservingOptionNew context:nil];
 		[self addObserver:self forKeyPath:@"localHeaderOffset" options:NSKeyValueObservingOptionNew context:nil];
@@ -56,39 +56,27 @@
 
 - (void) dealloc {
 	[self removeObservers];
-	self.cachedData = nil;
-	self.lastModDate = nil;
-	self.filename = nil;
-	self.extraField = nil;
-	self.comment = nil;
-	[super dealloc];
 }
 
-- (void) finalize {
-	self.cachedData = nil;
-	[self removeObservers];
-	[super finalize];
-}
 
-- (void) observeValueForKeyPath:(NSString *) keyPath ofObject:(id) object change:(NSDictionary *) change context:(void *) context {
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	if ([keyPath isEqualToString:@"compressedSize"]
-		|| [keyPath isEqualToString:@"uncompressedSize"]
-		|| [keyPath isEqualToString:@"localHeaderOffset"]) {
+	    || [keyPath isEqualToString:@"uncompressedSize"]
+	    || [keyPath isEqualToString:@"localHeaderOffset"])
 		self.versionNeededToExtract = ([self useZip64Extensions] ? 45 : 20);
-	} else if ([keyPath isEqualToString:@"extraField"] && self.extraFieldLength < 1) {
+	else if ([keyPath isEqualToString:@"extraField"] && self.extraFieldLength < 1)
 		self.extraFieldLength = [self.extraField length];
-	} else if ([keyPath isEqualToString:@"filename"] && self.filenameLength < 1) {
+	else if ([keyPath isEqualToString:@"filename"] && self.filenameLength < 1)
 		self.filenameLength = [self.filename zk_precomposedUTF8Length];
-	} else if ([keyPath isEqualToString:@"comment"] && self.commentLength < 1) {
+	else if ([keyPath isEqualToString:@"comment"] && self.commentLength < 1)
 		self.commentLength = [self.comment zk_precomposedUTF8Length];
-	}
 }
 
-+ (ZKCDHeader *) recordWithData:(NSData *)data atOffset:(NSUInteger)offset {
++ (ZKCDHeader *) recordWithData:(NSData *)data atOffset:(UInt64)offset {
 	if (!data) return nil;
 	NSUInteger mn = [data zk_hostInt32OffsetBy:&offset];
 	if (mn != ZKCDHeaderMagicNumber) return nil;
-	ZKCDHeader *record = [[ZKCDHeader new] autorelease];
+	ZKCDHeader *record = [ZKCDHeader new];
 	record.magicNumber = mn;
 	record.versionMadeBy = [data zk_hostInt16OffsetBy:&offset];
 	record.versionNeededToExtract = [data zk_hostInt16OffsetBy:&offset];
@@ -119,14 +107,14 @@
 	return record;
 }
 
-+ (ZKCDHeader *) recordWithArchivePath:(NSString *)path atOffset:(unsigned long long)offset {
++ (ZKCDHeader *) recordWithArchivePath:(NSString *)path atOffset:(UInt64)offset {
 	NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
 	[file seekToFileOffset:offset];
 	NSData *fixedData = [file readDataOfLength:ZKCDHeaderFixedDataLength];
 	ZKCDHeader *record = [self recordWithData:fixedData atOffset:0];
 	if (record.filenameLength > 0) {
 		NSData *data = [file readDataOfLength:record.filenameLength];
-		record.filename = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		record.filename = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	}
 	if (record.extraFieldLength > 0) {
 		record.extraField = [file readDataOfLength:record.extraFieldLength];
@@ -134,10 +122,10 @@
 	}
 	if (record.commentLength > 0) {
 		NSData *data = [file readDataOfLength:record.commentLength];
-		record.comment = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		record.comment = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	} else
 		record.comment = nil;
-
+    
 	[file closeFile];
 	return record;
 }
@@ -145,7 +133,7 @@
 - (NSData *) data {
 	if (!self.cachedData || ([self.cachedData length] < ZKCDHeaderFixedDataLength)) {
 		self.extraField = [self zip64ExtraField];
-
+        
 		self.cachedData = [NSMutableData zk_dataWithLittleInt32:self.magicNumber];
 		[self.cachedData zk_appendLittleInt16:self.versionMadeBy];
 		[self.cachedData zk_appendLittleInt16:self.versionNeededToExtract];
@@ -157,8 +145,8 @@
 			[self.cachedData zk_appendLittleInt32:0xFFFFFFFF];
 			[self.cachedData zk_appendLittleInt32:0xFFFFFFFF];
 		} else {
-			[self.cachedData zk_appendLittleInt32:self.compressedSize];
-			[self.cachedData zk_appendLittleInt32:self.uncompressedSize];
+			[self.cachedData zk_appendLittleInt32:(UInt32)self.compressedSize];
+			[self.cachedData zk_appendLittleInt32:(UInt32)self.uncompressedSize];
 		}
 		[self.cachedData zk_appendLittleInt16:[self.filename zk_precomposedUTF8Length]];
 		[self.cachedData zk_appendLittleInt16:[self.extraField length]];
@@ -169,7 +157,7 @@
 		if ([self useZip64Extensions])
 			[self.cachedData zk_appendLittleInt32:0xFFFFFFFF];
 		else
-			[self.cachedData zk_appendLittleInt32:self.localHeaderOffset];
+			[self.cachedData zk_appendLittleInt32:(UInt32)self.localHeaderOffset];
 		[self.cachedData zk_appendPrecomposedUTF8String:self.filename];
 		[self.cachedData appendData:self.extraField];
 		[self.cachedData zk_appendPrecomposedUTF8String:self.comment];
@@ -178,7 +166,8 @@
 }
 
 - (void) parseZip64ExtraField {
-	NSUInteger offset = 0, tag, length;
+	NSUInteger tag, length;
+	UInt64 offset = 0;
 	while (offset < self.extraFieldLength) {
 		tag = [self.extraField zk_hostInt16OffsetBy:&offset];
 		length = [self.extraField zk_hostInt16OffsetBy:&offset];
@@ -190,9 +179,8 @@
 			if (length >= 24)
 				self.localHeaderOffset = [self.extraField zk_hostInt64OffsetBy:&offset];
 			break;
-		} else {
+		} else
 			offset += length;
-		}
 	}
 }
 
@@ -220,33 +208,30 @@
 
 - (NSString *) description {
 	return [NSString stringWithFormat:@"%@ modified %@, %qu bytes (%qu compressed), @ %qu",
-			self.filename, self.lastModDate, self.uncompressedSize, self.compressedSize, self.localHeaderOffset];
+	        self.filename, self.lastModDate, self.uncompressedSize, self.compressedSize, self.localHeaderOffset];
 }
 
 - (NSNumber *) posixPermissions {
 	// if posixPermissions are 0, e.g. on Windows-produced archives, then default them to rwxr-wr-w a la Archive Utility
-	//return [NSNumber numberWithUnsignedInteger:(self.externalFileAttributes >> 16 & 0x1FF) ?: 0755U];
-	return [NSNumber numberWithUnsignedInteger:0755U];
+	return @((self.externalFileAttributes >> 16 & 0x1FF) ? : 0755U);
 }
 
 - (BOOL) isDirectory {
 	uLong type = self.externalFileAttributes >> 29 & 0x1F;
+	if (0 == (self.versionMadeBy >> 8)) { // DOS-originated archive
+		type = self.externalFileAttributes >> 4;
+		return (type == 0x01) && ![self isSymLink];
+	}
 	return (0x02 == type)  && ![self isSymLink];
 }
 
 - (BOOL) isSymLink {
 	uLong type = self.externalFileAttributes >> 29 & 0x1F;
-	return (0x05 == type);
+	return 0x05 == type;
 }
 
 - (BOOL) isResourceFork {
 	return [self.filename zk_isResourceForkPath];
 }
-
-- (NSComparisonResult)compare:(ZKCDHeader *)anotherHeader {
-	return [self.filename caseInsensitiveCompare:anotherHeader.filename];
-}
-
-@synthesize magicNumber, versionNeededToExtract, versionMadeBy, generalPurposeBitFlag, compressionMethod, lastModDate, crc, compressedSize, uncompressedSize, filenameLength, extraFieldLength, commentLength, diskNumberStart, internalFileAttributes, externalFileAttributes, localHeaderOffset, filename, extraField, comment, cachedData;
 
 @end

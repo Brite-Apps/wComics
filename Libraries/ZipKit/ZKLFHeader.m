@@ -28,7 +28,7 @@
 		self.extraFieldLength = 0;
 		self.filename = nil;
 		self.extraField = nil;
-
+        
 		[self addObserver:self forKeyPath:@"compressedSize" options:NSKeyValueObservingOptionNew context:nil];
 		[self addObserver:self forKeyPath:@"uncompressedSize" options:NSKeyValueObservingOptionNew context:nil];
 		[self addObserver:self forKeyPath:@"extraField" options:NSKeyValueObservingOptionNew context:nil];
@@ -51,27 +51,22 @@
 
 - (void) dealloc {
 	[self removeObservers];
-	self.lastModDate = nil;
-	self.filename = nil;
-	self.extraField = nil;
-	[super dealloc];
 }
 
-- (void) observeValueForKeyPath:(NSString *) keyPath ofObject:(id) object change:(NSDictionary *) change context:(void *) context {
-	if ([keyPath isEqualToString:@"compressedSize"] || [keyPath isEqualToString:@"uncompressedSize"]) {
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	if ([keyPath isEqualToString:@"compressedSize"] || [keyPath isEqualToString:@"uncompressedSize"])
 		self.versionNeededToExtract = ([self useZip64Extensions] ? 45 : 20);
-	} else if ([keyPath isEqualToString:@"extraField"] && self.extraFieldLength < 1) {
+	else if ([keyPath isEqualToString:@"extraField"] && self.extraFieldLength < 1)
 		self.extraFieldLength = [self.extraField length];
-	} else if ([keyPath isEqualToString:@"filename"] && self.filenameLength < 1) {
+	else if ([keyPath isEqualToString:@"filename"] && self.filenameLength < 1)
 		self.filenameLength = [self.filename zk_precomposedUTF8Length];
-	}
 }
 
-+ (ZKLFHeader *) recordWithData:(NSData *) data atOffset:(NSUInteger) offset {
++ (ZKLFHeader *) recordWithData:(NSData *)data atOffset:(UInt64)offset {
 	if (!data) return nil;
 	NSUInteger mn = [data zk_hostInt32OffsetBy:&offset];
 	if (mn != ZKLFHeaderMagicNumber) return nil;
-	ZKLFHeader *record = [[ZKLFHeader new] autorelease];
+	ZKLFHeader *record = [ZKLFHeader new];
 	record.magicNumber = mn;
 	record.versionNeededToExtract = [data zk_hostInt16OffsetBy:&offset];
 	record.generalPurposeBitFlag = [data zk_hostInt16OffsetBy:&offset];
@@ -93,14 +88,14 @@
 	return record;
 }
 
-+ (ZKLFHeader *) recordWithArchivePath:(NSString *) path atOffset:(unsigned long long) offset {
++ (ZKLFHeader *) recordWithArchivePath:(NSString *)path atOffset:(UInt64)offset {
 	NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
 	[file seekToFileOffset:offset];
 	NSData *fixedData = [file readDataOfLength:ZKLFHeaderFixedDataLength];
 	ZKLFHeader *record = [self recordWithData:fixedData atOffset:0];
 	if (record.filenameLength > 0) {
 		NSData *data = [file readDataOfLength:record.filenameLength];
-		record.filename = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+		record.filename = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	}
 	if (record.extraFieldLength > 0) {
 		record.extraField = [file readDataOfLength:record.extraFieldLength];
@@ -112,7 +107,7 @@
 
 - (NSData *) data {
 	self.extraField = [self zip64ExtraField];
-
+    
 	NSMutableData *data = [NSMutableData zk_dataWithLittleInt32:self.magicNumber];
 	[data zk_appendLittleInt16:self.versionNeededToExtract];
 	[data zk_appendLittleInt16:self.generalPurposeBitFlag];
@@ -123,8 +118,8 @@
 		[data zk_appendLittleInt32:0xFFFFFFFF];
 		[data zk_appendLittleInt32:0xFFFFFFFF];
 	} else {
-		[data zk_appendLittleInt32:self.compressedSize];
-		[data zk_appendLittleInt32:self.uncompressedSize];
+		[data zk_appendLittleInt32:(UInt32)self.compressedSize];
+		[data zk_appendLittleInt32:(UInt32)self.uncompressedSize];
 	}
 	[data zk_appendLittleInt16:self.filenameLength];
 	[data zk_appendLittleInt16:[self.extraField length]];
@@ -134,7 +129,8 @@
 }
 
 - (void) parseZip64ExtraField {
-	NSUInteger offset = 0, tag, length;
+	NSUInteger tag, length;
+	UInt64 offset = 0;
 	while (offset < self.extraFieldLength) {
 		tag = [self.extraField zk_hostInt16OffsetBy:&offset];
 		length = [self.extraField zk_hostInt16OffsetBy:&offset];
@@ -144,9 +140,8 @@
 			if (length >= 16)
 				self.compressedSize = [self.extraField zk_hostInt64OffsetBy:&offset];
 			break;
-		} else {
+		} else
 			offset += length;
-		}
 	}
 }
 
@@ -173,13 +168,11 @@
 
 - (NSString *) description {
 	return [NSString stringWithFormat:@"%@ modified %@, %qu bytes (%qu compressed)",
-			self.filename, self.lastModDate, self.uncompressedSize, self.compressedSize];
+	        self.filename, self.lastModDate, self.uncompressedSize, self.compressedSize];
 }
 
 - (BOOL) isResourceFork {
 	return [self.filename zk_isResourceForkPath];
 }
-
-@synthesize magicNumber, versionNeededToExtract, generalPurposeBitFlag, compressionMethod, lastModDate, crc, compressedSize, uncompressedSize, filenameLength, extraFieldLength, filename, extraField;
 
 @end

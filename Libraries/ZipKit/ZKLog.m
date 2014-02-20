@@ -7,21 +7,21 @@
 
 #import "ZKLog.h"
 
-NSString* const ZKLogLevelKey = @"ZKLogLevel";
-NSString* const ZKLogToFileKey = @"ZKLogToFile";
+NSString *const ZKLogLevelKey = @"ZKLogLevel";
+NSString *const ZKLogToFileKey = @"ZKLogToFile";
 
 @implementation ZKLog
 
-- (void) logFile:(char*) sourceFile lineNumber:(NSUInteger) lineNumber level:(NSUInteger) level format:(NSString*) format, ... {
+- (void) logFile:(char *)sourceFile lineNumber:(NSUInteger)lineNumber level:(NSUInteger)level format:(NSString *)format, ...{
 	if (level >= self.minimumLevel) {
 		va_list args;
 		va_start(args, format);
-		NSString *message = [[[NSString alloc] initWithFormat:format arguments:args] autorelease];
+		NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
 		va_end(args);
 		NSString *label = [self levelToLabel:level];
 		NSString *now = [self.dateFormatter stringFromDate:[NSDate date]];
 		if (label) {
-			NSString *line = [NSString stringWithFormat:@"%@ [%i] %@ %@ (%@:%u)", now, self.pid, label, message, [[NSString stringWithUTF8String:sourceFile] lastPathComponent], lineNumber];
+			NSString *line = [NSString stringWithFormat:@"%@ [%i] %@ %@ (%@:%lu)", now, self.pid, label, message, [@(sourceFile)lastPathComponent], (unsigned long)lineNumber];
 			fprintf(stderr, "%s\n", [line UTF8String]);
 			fflush(stderr);
 		}
@@ -30,15 +30,15 @@ NSString* const ZKLogToFileKey = @"ZKLogToFile";
 }
 
 - (NSUInteger) minimumLevel {
-	return minimumLevel;
+	return _minimumLevel;
 }
-- (void) setMinimumLevel:(NSUInteger) value {
+- (void) setMinimumLevel:(NSUInteger)value {
 	switch (value) {
 		case ZKLogLevelError:
 		case ZKLogLevelNotice:
 		case ZKLogLevelDebug:
 		case ZKLogLevelAll:
-			minimumLevel = value;
+			_minimumLevel = value;
 			break;
 		default:
 			ZKLogError(@"Invalid logging level: %u. Old value %@ unchanged.", value, [self levelToLabel:self.minimumLevel]);
@@ -47,7 +47,7 @@ NSString* const ZKLogToFileKey = @"ZKLogToFile";
 	return;
 }
 
-- (NSString *) levelToLabel:(NSUInteger) level {
+- (NSString *) levelToLabel:(NSUInteger)level {
 	NSString *label = nil;
 	switch (level) {
 		case ZKLogLevelError:
@@ -66,77 +66,66 @@ NSString* const ZKLogToFileKey = @"ZKLogToFile";
 	return label;
 }
 
-static ZKLog *sharedInstance = nil;
+static ZKLog *zkSharedInstance = nil;
 + (ZKLog *) sharedInstance {
 	@synchronized(self) {
-		if (sharedInstance == nil) {
-			sharedInstance = [self new];
-		}
+		if (zkSharedInstance == nil)
+			zkSharedInstance = [self new];
 	}
-	return sharedInstance;
+	return zkSharedInstance;
 }
 
 - (id) init {
 	@synchronized([self class]) {
-		if (sharedInstance == nil) {
+		if (zkSharedInstance == nil) {
 			if (self = [super init]) {
-				sharedInstance = self;
-				
+				zkSharedInstance = self;
+                
 				self.pid = [[NSProcessInfo processInfo] processIdentifier];
 				self.minimumLevel = ZKLogLevelError;
-				self.dateFormatter = [[NSDateFormatter new] autorelease];
+				self.dateFormatter = [NSDateFormatter new];
 				[self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
-				
+                
 				if ([[NSUserDefaults standardUserDefaults] boolForKey:ZKLogToFileKey]) {
 					NSArray *searchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-					NSString *libraryFolder = [searchPaths objectAtIndex:0];
+					NSString *libraryFolder = searchPaths[0];
 					NSString *logFolder = [libraryFolder stringByAppendingPathComponent:@"Logs"];
-					[[[NSFileManager new] autorelease] createDirectoryAtPath:logFolder withIntermediateDirectories:YES attributes:nil error:nil];
+					[[NSFileManager new] createDirectoryAtPath:logFolder withIntermediateDirectories:YES attributes:nil error:nil];
 					self.logFilePath = [logFolder stringByAppendingPathComponent:
-										[[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] 
-										 stringByAppendingPathExtension:@"log"]];
+					                    [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"]
+					                     stringByAppendingPathExtension:@"log"]];
 					freopen([self.logFilePath fileSystemRepresentation], "a+", stderr);
 				}
 			}
 		}
 	}
-	return sharedInstance;
+	return zkSharedInstance;
 }
 
-+ (id) allocWithZone:(NSZone *) zone {
++ (id) allocWithZone:(NSZone *)zone {
 	@synchronized(self) {
-		if (sharedInstance == nil) {
+		if (zkSharedInstance == nil)
 			return [super allocWithZone:zone];
-		}
 	}
-	return sharedInstance;
+	return zkSharedInstance;
 }
 
 + (void) initialize {
 	[[NSUserDefaults standardUserDefaults] registerDefaults:
-	 [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:ZKLogToFileKey]];
+	 @{ ZKLogToFileKey: @NO }];
 	[super initialize];
 }
 
-- (id) copyWithZone:(NSZone *) zone {
+- (id) copyWithZone:(NSZone *)zone {
 	return self;
 }
 
-- (void) finalize {
-	if (self.logFilePointer)
-		fclose(self.logFilePointer);
-	[super finalize];
-}
 
 - (void) dealloc {
-	if (self.logFilePointer) 
-		fclose(self.logFilePointer);	
-	self.dateFormatter = nil;
-	self.logFilePath = nil;
-	[super dealloc];
+	if (self.logFilePointer)
+		fclose(self.logFilePointer);
 }
 
-@synthesize dateFormatter, pid, logFilePath, logFilePointer;
 @dynamic minimumLevel;
 
 @end

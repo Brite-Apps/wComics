@@ -118,32 +118,30 @@
 	if ((self = [super init]) != nil) {
 		self.file = aFile;
 		archType = WCNone;
-
-		NSMutableString *titleStr = [[NSMutableString alloc] initWithString:[[_file componentsSeparatedByString:@"/"] lastObject]];
-		[titleStr replaceOccurrencesOfString:@".cbz" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [titleStr length])];
-		[titleStr replaceOccurrencesOfString:@".cbr" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [titleStr length])];
-		self.title = [[NSString alloc] initWithString:titleStr];
+		
+		NSString *title = [[_file lastPathComponent] stringByDeletingPathExtension];
+		self.title = title;
 
 		filesList = [[NSMutableArray alloc] init];
 		
 		archive = [ZKDataArchive archiveWithArchivePath:_file];
 		
 		if (archive && [archive.centralDirectory count]) {
+			NSArray *validExtensions = @[@"jpg", @"jpeg", @"png", @"gif", @"tiff", @"tif"];
+			
 			for (ZKCDHeader *header in archive.centralDirectory) {
 				NSString *filename = header.filename;
-				NSString *ext = [filename pathExtension];
+				NSString *ext = [[filename pathExtension] lowercaseString];
 
-				NSComparisonResult jpg = [ext caseInsensitiveCompare:@"jpg"];
-				NSComparisonResult jpeg = [ext caseInsensitiveCompare:@"jpeg"];
-				NSComparisonResult png = [ext caseInsensitiveCompare:@"png"];
-				NSComparisonResult gif = [ext caseInsensitiveCompare:@"gif"];
-				NSComparisonResult tiff = [ext caseInsensitiveCompare:@"tiff"];
-				NSComparisonResult tif = [ext caseInsensitiveCompare:@"tif"];
-
-				if (jpg == NSOrderedSame || jpeg == NSOrderedSame || png == NSOrderedSame || gif == NSOrderedSame || tiff == NSOrderedSame || tif == NSOrderedSame) {
+				if ([validExtensions containsObject:ext]) {
 					[filesList addObject:header];
 				}
 			}
+			
+			[filesList sortUsingComparator:^NSComparisonResult(ZKCDHeader *header1, ZKCDHeader *header2) {
+				return [header1.filename caseInsensitiveCompare:header2.filename];
+			}];
+
 			archType = WCZipFile;
 		}
 		
@@ -153,6 +151,7 @@
 
 			if (ok) {
 				[filesList addObjectsFromArray:[rarArchive myUnrarListFiles]];
+				[filesList sortUsingSelector:@selector(caseInsensitiveCompare:)];
 				archType = WCRarFile;
 			}
 			else {
@@ -164,8 +163,6 @@
 		if (archType == WCNone) {
 			return nil;
 		}
-
-		[filesList sortUsingSelector:@selector(compare:)];
 	}
 	return self;
 }

@@ -20,10 +20,10 @@
 	return self;
 }
 
-+ (ZKCDTrailer64Locator *) recordWithData:(NSData *)data atOffset:(NSUInteger) offset {
++ (ZKCDTrailer64Locator *) recordWithData:(NSData *)data atOffset:(UInt64)offset {
 	NSUInteger mn = [data zk_hostInt32OffsetBy:&offset];
 	if (mn != ZKCDTrailer64LocatorMagicNumber) return nil;
-	ZKCDTrailer64Locator *record = [[ZKCDTrailer64Locator new] autorelease];
+	ZKCDTrailer64Locator *record = [ZKCDTrailer64Locator new];
 	record.magicNumber = mn;
 	record.diskNumberWithStartOfCentralDirectory = [data zk_hostInt32OffsetBy:&offset];
 	record.offsetOfStartOfCentralDirectoryTrailer64 = [data zk_hostInt64OffsetBy:&offset];
@@ -56,7 +56,5 @@
 - (NSString *) description {
 	return [NSString stringWithFormat:@"offset of CD64: %qu", self.offsetOfStartOfCentralDirectoryTrailer64];
 }
-
-@synthesize magicNumber, diskNumberWithStartOfCentralDirectory, offsetOfStartOfCentralDirectoryTrailer64, numberOfDisks;
 
 @end

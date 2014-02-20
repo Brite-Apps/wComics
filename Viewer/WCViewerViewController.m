@@ -247,10 +247,12 @@
 			 CGRect frame = bottomToolbar.frame;
 			 frame.origin.y = weakSelf.view.bounds.size.height;
 			 bottomToolbar.frame = frame;
+			 bottomToolbar.alpha = 0.0f;
 			 
 			 frame = topLabel.frame;
 			 frame.origin.y = -frame.size.height;
 			 topLabel.frame = frame;
+			 topLabel.alpha = 0.0f;
 		 }];
 	}
 	else {
@@ -260,10 +262,12 @@
 			 CGRect frame = bottomToolbar.frame;
 			 frame.origin.y = weakSelf.view.bounds.size.height - frame.size.height;
 			 bottomToolbar.frame = frame;
+			 bottomToolbar.alpha = 1.0f;
 			 
 			 frame = topLabel.frame;
 			 frame.origin.y = 0.0f;
 			 topLabel.frame = frame;
+			 topLabel.alpha = 1.0f;
 		 }];
 	}
 }
@@ -305,19 +309,24 @@
 
 	if (toolbarHidden) {
 		tmpRect.origin.y = screenFrame.size.height;
+		bottomToolbar.alpha = 0.0f;
 	}
 	else {
 		tmpRect.origin.y = screenFrame.size.height - tmpRect.size.height;
+		bottomToolbar.alpha = 1.0f;
 	}
 
 	bottomToolbar.frame = tmpRect;
 	
 	tmpRect = topLabel.frame;
+	tmpRect.size.width = screenFrame.size.width;
 	
 	if (toolbarHidden) {
+		topLabel.alpha = 0.0f;
 		tmpRect.origin.y = -tmpRect.size.height;
 	}
 	else {
+		topLabel.alpha = 1.0f;
 		tmpRect.origin.y = 0.0f;
 	}
 	

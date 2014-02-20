@@ -15,7 +15,7 @@
 }
 
 - (BOOL) zk_isResourceForkPath {
-	return [[[self pathComponents] objectAtIndex:0] isEqualToString:ZKMacOSXDirectory];
+	return [[self pathComponents][0] isEqualToString:ZKMacOSXDirectory];
 }
 
 
