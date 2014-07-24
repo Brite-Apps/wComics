@@ -170,12 +170,13 @@
 			[_comic close];
 			_comic = aComic;
 
-			//[self redrawInterface];
-
 			[[WCSettingsStorage sharedInstance] setLastDocument:_comic.file];
 
 			topLabel.text = _comic.title;
-			
+
+			[currentPageView.viewForZoom removeFromSuperview];
+			currentPageView.viewForZoom = nil;
+
 			[self displayPage:currentPageNumber animationDirection:0];
 		}
 	}
