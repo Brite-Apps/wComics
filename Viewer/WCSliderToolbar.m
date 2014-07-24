@@ -1,12 +1,17 @@
-/**
- * @class WCSliderToolbar
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCSliderToolbar.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCSliderToolbar.h"
-#import <QuartzCore/QuartzCore.h>
 
-@implementation WCSliderToolbar
+@implementation WCSliderToolbar {
+	UILabel *pageLabel;
+	UISlider *slider;
+}
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame]) != nil) {

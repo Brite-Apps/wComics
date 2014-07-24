@@ -1,15 +1,17 @@
-/**
- * @class WCSettingsStorage
- */
+//
+//  WCSettingsStorage.h
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
-@interface WCSettingsStorage : NSObject {
-	NSUserDefaults *settings;
-}
+@interface WCSettingsStorage : NSObject
 
-@property (nonatomic, assign, setter=setLastDocument:, getter=lastDocument) NSString *lastDocument;
+@property (nonatomic, assign) NSString *lastDocument;
 
-+ (WCSettingsStorage *)sharedInstance;
-- (unsigned int)currentPageForFile:(NSString *)file;
++ (instancetype)sharedInstance;
+- (NSUInteger)currentPageForFile:(NSString *)file;
 - (void)saveCurrentPage:(NSInteger)page forFile:(NSString *)file;
 - (void)removeSettingsForFile:(NSString *)file;
 

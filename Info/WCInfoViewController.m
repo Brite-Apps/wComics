@@ -1,7 +1,10 @@
-/**
- * @class WCInfoViewController
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCInfoViewController.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCInfoViewController.h"
 
@@ -10,7 +13,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+	UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
 	webView.backgroundColor = RGB(255, 255, 255);
 	self.view = webView;
 	webView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -42,10 +45,6 @@
 
 - (NSUInteger)supportedInterfaceOrientations {
 	return UIInterfaceOrientationMaskAll;
-}
-
-- (void)dealloc {
-	[webView stopLoading];
 }
 
 @end

@@ -28,7 +28,7 @@
 @synthesize rnfrFilename;
 
 - (id)initWithAsyncSocket:(AsyncSocket *)newSocket forServer:(id)myServer {
-	if ((self = self = [super init]) != nil) {
+	if ((self = [super init]) != nil) {
 		connectionSocket = newSocket;
 		server = myServer;
 		[ connectionSocket setDelegate:self ];
@@ -658,7 +658,7 @@
 	if ( [ self changedCurrentDirectoryTo:cwdDir ] )											// tries to change to that directory, checks in bounds and viable
 	{
 		cmdstr = [ NSString stringWithFormat:@"250 OK. Current directory is %@", [self visibleCurrentDir]];		// currentDir is now in the new place
-		cmdstr = @"250 CWD command successful.";
+		//cmdstr = @"250 CWD command successful.";
 	}
 	else
 	{

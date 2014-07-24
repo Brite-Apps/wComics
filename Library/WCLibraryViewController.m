@@ -1,7 +1,10 @@
-/**
- * @class WCLibraryViewController
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCLibraryViewController.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCLibraryViewController.h"
 #import "WCViewerViewController.h"
@@ -40,6 +43,7 @@
 	static NSString *cellId = @"cellId";
 
 	WCItemCell *cell = (WCItemCell *)[tableView dequeueReusableCellWithIdentifier:cellId];
+
 	if (cell == nil) {
 		cell = [[WCItemCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
 	}
@@ -110,11 +114,6 @@
 #pragma clang diagnostic pop
 		}
 	}
-}
-
-- (void)dealloc {
-	self.target = nil;
-	self.dataSource = nil;
 }
 
 @end

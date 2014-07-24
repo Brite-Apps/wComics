@@ -1,7 +1,10 @@
-/**
- * @class WCServerViewController
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCServerViewController.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCServerViewController.h"
 #import "FtpServer.h"
@@ -9,7 +12,11 @@
 
 #define FTP_PORT 12345
 
-@implementation WCServerViewController
+@implementation WCServerViewController {
+	FtpServer *ftpServer;
+	UILabel *urlLabel;
+	UIImageView *wifiImageView;
+}
 
 - (void)redrawInterface {
 	CGRect frame = urlLabel.frame;
@@ -58,6 +65,8 @@
 	[urlLabel sizeToFit];
 	
 	[self.view addSubview:urlLabel];
+	
+	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -79,6 +88,8 @@
 - (void)dealloc {
 	[ftpServer stopFtpServer];
 	ftpServer = nil;
+	
+	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
 @end

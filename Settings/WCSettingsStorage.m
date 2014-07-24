@@ -1,25 +1,24 @@
-/**
- * @class WCSettingsStorage
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
-
-static NSString *settingsMutex = @"settingsMutex";
+//
+//  WCSettingsStorage.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCSettingsStorage.h"
 
-@implementation WCSettingsStorage
+@implementation WCSettingsStorage {
+	NSUserDefaults *settings;
+}
 
-+ (WCSettingsStorage *)sharedInstance {
-	static WCSettingsStorage *sharedInstance;
-	@synchronized (settingsMutex) {
-		if (sharedInstance == nil) {
-			@synchronized (settingsMutex)
-			{
-				sharedInstance = [[WCSettingsStorage alloc] init];
-			}
-		}
-	}
-	return sharedInstance;
++ (instancetype)sharedInstance {
+	static dispatch_once_t pred;
+	static WCSettingsStorage *shared = nil;
+	dispatch_once(&pred, ^{
+		shared = [[self alloc] init];
+	});
+	return shared;
 }
 
 - (id)init {
@@ -29,15 +28,14 @@ static NSString *settingsMutex = @"settingsMutex";
 	return self;
 }
 
-- (unsigned int)currentPageForFile:(NSString *)file {
-	return [[[settings objectForKey:@"states"] objectForKey:file] unsignedIntValue];
+- (NSUInteger)currentPageForFile:(NSString *)file {
+	return [[[settings objectForKey:@"states"] objectForKey:file] unsignedIntegerValue];
 }
 
 - (void)saveCurrentPage:(NSInteger)page forFile:(NSString *)file {
 	@try {
 		NSMutableDictionary *states = [[NSMutableDictionary alloc] initWithDictionary:[settings objectForKey:@"states"]];
-		NSNumber *num = @(page);
-		[states setObject:num forKey:file];
+		states[file] = @(page);
 		[settings setObject:states forKey:@"states"];
 	}
 	@catch (NSException *e) {

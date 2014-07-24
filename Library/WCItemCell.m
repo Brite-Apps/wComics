@@ -1,9 +1,13 @@
-/**
- * @class WCItemCell
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCItemCell.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCItemCell.h"
+#import "WCComic.h"
 
 @implementation WCItemCell
 
@@ -33,11 +37,11 @@
 			else {
 				self.accessoryType = UITableViewCellAccessoryNone;
 				
-				NSString *coverFile = [[NSString alloc] initWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [itemPath lastPathComponent]];
-
+				__block NSString *coverFile = [[NSString alloc] initWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [itemPath lastPathComponent]];
+				
 				if ([[NSFileManager defaultManager] fileExistsAtPath:coverFile]) {
 					UIImage *cover = [[UIImage alloc] initWithData:[NSData dataWithContentsOfFile:coverFile] scale:[UIScreen mainScreen].scale];
-
+					
 					if (cover && cover.size.width) {
 						self.imageView.image = cover;
 					}
@@ -47,8 +51,18 @@
 				}
 				else {
 					self.imageView.image = [UIImage imageNamed:@"document"];
+					
+					__weak typeof(self.imageView) weakImageView = self.imageView;
+					
+					[WCComic
+					 createCoverImageForPath:_item[@"path"]
+					 withCallback:^(UIImage *image, NSString *file) {
+						 if (image &&[file isEqualToString:coverFile]) {
+							 weakImageView.image = image;
+						 }
+					 }];
 				}
-
+				
 				[self.imageView sizeToFit];
 			}
 			

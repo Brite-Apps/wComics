@@ -1,7 +1,10 @@
-/**
- * @class WCScrollView
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCScrollView.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCScrollView.h"
 
@@ -11,7 +14,7 @@
 	if ((self = [super initWithFrame:frame]) != nil) {
 		self.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		self.scrollEnabled = YES;
-		self.maximumZoomScale = 100.0;
+		self.maximumZoomScale = 5.0f;
 		self.delegate = self;
 		self.delaysContentTouches = NO;
 		self.backgroundColor = [UIColor clearColor];
@@ -22,28 +25,9 @@
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-	CGRect _innerFrame = _viewForZoom.frame;
-	CGRect scrollerBounds = scrollView.bounds;
-
-	if ((_innerFrame.size.width < scrollerBounds.size.width ) || (_innerFrame.size.height < scrollerBounds.size.height)) {
-		CGFloat tempx = _viewForZoom.center.x - (scrollerBounds.size.width / 2.0);
-		CGFloat tempy = _viewForZoom.center.y - (scrollerBounds.size.height / 2.0);
-		CGPoint myScrollViewOffset = CGPointMake(tempx, tempy);
-		
-		self.contentOffset = myScrollViewOffset;
-	}
-
-	UIEdgeInsets anEdgeInset = {0, 0, 0, 0};
-	if (scrollerBounds.size.width > _innerFrame.size.width) {
-		anEdgeInset.left = (scrollerBounds.size.width - _innerFrame.size.width) / 2.0;
-		anEdgeInset.right = - anEdgeInset.left;
-	}
-	if (scrollerBounds.size.height > _innerFrame.size.height) {
-		anEdgeInset.top = (scrollerBounds.size.height - _innerFrame.size.height) / 2.0;
-		anEdgeInset.bottom = -anEdgeInset.top;
-	}
-	
-	self.contentInset = anEdgeInset;
+	CGFloat offsetX = MAX((scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5f, 0.0f);
+	CGFloat offsetY = MAX((scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5f, 0.0f);
+	_viewForZoom.center = CGPointMake(scrollView.contentSize.width * 0.5f + offsetX, scrollView.contentSize.height * 0.5f + offsetY);
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {

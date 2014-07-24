@@ -1,113 +1,25 @@
-/**
- * @class WCComic
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCComic.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCComic.h"
 #import "ZKDefs.h"
 #import "ZKDataArchive.h"
 #import "ZKCDHeader.h"
-#import "Unrar4iOS.h"
-#import "Unrar4iOSAdditions.h"
+#import "URKArchive.h"
+#import "URKArchiveAdditions.h"
 
-@implementation WCComic
+@implementation WCComic {
+	__strong __block ZKDataArchive *archive;
+	__strong __block URKArchive *rarArchive;
+	__block CGPDFDocumentRef pdfDoc;
 
-+ (void)createCoverImageForFile:(NSString *)path {
-	@autoreleasepool {
-		ZKDataArchive *arch = [ZKDataArchive archiveWithArchivePath:path];
-		if (arch && [arch.centralDirectory count]) {
-			UIImage *cover = nil;
-			
-			for (NSInteger i = 0; i < [arch.centralDirectory count]; i++) {
-				ZKCDHeader *header = [arch.centralDirectory objectAtIndex:i];
-				NSDictionary *attrs = nil;
-				NSData *coverData = [arch inflateFile:header attributes:&attrs];
-
-				cover = [[UIImage alloc] initWithData:coverData];
-
-				if (cover.size.width == 0) {
-					continue;
-				}
-				else {
-					CGFloat c = 31.0f / cover.size.width;
-					CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
-					
-					if (newSize.width > 31.0f) {
-						c = 31.0f / newSize.width;
-						newSize.width = 31.0f;
-						newSize.height *= c;
-					}
-					
-					if (newSize.height > 40.0f) {
-						c = 40.0f / newSize.height;
-						newSize.height = 40.0f;
-						newSize.width *= c;
-					}
-					
-					UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
-					[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-					UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-					UIGraphicsEndImageContext();
-					NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.9f);
-					
-					NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
-					[newCoverData writeToFile:coverFile options:0 error:nil];
-
-					break;
-				}
-			}
-		}
-		else {
-			Unrar4iOS *unrar = [[Unrar4iOS alloc] init];
-
-			if ([unrar unrarOpenFile:path]) {
-				NSArray *files = [unrar myUnrarListFiles];
-				UIImage *cover = nil;
-
-				for (NSInteger i = 0; i < [files count]; i++) {
-					NSData *coverData = [unrar extractStream:[files objectAtIndex:i]];
-
-					cover = [[UIImage alloc] initWithData:coverData];
-
-					if (cover.size.width == 0) {
-						continue;
-					}
-					else {
-						CGFloat c = 31.0f / cover.size.width;
-						CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
-						
-						if (newSize.width > 31.0f) {
-							c = 31.0f / newSize.width;
-							newSize.width = 31.0f;
-							newSize.height *= c;
-						}
-						
-						if (newSize.height > 40.0f) {
-							c = 40.0f / newSize.height;
-							newSize.height = 40.0f;
-							newSize.width *= c;
-						}
-						
-						TRACE(@"New size: %@", NSStringFromCGSize(newSize));
-						
-						UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
-						[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-						UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
-						UIGraphicsEndImageContext();
-						NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.9f);
-						
-						NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
-					
-						[newCoverData writeToFile:coverFile options:0 error:nil];
-
-						break;
-					}
-				}
-			}
-
-			[unrar unrarCloseFile];
-		}
-	}
+	__block NSMutableArray *filesList;
+	__block WCArchType archType;
 }
 
 - (id)initWithFile:(NSString *)aFile {
@@ -141,22 +53,45 @@
 			[filesList sortUsingComparator:^NSComparisonResult(ZKCDHeader *header1, ZKCDHeader *header2) {
 				return [header1.filename caseInsensitiveCompare:header2.filename];
 			}];
+			
+			_numberOfPages = [filesList count];
 
 			archType = WCZipFile;
 		}
 		
 		if (archType != WCZipFile) {
-			rarArchive = [[Unrar4iOS alloc] init];
-			BOOL ok = [rarArchive unrarOpenFile:aFile];
-
-			if (ok) {
-				[filesList addObjectsFromArray:[rarArchive myUnrarListFiles]];
+			rarArchive = [URKArchive rarArchiveAtPath:aFile];
+			BOOL ok = NO;
+			NSArray *files = [rarArchive myUnrarListFiles];
+			
+			if ([files count]) {
+				[filesList addObjectsFromArray:files];
 				[filesList sortUsingSelector:@selector(caseInsensitiveCompare:)];
 				archType = WCRarFile;
+				ok = YES;
+				
+				_numberOfPages = [filesList count];
 			}
-			else {
-				[rarArchive unrarCloseFile];
+
+			if (!ok) {
+				[rarArchive closeFile];
 				rarArchive = nil;
+			}
+		}
+		
+		if (archType == WCNone) {
+			CFURLRef pdfURL = CFURLCreateWithFileSystemPath(NULL, (__bridge CFStringRef)aFile, kCFURLPOSIXPathStyle, FALSE);
+
+			if (pdfURL != NULL) {
+				pdfDoc = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
+
+				if (pdfDoc != NULL) {
+					archType = WCPdfFile;
+
+					_numberOfPages = CGPDFDocumentGetNumberOfPages(pdfDoc);
+				}
+				
+				CFRelease(pdfURL);
 			}
 		}
 
@@ -169,27 +104,75 @@
 
 - (void)close {
 	archive = nil;
-	[rarArchive unrarCloseFile];
+	[rarArchive closeFile];
 	rarArchive = nil;
 	archType = WCNone;
+	
+	if (pdfDoc != NULL) {
+		CGPDFDocumentRelease(pdfDoc);
+		pdfDoc = NULL;
+	}
 }
 
 - (UIImage *)imageAtIndex:(NSInteger)index {
 	UIImage *img = nil;
 	
 	if (archType == WCZipFile) {
-		ZKCDHeader *header = [filesList objectAtIndex:index];
+		ZKCDHeader *header = filesList[index];
 		NSDictionary *attrs = nil;
 		NSData *d = [archive inflateFile:header attributes:&attrs];
 		img = [[UIImage alloc] initWithData:d];
 	}
 	else if (archType == WCRarFile) {
-		NSData *data = [rarArchive extractStream:[filesList objectAtIndex:index]];
+		NSData *data = [rarArchive extractDataFromFile:filesList[index] error:nil];
 
 		if (data != nil) {
 			img = [[UIImage alloc] initWithData:data];
 		}
 	}
+	else if (archType == WCPdfFile) {
+		CGPDFPageRef pdfPage = CGPDFDocumentGetPage(pdfDoc, index + 1);
+		
+		if (pdfPage != NULL) {
+			CGRect pageRect = CGRectIntegral(CGPDFPageGetBoxRect(pdfPage, kCGPDFCropBox));
+			CGSize size = pageRect.size;
+			CGSize screenSize = [UIScreen mainScreen].bounds.size;
+			CGFloat maxSide = MAX(screenSize.width, screenSize.height);
+
+			if (size.width < maxSide) {
+				CGFloat c = maxSide / size.width;
+				size.width = maxSide;
+				size.height = floorf(size.height * c);
+			}
+
+			if (size.height < maxSide) {
+				CGFloat c = maxSide / size.height;
+				size.height = maxSide;
+				size.width = floorf(size.width * c);
+			}
+			
+			CGPDFPageRef pdfPage = CGPDFDocumentGetPage(pdfDoc, index + 1);
+			
+			UIGraphicsBeginImageContextWithOptions(size, true, 0);
+			
+			CGContextRef ctx = UIGraphicsGetCurrentContext();
+			
+			CGContextGetCTM(ctx);
+			CGContextScaleCTM(ctx, 1, -1);
+			CGContextTranslateCTM(ctx, 0, -size.height);
+			
+			CGRect mediaRect = CGPDFPageGetBoxRect(pdfPage, kCGPDFCropBox);
+			CGContextScaleCTM(ctx, size.width / mediaRect.size.width, size.height / mediaRect.size.height);
+			CGContextTranslateCTM(ctx, -mediaRect.origin.x, -mediaRect.origin.y);
+			
+			CGContextDrawPDFPage(ctx, pdfPage);
+		
+			img = UIGraphicsGetImageFromCurrentImageContext();
+
+			UIGraphicsEndImageContext();
+		}
+	}
+
 	return img;
 }
 
@@ -225,14 +208,189 @@
 	return result;
 }
 
-- (NSInteger)numberOfPages {
-	return [filesList count];
++ (void)createCoverImageForPath:(NSString *)path withCallback:(void(^)(UIImage *image, NSString *file))callback {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+		ZKDataArchive *arch = [ZKDataArchive archiveWithArchivePath:path];
+
+		if (arch && [arch.centralDirectory count]) {
+			for (NSInteger i = 0; i < [arch.centralDirectory count]; i++) {
+				ZKCDHeader *header = arch.centralDirectory[i];
+				
+				NSDictionary *attrs = nil;
+				NSData *coverData = [arch inflateFile:header attributes:&attrs];
+				
+				UIImage *cover = [[UIImage alloc] initWithData:coverData];
+				
+				if (cover.size.width == 0) {
+					continue;
+				}
+				else {
+					CGFloat c = 31.0f / cover.size.width;
+					CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
+					
+					if (newSize.width > 31.0f) {
+						c = 31.0f / newSize.width;
+						newSize.width = 31.0f;
+						newSize.height *= c;
+					}
+					
+					if (newSize.height > 40.0f) {
+						c = 40.0f / newSize.height;
+						newSize.height = 40.0f;
+						newSize.width *= c;
+					}
+					
+					UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
+					[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+					UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+					UIGraphicsEndImageContext();
+					NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8f);
+					
+					__block NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
+					[newCoverData writeToFile:coverFile options:0 error:nil];
+					
+					if (callback) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							callback(newImage, coverFile);
+						});
+					}
+					
+					return;
+				}
+			}
+		}
+		else {
+			URKArchive *rarArchive = [URKArchive rarArchiveAtPath:path];
+			BOOL ok = NO;
+			NSArray *files = [rarArchive myUnrarListFiles];
+			
+			if ([files count]) {
+				for (NSString *file in files) {
+					NSData *coverData = [rarArchive extractDataFromFile:file error:nil];
+					
+					UIImage *cover = [[UIImage alloc] initWithData:coverData];
+					
+					if (cover.size.width == 0) {
+						continue;
+					}
+					else {
+						CGFloat c = 31.0f / cover.size.width;
+						CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
+						
+						if (newSize.width > 31.0f) {
+							c = 31.0f / newSize.width;
+							newSize.width = 31.0f;
+							newSize.height *= c;
+						}
+						
+						if (newSize.height > 40.0f) {
+							c = 40.0f / newSize.height;
+							newSize.height = 40.0f;
+							newSize.width *= c;
+						}
+						
+						UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
+						[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+						UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+						UIGraphicsEndImageContext();
+						NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8f);
+						
+						__block NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
+						[newCoverData writeToFile:coverFile options:0 error:nil];
+						
+						if (callback) {
+							dispatch_async(dispatch_get_main_queue(), ^{
+								callback(newImage, coverFile);
+							});
+						}
+						
+						break;
+					}
+				}
+
+				ok = YES;
+			}
+			
+			[rarArchive closeFile];
+			
+			if (!ok) {
+				CFURLRef pdfURL = CFURLCreateWithFileSystemPath(NULL, (__bridge CFStringRef)path, kCFURLPOSIXPathStyle, FALSE);
+				
+				if (pdfURL != NULL) {
+					CGPDFDocumentRef pdfDoc = CGPDFDocumentCreateWithURL((CFURLRef)pdfURL);
+					CFRelease(pdfURL);
+
+					if (pdfDoc != NULL) {
+						CGPDFPageRef pdfPage = CGPDFDocumentGetPage(pdfDoc, 1);
+						
+						if (pdfPage != NULL) {
+							CGRect pageRect = CGRectIntegral(CGPDFPageGetBoxRect(pdfPage, kCGPDFCropBox));
+							
+							CGSize size = pageRect.size;
+							
+							CGFloat c = 31.0f / size.width;
+							CGSize newSize = CGSizeMake(size.width * c, size.height * c);
+							
+							if (newSize.width > 31.0f) {
+								c = 31.0f / newSize.width;
+								newSize.width = 31.0f;
+								newSize.height *= c;
+							}
+							
+							if (newSize.height > 40.0f) {
+								c = 40.0f / newSize.height;
+								newSize.height = 40.0f;
+								newSize.width *= c;
+							}
+							
+							UIGraphicsBeginImageContextWithOptions(newSize, false, 0);
+							
+							CGContextRef context = UIGraphicsGetCurrentContext();
+							
+							CGRect bounds = CGContextGetClipBoundingBox(context);
+							CGContextTranslateCTM(context, 0, bounds.size.height);
+							CGContextScaleCTM(context, 1.0, -1.0);
+							
+							CGContextSaveGState(context);
+							
+							CGRect transformRect = CGRectMake(0, 0, newSize.width, newSize.height);
+							CGAffineTransform pdfTransform = CGPDFPageGetDrawingTransform(pdfPage, kCGPDFCropBox, transformRect, 0, true);
+							
+							CGContextConcatCTM(context, pdfTransform);
+							
+							CGContextDrawPDFPage(context, pdfPage);
+							
+							CGContextRestoreGState(context);
+							
+							UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+							
+							NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8f);
+							__block NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
+							[newCoverData writeToFile:coverFile options:0 error:nil];
+							
+							UIGraphicsEndImageContext();
+							
+							if (callback) {
+								dispatch_async(dispatch_get_main_queue(), ^{
+									callback(newImage, coverFile);
+								});
+							}
+							
+							return;
+						}
+						
+						CGPDFDocumentRelease(pdfDoc);
+					}
+				}
+			}
+		}
+	});
 }
 
 - (void)dealloc {
 	filesList = nil;
 	archive = nil;
-	[rarArchive unrarCloseFile];
+	[rarArchive closeFile];
 	rarArchive = nil;
 	rarArchive = nil;
 	self.file = nil;

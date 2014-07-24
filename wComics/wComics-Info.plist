@@ -40,6 +40,22 @@
 				<string>com.briteapps.cbr</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>document_small</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PDF</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.briteapps.pdf</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
@@ -113,6 +129,27 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>cbr</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>PDF file</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.briteapps.pdf</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>document_big</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>document_small</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>pdf</string>
 				</array>
 			</dict>
 		</dict>

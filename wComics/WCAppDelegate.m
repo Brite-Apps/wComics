@@ -17,7 +17,11 @@ void uncaughtExceptionHandler(NSException *exception) {
 	TRACE(@"Stack Trace: %@", [exception callStackSymbols]);
 }
 
-@implementation WCAppDelegate
+@implementation WCAppDelegate {
+	UIWindow *window;
+	WCViewerViewController *viewController;
+	BOOL justStarted;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
@@ -26,36 +30,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 	
 	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	window.rootViewController = viewController;
-	
-	updateIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 300.0f, 300.0f)];
-	updateIndicator.backgroundColor = RGBA(0, 0, 0, 0.8);
-	CALayer *layer = updateIndicator.layer;
-	layer.masksToBounds = YES;
-	layer.cornerRadius = 10.0f;
-	
-	UIActivityIndicatorView *ind = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-	[updateIndicator addSubview:ind];
-	CGRect tmpRect = ind.frame;
-	tmpRect.origin.x = floorf((updateIndicator.frame.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = floorf((updateIndicator.frame.size.height - tmpRect.size.height) / 2.0f) - 20.0f;
-	ind.frame = tmpRect;
-	[ind startAnimating];
-	
-	UILabel *textLabel = [[UILabel alloc] init];
-	textLabel.backgroundColor = [UIColor clearColor];
-	textLabel.font = [UIFont boldSystemFontOfSize:18];
-	textLabel.textColor = RGB(255, 255, 255);
-	textLabel.numberOfLines = 1;
-	textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-	textLabel.text = NSLocalizedString(@"UPDATING_LIBRARY", @"Updating library");
-	[textLabel sizeToFit];
-	tmpRect = textLabel.frame;
-	tmpRect.origin.x = floorf((updateIndicator.frame.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = ind.frame.origin.y + ind.frame.size.height + 20.0f;
-	textLabel.frame = tmpRect;
-	[updateIndicator addSubview:textLabel];
-	
-	viewController.updateIndicator = updateIndicator;
 
 	[window makeKeyAndVisible];
 	
@@ -88,10 +62,8 @@ void uncaughtExceptionHandler(NSException *exception) {
 	NSString *lastDocument = [[WCSettingsStorage sharedInstance] lastDocument];
 
 	if (lastDocument) {
-		[self showIndicator];
 		WCComic *comic = [[WCComic alloc] initWithFile:lastDocument];
 		viewController.comic = comic;
-		[self hideIndicator];
 	}
 	else {
 		viewController.comic = nil;
@@ -99,40 +71,23 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 
 - (void)updateLibrary {
-	[self showIndicator];
-
+	__weak typeof(self) weakSelf = self;
+	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 		@autoreleasepool {
-			[[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-
 			NSString *coverDir = [DOCPATH stringByAppendingPathComponent:@"covers"];
 			[[NSFileManager defaultManager] createDirectoryAtPath:coverDir withIntermediateDirectories:YES attributes:nil error:nil];
 			[[WCLibraryDataSource sharedInstance] updateLibrary];
+			
+			if (justStarted) {
+				justStarted = NO;
 
-			[[UIApplication sharedApplication] endIgnoringInteractionEvents];
-
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[self hideIndicator];
-				
-				if (justStarted) {
-					justStarted = NO;
-					[self checkOpen];
-				}
-			});
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[weakSelf checkOpen];
+				});
+			}
 		}
 	});
-}
-
-- (void)showIndicator {
-	[viewController.view addSubview:updateIndicator];
-	CGRect tmpRect = updateIndicator.frame;
-	tmpRect.origin.x = floorf((viewController.view.bounds.size.width - tmpRect.size.width) * 0.5f);
-	tmpRect.origin.y = floorf((viewController.view.bounds.size.height - tmpRect.size.height) * 0.5f);
-	updateIndicator.frame = tmpRect;
-}
-
-- (void)hideIndicator {
-	[updateIndicator removeFromSuperview];
 }
 
 @end

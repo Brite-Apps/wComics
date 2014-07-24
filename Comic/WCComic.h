@@ -1,30 +1,31 @@
-/**
- * @class WCComic
- */
+//
+//  WCComic.h
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
-@class ZKDataArchive, Unrar4iOS;
+@class URKArchive;
+@class ZKDataArchive;
 
-typedef enum {
+typedef NS_ENUM(NSInteger, WCArchType) {
 	WCZipFile = 1,
 	WCRarFile = 2,
-	WCNone = 3
-} WCArchType;
+	WCPdfFile = 3,
+	WCNone = 4
+};
 
-@interface WCComic : NSObject {
-	__strong ZKDataArchive *archive;
-	Unrar4iOS *rarArchive;
-	NSMutableArray *filesList;
-	WCArchType archType;
-}
+@interface WCComic : NSObject
 
 @property (nonatomic, strong) NSString *file;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, readonly) NSInteger numberOfPages;
 
-+ (void)createCoverImageForFile:(NSString *)path;
 - (id)initWithFile:(NSString *)aFile;
 - (UIImage *)imageAtIndex:(NSInteger)index;
 - (void)close;
 - (BOOL)somewhereInSubdir:(NSString *)dir;
++ (void)createCoverImageForPath:(NSString *)path withCallback:(void(^)(UIImage *image, NSString *file))callback;
 
 @end

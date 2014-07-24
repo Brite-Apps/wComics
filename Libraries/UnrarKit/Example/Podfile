@@ -1,0 +1,7 @@
+pod "UnrarKit", :path => "../UnrarKit.podspec"
+
+target "Demo" do
+end
+
+target "DemoTests" do
+end

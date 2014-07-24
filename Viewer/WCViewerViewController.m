@@ -1,7 +1,10 @@
-/**
- * @class WCViewerViewController
- * @author Nik Dyonin <wolf.step@gmail.com>
- */
+//
+//  WCViewerViewController.m
+//  wComics
+//
+//  Created by Nik Dyonin on 22.08.13.
+//  Copyright (c) 2013 Nik Dyonin. All rights reserved.
+//
 
 #import "WCViewerViewController.h"
 #import "WCScrollView.h"
@@ -13,7 +16,113 @@
 #import "WCSettingsStorage.h"
 #import "WCLibraryDataSource.h"
 
-@implementation WCViewerViewController
+@implementation WCViewerViewController {
+	UIView *pagesView;
+	__block WCScrollView *currentPageView;
+	
+	NSInteger currentPageNumber;
+	NSInteger totalPagesNumber;
+	
+	BOOL animating;
+	
+	UIPopoverController *currentPopover;
+	UINavigationController *navController;
+	
+	BOOL scaleWidth;
+	
+	UILabel *topLabel;
+	__block WCSliderToolbar *bottomToolbar;
+	
+	UIButton *libraryButton;
+	UIButton *wifiButton;
+	UIButton *infoButton;
+	
+	BOOL toolbarHidden;
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	
+	self.view.backgroundColor = RGB(0, 0, 0);
+	
+	toolbarHidden = YES;
+	
+	CGRect frame;
+	frame.origin.x = 0.0f;
+	frame.origin.y = self.view.bounds.size.height;
+	frame.size.width = self.view.bounds.size.width;
+	frame.size.height = 100.0f;
+	
+	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
+	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
+	bottomToolbar.target = self;
+	bottomToolbar.selector = @selector(progressChanged:);
+	[self.view addSubview:bottomToolbar];
+	
+	frame.size.height = 44.0f;
+	frame.origin.y = -frame.size.height;
+	
+	topLabel = [[UILabel alloc] initWithFrame:frame];
+	topLabel.backgroundColor = bottomToolbar.backgroundColor;
+	topLabel.numberOfLines = 1;
+	topLabel.font = [UIFont boldSystemFontOfSize:16];
+	topLabel.textColor = RGB(255, 255, 255);
+	topLabel.textAlignment = NSTextAlignmentCenter;
+	topLabel.text = @"wComics";
+	[self.view addSubview:topLabel];
+	
+	libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[libraryButton setBackgroundImage:[UIImage imageNamed:@"library"] forState:UIControlStateNormal];
+	[libraryButton sizeToFit];
+	[bottomToolbar addSubview:libraryButton];
+	[libraryButton addTarget:self action:@selector(showLibrary) forControlEvents:UIControlEventTouchUpInside];
+	
+	wifiButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[wifiButton setBackgroundImage:[UIImage imageNamed:@"wifi"] forState:UIControlStateNormal];
+	[wifiButton sizeToFit];
+	[bottomToolbar addSubview:wifiButton];
+	[wifiButton addTarget:self action:@selector(showServerViewController:) forControlEvents:UIControlEventTouchUpInside];
+	
+	infoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[infoButton setBackgroundImage:[UIImage imageNamed:@"info"] forState:UIControlStateNormal];
+	[infoButton sizeToFit];
+	[bottomToolbar addSubview:infoButton];
+	[infoButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
+	
+	bottomToolbar.pageNumber = -1;
+	
+	pagesView = [[UIView alloc] initWithFrame:self.view.bounds];
+	[self.view insertSubview:pagesView belowSubview:bottomToolbar];
+	
+	currentPageView = [[WCScrollView alloc] initWithFrame:pagesView.bounds];
+	[pagesView addSubview:currentPageView];
+	
+	scaleWidth = NO;
+	
+	UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+	doubleTapRecognizer.numberOfTapsRequired = 2;
+	[pagesView addGestureRecognizer:doubleTapRecognizer];
+	
+	UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+	singleTapRecognizer.numberOfTapsRequired = 1;
+	[singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
+	[pagesView addGestureRecognizer:singleTapRecognizer];
+	
+	UISwipeGestureRecognizer *swipeLeftRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+	swipeLeftRecognizer.numberOfTouchesRequired = 1;
+	swipeLeftRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+	[pagesView addGestureRecognizer:swipeLeftRecognizer];
+	
+	UISwipeGestureRecognizer *swipeRightRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+	swipeRightRecognizer.numberOfTouchesRequired = 1;
+	swipeRightRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+	[pagesView addGestureRecognizer:swipeRightRecognizer];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	[self redrawInterface];
+}
 
 - (void)showErrorAlert {
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"WARNING", @"Warning alert title")
@@ -26,19 +135,20 @@
 
 - (void)setComic:(WCComic *)aComic {
 	if (aComic == nil) {
-		[[pagesScrollView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 		[_comic close];
 		_comic = nil;
 		[[WCSettingsStorage sharedInstance] setLastDocument:nil];
-		pagesScrollView.contentSize = CGSizeZero;
 		bottomToolbar.pageNumber = -1;
 		topLabel.text = nil;
 		
 		topLabel.text = @"wComics";
 		
 		if (toolbarHidden) {
-			[self handleSingleTap:nil];
+			[self toggleToolbars];
 		}
+
+		[currentPageView.viewForZoom removeFromSuperview];
+		currentPageView.viewForZoom = nil;
 	}
 	else {
 		if (![_comic isEqual:aComic]) {
@@ -56,17 +166,17 @@
 
 			bottomToolbar.pageNumber = currentPageNumber + 1;
 			bottomToolbar.totalPages = totalPagesNumber;
-			
-			[[pagesScrollView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 
 			[_comic close];
 			_comic = aComic;
 
-			[self redrawInterface];
+			//[self redrawInterface];
 
 			[[WCSettingsStorage sharedInstance] setLastDocument:_comic.file];
 
 			topLabel.text = _comic.title;
+			
+			[self displayPage:currentPageNumber animationDirection:0];
 		}
 	}
 }
@@ -93,8 +203,8 @@
 	[currentPopover dismissPopoverAnimated:YES];
 	currentPopover = nil;
 	
-	if (!EQUAL_STR([[item objectForKey:@"path"] stringByResolvingSymlinksInPath], [_comic.file stringByResolvingSymlinksInPath])) {
-		WCComic *newComic = [[WCComic alloc] initWithFile:[item objectForKey:@"path"]];
+	if (!EQUAL_STR([item[@"path"] stringByResolvingSymlinksInPath], [_comic.file stringByResolvingSymlinksInPath])) {
+		WCComic *newComic = [[WCComic alloc] initWithFile:item[@"path"]];
 
 		if (newComic) {
 			self.comic = newComic;
@@ -151,91 +261,9 @@
 	[self presentViewController:nav animated:YES completion:NULL];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-	[self redrawInterface];
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	
-	self.view.backgroundColor = RGB(0, 0, 0);
-	
-	toolbarHidden = YES;
-
-	CGRect frame;
-	frame.origin.x = 0.0f;
-	frame.origin.y = self.view.bounds.size.height;
-	frame.size.width = self.view.bounds.size.width;
-	frame.size.height = 100.0f;
-	
-	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
-	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
-	bottomToolbar.target = self;
-	bottomToolbar.selector = @selector(progressChanged:);
-	[self.view addSubview:bottomToolbar];
-	
-	frame.size.height = 44.0f;
-	frame.origin.y = -frame.size.height;
-	
-	topLabel = [[UILabel alloc] initWithFrame:frame];
-	topLabel.backgroundColor = bottomToolbar.backgroundColor;
-	topLabel.numberOfLines = 1;
-	topLabel.font = [UIFont boldSystemFontOfSize:16];
-	topLabel.textColor = RGB(255, 255, 255);
-	topLabel.textAlignment = NSTextAlignmentCenter;
-	topLabel.text = @"wComics";
-	[self.view addSubview:topLabel];
-	
-	libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	[libraryButton setBackgroundImage:[UIImage imageNamed:@"library"] forState:UIControlStateNormal];
-	[libraryButton sizeToFit];
-	[bottomToolbar addSubview:libraryButton];
-	[libraryButton addTarget:self action:@selector(showLibrary) forControlEvents:UIControlEventTouchUpInside];
-	
-	wifiButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	[wifiButton setBackgroundImage:[UIImage imageNamed:@"wifi"] forState:UIControlStateNormal];
-	[wifiButton sizeToFit];
-	[bottomToolbar addSubview:wifiButton];
-	[wifiButton addTarget:self action:@selector(showServerViewController:) forControlEvents:UIControlEventTouchUpInside];
-	
-	infoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	[infoButton setBackgroundImage:[UIImage imageNamed:@"info"] forState:UIControlStateNormal];
-	[infoButton sizeToFit];
-	[bottomToolbar addSubview:infoButton];
-	[infoButton addTarget:self action:@selector(showInfo) forControlEvents:UIControlEventTouchUpInside];
-
-	bottomToolbar.pageNumber = -1;
-
-	pagesScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-	[self.view insertSubview:pagesScrollView belowSubview:bottomToolbar];
-
-	pagesScrollView.pagingEnabled = YES;
-	pagesScrollView.bounces = NO;
-	pagesScrollView.showsVerticalScrollIndicator = NO;
-	pagesScrollView.showsHorizontalScrollIndicator = NO;
-	pagesScrollView.delegate = self;
-	
-	scaleWidth = NO;
-	
-	UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-	doubleTapRecognizer.numberOfTapsRequired = 2;
-	[pagesScrollView addGestureRecognizer:doubleTapRecognizer];
-
-	UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-	singleTapRecognizer.numberOfTapsRequired = 1;
-	[singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
-	[pagesScrollView addGestureRecognizer:singleTapRecognizer];
-}
-
 - (void)handleDoubleTap:(UIGestureRecognizer *)sender {
 	scaleWidth = !scaleWidth;
-
-	for (NSInteger i = currentPageNumber - 3; i <= currentPageNumber + 3; i++) {
-		if (i >= 0 && i < totalPagesNumber) {
-			[self updateZoomParams:i];
-		}
-	}
+	[self updateZoomParams];
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
@@ -243,6 +271,21 @@
 		return;
 	}
 	
+	CGPoint location = [sender locationInView:self.view];
+	CGFloat quarterWidth = self.view.bounds.size.width * 0.25f;
+	
+	if (location.x <= quarterWidth) {
+		[self displayPage:(currentPageNumber - 1) animationDirection:1];
+	}
+	else if (location.x >= self.view.bounds.size.width - quarterWidth) {
+		[self displayPage:(currentPageNumber + 1) animationDirection:-1];
+	}
+	else {
+		[self toggleToolbars];
+	}
+}
+
+- (void)toggleToolbars {
 	toolbarHidden = !toolbarHidden;
 	
 	__weak typeof(self) weakSelf = self;
@@ -279,8 +322,21 @@
 	}
 }
 
+- (void)handleSwipe:(UISwipeGestureRecognizer *)sender {
+	if (_comic) {
+		if (sender.state == UIGestureRecognizerStateRecognized) {
+			if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+				[self displayPage:(currentPageNumber + 1) animationDirection:-1];
+			}
+			else if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+				[self displayPage:(currentPageNumber - 1) animationDirection:1];
+			}
+		}
+	}
+}
+
 - (void)comicRemoved:(NSDictionary *)item {
-	NSString *path = [item objectForKey:@"path"];
+	NSString *path = item[@"path"];
 	
 	if (EQUAL_STR([_comic.file stringByResolvingSymlinksInPath], [path stringByResolvingSymlinksInPath]) || [self.comic somewhereInSubdir:path]) {
 		self.comic = nil;
@@ -289,21 +345,11 @@
 
 - (void)progressChanged:(NSNumber *)progress {
 	currentPageNumber = totalPagesNumber * [progress floatValue];
-	CGPoint currentOffset = CGPointZero;
-	currentOffset.x = currentPageNumber * pagesScrollView.frame.size.width;
-	[pagesScrollView setContentOffset:currentOffset animated:NO];
-	[self displayPage:currentPageNumber];
+	[self displayPage:currentPageNumber animationDirection:0];
 }
 
 - (void)pageChanged {
 	[[WCSettingsStorage sharedInstance] saveCurrentPage:currentPageNumber forFile:_comic.file];
-	for (WCScrollView *v in [pagesScrollView subviews]) {
-		if ([v isKindOfClass:[WCScrollView class]]) {
-			if (v.tag < currentPageNumber || v.tag > currentPageNumber + 2) {
-				[v removeFromSuperview];
-			}
-		}
-	}
 }
 
 - (void)redrawInterface {
@@ -355,45 +401,13 @@
 	infoButton.frame = tmpRect;
 	
 	screenFrame.origin = CGPointZero;
-	pagesScrollView.frame = screenFrame;
-
-	float totalWidth = screenFrame.size.width * totalPagesNumber;
-	pagesScrollView.contentSize = CGSizeMake(totalWidth, screenFrame.size.height);
+	pagesView.frame = screenFrame;
 	
-	tmpRect = _updateIndicator.frame;
-	tmpRect.origin.x = floorf((screenFrame.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = floorf((screenFrame.size.height - tmpRect.size.height) / 2.0f);
-	_updateIndicator.frame = tmpRect;
+	currentPageView.frame = pagesView.bounds;
 	
-	for (UIImageView *v in [pagesScrollView subviews]) {
-		if ([v isKindOfClass:[UIImageView class]]) {
-			[v removeFromSuperview];
-		}
-	}
-
-	for (NSInteger i = 0; i < totalPagesNumber; i++) {
-		WCScrollView *wcScrollView = (WCScrollView *)[pagesScrollView viewWithTag:i + 1];
-
-		if (wcScrollView) {
-			wcScrollView.frame = pagesScrollView.frame;
-			CGRect tmpRect = wcScrollView.frame;
-			float offset = i * pagesScrollView.frame.size.width;
-			tmpRect.origin.x = offset;
-			wcScrollView.frame = tmpRect;
-		}
-		
-		UIImageView *img = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"info"]];
-		CGRect tmpRect = img.frame;
-		tmpRect.origin.x = floorf((pagesScrollView.frame.size.width - tmpRect.size.width) / 2.0f) + pagesScrollView.frame.size.width * i;
-		tmpRect.origin.y = floorf((pagesScrollView.frame.size.height - tmpRect.size.height) / 2.0f);
-		img.frame = tmpRect;
-		[pagesScrollView insertSubview:img atIndex:0];
-	}
-
-	CGPoint currentOffset = CGPointZero;
-	currentOffset.x = currentPageNumber * pagesScrollView.frame.size.width;
-	[pagesScrollView setContentOffset:currentOffset animated:NO];
-	[self displayPage:currentPageNumber];
+	[self updateZoomParams];
+	
+	bottomToolbar.pageNumber = currentPageNumber + 1;
 
 	[UIView setAnimationsEnabled:YES];
 }
@@ -403,11 +417,6 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	for (WCScrollView *v in [pagesScrollView subviews]) {
-		if ([v isKindOfClass:[WCScrollView class]]) {
-			[v removeFromSuperview];
-		}
-	}
 	[self redrawInterface];
 }
 
@@ -420,31 +429,30 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[self updateZoomParams:currentPageNumber];
+	[self updateZoomParams];
 }
 
-- (void)updateZoomParams:(NSInteger)pageNum {
-	WCScrollView *scrollView = (WCScrollView *)[pagesScrollView viewWithTag:pageNum + 1];
-	CGSize imageSize = scrollView.pageRect.size;
+- (void)updateZoomParams {
+	CGSize imageSize = currentPageView.pageRect.size;
 
-	CGFloat nScaleWidth = scrollView.frame.size.width / imageSize.width;
-	CGFloat nScaleHeight = scrollView.frame.size.height / imageSize.height;
+	CGFloat nScaleWidth = currentPageView.frame.size.width / imageSize.width;
+	CGFloat nScaleHeight = currentPageView.frame.size.height / imageSize.height;
 
 	CGFloat minimumZoom = MIN(nScaleWidth, nScaleHeight);
-	scrollView.minimumZoomScale = minimumZoom;
+	currentPageView.minimumZoomScale = minimumZoom;
 
 	if (scaleWidth) {
-		[scrollView setZoomScale:nScaleWidth animated:NO];
+		[currentPageView setZoomScale:nScaleWidth animated:NO];
 	}
 	else {
-		[scrollView setZoomScale:minimumZoom animated:NO];
+		[currentPageView setZoomScale:minimumZoom animated:NO];
 	}
 
-	[scrollView scrollViewDidZoom:scrollView];
-	[scrollView scrollRectToVisible:CGRectMake(0.0f, 0.0f, 1.0f, 1.0f) animated:NO];
+	[currentPageView scrollViewDidZoom:currentPageView];
+	[currentPageView scrollRectToVisible:CGRectMake(0.0f, 0.0f, 1.0f, 1.0f) animated:NO];
 }
 
-- (void)displayPage:(NSInteger)pageNum {
+- (void)displayPage:(NSInteger)pageNum animationDirection:(NSInteger)animationDirection {
 	if (!_comic) {
 		bottomToolbar.pageNumber = -1;
 	}
@@ -452,102 +460,94 @@
 	if (pageNum < 0 || pageNum >= totalPagesNumber) {
 		return;
 	}
-
-	pagesScrollView.userInteractionEnabled = NO;
-	WCScrollView *scrollView = (WCScrollView *)[pagesScrollView viewWithTag:pageNum + 1];
 	
-	if (!scrollView) {
-		scrollView = [[WCScrollView alloc] initWithFrame:pagesScrollView.frame];
-		UIImage *img = [_comic imageAtIndex:pageNum];
-		CGRect pageRect = CGRectMake(0.0f, 0.0f, img.size.width, img.size.height);
+	__block WCScrollView *oldPageView = nil;
+
+	if (animationDirection != 0) {
+		oldPageView = currentPageView;
+
+		currentPageView = [[WCScrollView alloc] initWithFrame:pagesView.bounds];
 		
-		CGFloat c = scrollView.frame.size.height / pageRect.size.height;
-		pageRect.size.width = floorf(c * pageRect.size.width * 0.5f);
-		pageRect.size.height = floorf(c * pageRect.size.height * 0.5f);
-		
-		scrollView.pageRect = pageRect;
-		
-		UIView *pageContentView = [[UIView alloc] initWithFrame:pageRect];
-		pageContentView.backgroundColor = RGB(255, 255, 255);
-		CATiledLayer *tiledLayer = [[CATiledLayer alloc] init];
-		tiledLayer.bounds = pageRect;
-		tiledLayer.delegate = nil;
-		tiledLayer.tileSize = CGSizeMake(256.0f, 256.0f);
-		tiledLayer.levelsOfDetail = 5;
-		tiledLayer.levelsOfDetailBias = 5;
-		tiledLayer.backgroundColor = RGB(255, 255, 255).CGColor;
-		tiledLayer.frame = pageRect;
-		[pageContentView.layer addSublayer:tiledLayer];
-		[tiledLayer setContents:(id)[img CGImage]];
-		[scrollView addSubview:pageContentView];
-		
-		scrollView.viewForZoom = pageContentView;
-		
-		CGRect tmpRect = scrollView.frame;
-		CGFloat offset = pageNum * pagesScrollView.frame.size.width;
-		tmpRect.origin.x = offset;
-		scrollView.frame = tmpRect;
-		[pagesScrollView addSubview:scrollView];
-		scrollView.tag = pageNum + 1;
-		[self pageChanged];
+		if (animationDirection == 1) {
+			[pagesView insertSubview:currentPageView aboveSubview:oldPageView];
+			CGRect frame = currentPageView.frame;
+			frame.origin.x = -frame.size.width;
+			currentPageView.frame = frame;
+			currentPageView.alpha = 0.0f;
+		}
+		else {
+			[pagesView insertSubview:currentPageView belowSubview:oldPageView];
+		}
 	}
 
-	[self updateZoomParams:pageNum];
+	pagesView.userInteractionEnabled = NO;
+
+	UIImage *img = [_comic imageAtIndex:pageNum];
+	CGRect pageRect = CGRectMake(0.0f, 0.0f, img.size.width, img.size.height);
+
+	CGFloat c = currentPageView.frame.size.height / pageRect.size.height;
+	pageRect.size.width = floorf(c * pageRect.size.width * 0.5f);
+	pageRect.size.height = floorf(c * pageRect.size.height * 0.5f);
 	
-	if (pageNum == currentPageNumber) {
-		[self displayPage:(pageNum - 1)];
-		[self displayPage:(pageNum + 1)];
-	}
-	pagesScrollView.userInteractionEnabled = YES;
+	currentPageView.pageRect = pageRect;
+	
+	UIView *pageContentView = [[UIView alloc] initWithFrame:pageRect];
+	pageContentView.backgroundColor = RGB(255, 255, 255);
+	CATiledLayer *tiledLayer = [[CATiledLayer alloc] init];
+	tiledLayer.bounds = pageRect;
+	tiledLayer.delegate = nil;
+	tiledLayer.tileSize = CGSizeMake(256.0f, 256.0f);
+	tiledLayer.levelsOfDetail = 5;
+	tiledLayer.levelsOfDetailBias = 5;
+	tiledLayer.backgroundColor = RGB(255, 255, 255).CGColor;
+	tiledLayer.frame = pageRect;
+	[pageContentView.layer addSublayer:tiledLayer];
+	[tiledLayer setContents:(id)[img CGImage]];
+	[currentPageView addSubview:pageContentView];
+	
+	currentPageView.viewForZoom = pageContentView;
+	
+	currentPageNumber = pageNum;
+	bottomToolbar.pageNumber = currentPageNumber + 1;
+
+	[self pageChanged];
+	[self updateZoomParams];
+	
+	pagesView.userInteractionEnabled = YES;
 	
 	bottomToolbar.pageNumber = currentPageNumber + 1;
+	
+	if (oldPageView) {
+		[UIView
+		 animateWithDuration:0.3
+		 animations:^{
+			 if (animationDirection == 1) {
+				 CGRect frame = currentPageView.frame;
+				 frame.origin.x = 0.0f;
+				 currentPageView.frame = frame;
+				 currentPageView.alpha = 1.0f;
+			 }
+			 else {
+				 CGRect frame = oldPageView.frame;
+				 frame.origin.x = (animationDirection == - 1) ? -frame.size.width : frame.size.width;
+				 oldPageView.frame = frame;
+				 oldPageView.alpha = 0.0f;
+			 }
+		 }
+		 completion:^(BOOL finished) {
+			 [oldPageView removeFromSuperview], oldPageView = nil;
+		 }];
+	}
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
 	if (_comic) {
 		animating = YES;
+
 		if (!decelerate) {
 			[self scrollViewDidEndDecelerating:scrollView];
 		}
 	}
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-	if (_comic) {
-		animating = YES;
-
-		if (scrollView == pagesScrollView) {
-			NSInteger newPageNumber = floorf(scrollView.contentOffset.x / scrollView.frame.size.width);
-
-			if (newPageNumber != currentPageNumber) {
-				currentPageNumber = newPageNumber;
-				bottomToolbar.pageNumber = currentPageNumber + 1;
-				[self displayPage:currentPageNumber];
-			}
-		}
-
-		animating = NO;
-	}
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	if (!animating) {
-		[self scrollViewDidEndDecelerating:scrollView];
-	}
-}
-
-- (void)didReceiveMemoryWarning {
-	for (NSInteger i = 1; i <= totalPagesNumber; i++) {
-		if (i != currentPageNumber + 1) {
-			WCScrollView *s = (WCScrollView *)[pagesScrollView viewWithTag:i];
-
-			if (s && [s isKindOfClass:[WCScrollView class]]) {
-				[s removeFromSuperview];
-			}
-		}
-	}
-
-	[self displayPage:currentPageNumber];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -558,7 +558,6 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:navController];
 	self.comic = nil;
 	navController = nil;
-	self.updateIndicator = nil;
 }
 
 @end
