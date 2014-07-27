@@ -346,6 +346,10 @@
 
 - (void)progressChanged:(NSNumber *)progress {
 	currentPageNumber = totalPagesNumber * [progress floatValue];
+	
+	[currentPageView.viewForZoom removeFromSuperview];
+	currentPageView.viewForZoom = nil;
+	
 	[self displayPage:currentPageNumber animationDirection:0];
 }
 
