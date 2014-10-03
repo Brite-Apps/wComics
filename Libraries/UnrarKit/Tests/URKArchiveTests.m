@@ -13,6 +13,7 @@
 
 @property (copy) NSURL *tempDirectory;
 @property (retain) NSMutableDictionary *testFileURLs;
+@property NSURL *corruptArchive;
 
 @end
 
@@ -71,6 +72,15 @@
         
         [self.testFileURLs setObject:destinationURL forKey:file];
     }
+    
+    // Make a "corrupt" rar file
+    NSURL *m4aFileURL = [self urlOfTestFile:testFiles[5]];
+    self.corruptArchive = [self.tempDirectory URLByAppendingPathComponent:@"corrupt.rar"];
+    [fm copyItemAtURL:m4aFileURL
+                toURL:self.corruptArchive
+                error:&error];
+    
+    XCTAssertNil(error, @"Failed to create corrupt archive (copy from %@ to %@)", m4aFileURL, self.corruptArchive);
 }
 
 - (void)tearDown
@@ -374,14 +384,54 @@
     XCTAssertEqual(error.code, URKErrorCodeBadArchive, @"Unexpected error code returned");
 }
 
-- (void)testCloseFile
+- (void)testFileDescriptorUsage
 {
-    URKArchive *archive = [[URKArchive alloc] init];
-    BOOL result = [archive closeFile];
-    XCTAssertTrue(result, @"Close file returned NO");
+    NSInteger initialFileCount = [self numberOfOpenFileHandles];
     
-    result = [archive closeFile];
-    XCTAssertTrue(result, @"Close file returned NO on second attempt");
+    NSString *testArchiveName = @"Test Archive.rar";
+    NSURL *testArchiveOriginalURL = self.testFileURLs[testArchiveName];
+    NSFileManager *fm = [NSFileManager defaultManager];
+
+    for (NSInteger i = 0; i < 1000; i++) {
+        NSString *tempDir = [self randomDirectoryName];
+        NSURL *tempDirURL = [self.tempDirectory URLByAppendingPathComponent:tempDir];
+        NSURL *testArchiveCopyURL = [tempDirURL URLByAppendingPathComponent:testArchiveName];
+        
+        NSError *error = nil;
+        [fm createDirectoryAtURL:tempDirURL
+     withIntermediateDirectories:YES
+                      attributes:nil
+                           error:&error];
+        
+        XCTAssertNil(error, @"Error creating temp directory: %@", tempDirURL);
+        
+        [fm copyItemAtURL:testArchiveOriginalURL toURL:testArchiveCopyURL error:&error];
+        XCTAssertNil(error, @"Error copying test archive \n from: %@ \n\n   to: %@", testArchiveOriginalURL, testArchiveCopyURL);
+
+        URKArchive *archive = [URKArchive rarArchiveAtURL:testArchiveCopyURL];
+        
+        NSArray *fileList = [archive listFiles:&error];
+        XCTAssertNotNil(fileList);
+        
+        for (NSString *fileName in fileList) {
+            NSData *fileData = [archive extractDataFromFile:fileName error:&error];
+            XCTAssertNotNil(fileData);
+            XCTAssertNil(error);
+        }
+    }
+    
+    NSInteger finalFileCount = [self numberOfOpenFileHandles];
+    
+    XCTAssertEqualWithAccuracy(initialFileCount, finalFileCount, 1, @"File descriptors were left open");
+}
+
+- (void)testErrorIsCorrect
+{
+    NSError *error = nil;
+    URKArchive *archive = [URKArchive rarArchiveAtURL:self.corruptArchive];
+    XCTAssertNil([archive listFiles:&error], "Listing files in corrupt archive should return nil");
+    XCTAssertNotNil(error, @"An error should be returned when listing files in a corrupt archive");
+    XCTAssertNotNil(error.description, @"Error's description is nil");
 }
 
 
@@ -410,6 +460,28 @@
 - (NSString *)randomDirectoryWithPrefix:(NSString *)prefix
 {
     return [NSString stringWithFormat:@"%@ %@", prefix, [self randomDirectoryName]];
+}
+
+- (NSInteger)numberOfOpenFileHandles {
+    int pid = [[NSProcessInfo processInfo] processIdentifier];
+    NSPipe *pipe = [NSPipe pipe];
+    NSFileHandle *file = pipe.fileHandleForReading;
+    
+    NSTask *task = [[NSTask alloc] init];
+    task.launchPath = @"/usr/sbin/lsof";
+    task.arguments = @[@"-P", @"-n", @"-p", [NSString stringWithFormat:@"%d", pid]];
+    task.standardOutput = pipe;
+    
+    [task launch];
+    
+    NSData *data = [file readDataToEndOfFile];
+    [file closeFile];
+    
+    NSString *lsofOutput = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+    
+//    NSLog(@"LSOF:\n%@", lsofOutput);
+    
+    return [lsofOutput componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]].count;
 }
 
 

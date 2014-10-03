@@ -17,7 +17,7 @@
 		self.maximumZoomScale = 5.0f;
 		self.delegate = self;
 		self.delaysContentTouches = NO;
-		self.backgroundColor = [UIColor clearColor];
+		self.backgroundColor = RGB(0, 0, 0);
 		self.showsVerticalScrollIndicator = NO;
 		self.showsHorizontalScrollIndicator = NO;
 	}
