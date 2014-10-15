@@ -13,6 +13,14 @@
 #import "URKArchive.h"
 #import "URKArchiveAdditions.h"
 
+
+@interface URKArchive(PublicAdditions)
+
+- (BOOL)closeFile;
+
+@end
+
+
 @implementation WCComic {
 	__strong __block ZKDataArchive *archive;
 	__strong __block URKArchive *rarArchive;
