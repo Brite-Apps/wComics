@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF1D816E19F696640043A480 /* libUnrarKit iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF8863D819EE8BE700A710B7 /* libUnrarKit iOS.a */; };
 		AF4B5FA917C56CAD00BF789B /* wifi-big-image~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = AF4B5FA717C56CAD00BF789B /* wifi-big-image~ipad.png */; };
 		AF4B5FAA17C56CAD00BF789B /* wifi-big-image@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = AF4B5FA817C56CAD00BF789B /* wifi-big-image@2x~ipad.png */; };
-		AF599F3D193E7F22008E1F24 /* libUnrarKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF599F38193E7F15008E1F24 /* libUnrarKit.a */; };
 		AF75C83F18B672A9007F3B5A /* GMAppleDouble+ZKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AF75C81718B672A9007F3B5A /* GMAppleDouble+ZKAdditions.m */; };
 		AF75C84018B672A9007F3B5A /* COPYING.TXT in Resources */ = {isa = PBXBuildFile; fileRef = AF75C81918B672A9007F3B5A /* COPYING.TXT */; };
 		AF75C84118B672A9007F3B5A /* GMAppleDouble.m in Sources */ = {isa = PBXBuildFile; fileRef = AF75C81B18B672A9007F3B5A /* GMAppleDouble.m */; };
@@ -85,6 +85,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AF1D816F19F6969E0043A480 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF599F32193E7F15008E1F24 /* UnrarKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 969BD9AE19EDE88E002CE755;
+			remoteInfo = "UnrarKit iOS";
+		};
 		AF599F37193E7F15008E1F24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AF599F32193E7F15008E1F24 /* UnrarKit.xcodeproj */;
@@ -98,13 +105,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 964C8ABB18D28EE000AD7321;
 			remoteInfo = "UnrarKit Tests";
-		};
-		AF599F3B193E7F1D008E1F24 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AF599F32193E7F15008E1F24 /* UnrarKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9685410F18DBA06000B5651B;
-			remoteInfo = UnrarKit;
 		};
 		AF8863D719EE8BE700A710B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -169,7 +169,6 @@
 		AF9B6B7A17A032570046F92A /* WCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCAppDelegate.h; sourceTree = "<group>"; };
 		AF9B6B7B17A032570046F92A /* WCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCAppDelegate.m; sourceTree = "<group>"; };
 		AF9B6B7D17A032570046F92A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		AF9B6B8417A032570046F92A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		AF9B6B9B17A032830046F92A /* URKArchiveAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URKArchiveAdditions.h; sourceTree = "<group>"; };
 		AF9B6B9C17A032830046F92A /* URKArchiveAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URKArchiveAdditions.m; sourceTree = "<group>"; };
 		AF9B6B9D17A032830046F92A /* WCComic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCComic.h; sourceTree = "<group>"; };
@@ -242,7 +241,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF599F3D193E7F22008E1F24 /* libUnrarKit.a in Frameworks */,
+				AF1D816E19F696640043A480 /* libUnrarKit iOS.a in Frameworks */,
 				AF9B6D0017A036190046F92A /* libstdc++.dylib in Frameworks */,
 				AF9B6CFE17A0356D0046F92A /* libz.dylib in Frameworks */,
 				AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */,
@@ -351,7 +350,6 @@
 				AF9B6CFF17A036190046F92A /* libstdc++.dylib */,
 				AF9B6CFD17A0356D0046F92A /* libz.dylib */,
 				AF9B6B6F17A032570046F92A /* UIKit.framework */,
-				AF9B6B8417A032570046F92A /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -522,7 +520,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				AF599F3C193E7F1D008E1F24 /* PBXTargetDependency */,
+				AF1D817019F6969E0043A480 /* PBXTargetDependency */,
 			);
 			name = wComics;
 			productName = wComics;
@@ -682,10 +680,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		AF599F3C193E7F1D008E1F24 /* PBXTargetDependency */ = {
+		AF1D817019F6969E0043A480 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = UnrarKit;
-			targetProxy = AF599F3B193E7F1D008E1F24 /* PBXContainerItemProxy */;
+			name = "UnrarKit iOS";
+			targetProxy = AF1D816F19F6969E0043A480 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
