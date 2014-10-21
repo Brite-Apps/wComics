@@ -13,11 +13,11 @@
    height="262.83014"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="wifi-background.svg"
-   inkscape:export-filename="/home/narmo/Dropbox/Temp/w/wifi-background.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="wifi-big-image.svg"
+   inkscape:export-filename="/Users/narmo/Downloads/wifi-big-image@3x.png"
+   inkscape:export-xdpi="266.66666"
+   inkscape:export-ydpi="266.66666">
   <defs
      id="defs4">
     <linearGradient
@@ -53,7 +53,7 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="973"
+     inkscape:window-height="1031"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -71,7 +71,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

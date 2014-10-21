@@ -14,21 +14,20 @@
 
 @implementation WCLibraryViewController
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	
+	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(dismissModalViewController)];
+	self.navigationItem.rightBarButtonItem = closeItem;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	[self.tableView reloadData];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (BOOL)shouldAutorotate {
-	return YES;
-}
-
-- (NSUInteger)supportedInterfaceOrientations {
-	return UIInterfaceOrientationMaskAll;
+- (void)dismissModalViewController {
+	[self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -98,21 +97,13 @@
 		WCLibraryViewController *lvc = [[WCLibraryViewController alloc] init];
 		lvc.dataSource = item[@"children"];
 		lvc.title = [item[@"path"] lastPathComponent];
-
 		lvc.target = _target;
-		lvc.selector = _selector;
-		
 		lvc.preferredContentSize = self.view.bounds.size;
 		self.preferredContentSize = self.view.bounds.size;
 		[self.navigationController pushViewController:lvc animated:YES];
 	}
 	else {
-		if ([_target respondsToSelector:_selector]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-			[_target performSelector:_selector withObject:item];
-#pragma clang diagnostic pop
-		}
+		[_target comicItemSelected:item];
 	}
 }
 

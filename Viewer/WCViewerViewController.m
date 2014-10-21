@@ -16,6 +16,8 @@
 #import "WCSettingsStorage.h"
 #import "WCLibraryDataSource.h"
 
+extern BOOL isPad;
+
 @implementation WCViewerViewController {
 	UIView *pagesView;
 	__block WCScrollView *currentPageView;
@@ -24,12 +26,7 @@
 	NSInteger totalPagesNumber;
 	
 	BOOL animating;
-	
-	UIPopoverController *currentPopover;
-	UINavigationController *navController;
-	
-	BOOL scaleWidth;
-	
+
 	UILabel *topLabel;
 	__block WCSliderToolbar *bottomToolbar;
 	
@@ -38,13 +35,15 @@
 	UIButton *infoButton;
 	
 	BOOL toolbarHidden;
+	
+	UINavigationController *libraryNavigationController;
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
 	self.view.backgroundColor = RGB(0, 0, 0);
-	
+
 	toolbarHidden = YES;
 	
 	CGRect frame;
@@ -56,7 +55,6 @@
 	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
 	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
 	bottomToolbar.target = self;
-	bottomToolbar.selector = @selector(progressChanged:);
 	[self.view addSubview:bottomToolbar];
 	
 	frame.size.height = 44.0f;
@@ -96,9 +94,7 @@
 	
 	currentPageView = [[WCScrollView alloc] initWithFrame:pagesView.bounds];
 	[pagesView addSubview:currentPageView];
-	
-	scaleWidth = NO;
-	
+
 	UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 	doubleTapRecognizer.numberOfTapsRequired = 2;
 	[pagesView addGestureRecognizer:doubleTapRecognizer];
@@ -190,57 +186,42 @@
 	nav.modalPresentationStyle = UIModalPresentationFormSheet;
 	nav.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 
-	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(hideInfo)];
+	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(dismissModalViewController)];
 	v.navigationItem.rightBarButtonItem = closeItem;
 	
 	[self presentViewController:nav animated:YES completion:NULL];
 }
 
-- (void)hideInfo {
+- (void)dismissModalViewController {
 	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)libraryItemSelected:(NSDictionary *)item {
-	[currentPopover dismissPopoverAnimated:YES];
-	currentPopover = nil;
+- (void)comicItemSelected:(NSDictionary *)item {
+	__weak typeof(_comic) weakComicRef = _comic;
+	__weak typeof(self) weakSeflRef = self;
 	
-	if (!EQUAL_STR([item[@"path"] stringByResolvingSymlinksInPath], [_comic.file stringByResolvingSymlinksInPath])) {
-		WCComic *newComic = [[WCComic alloc] initWithFile:item[@"path"]];
-
-		if (newComic) {
-			self.comic = newComic;
+	[self dismissViewControllerAnimated:YES completion:^{
+		if (!EQUAL_STR([item[@"path"] stringByResolvingSymlinksInPath], [weakComicRef.file stringByResolvingSymlinksInPath])) {
+			WCComic *newComic = [[WCComic alloc] initWithFile:item[@"path"]];
+			
+			if (newComic) {
+				weakSeflRef.comic = newComic;
+			}
 		}
-	}
+	}];
 }
 
 - (void)showLibrary {
-	if (!navController) {
+	if (!libraryNavigationController) {
 		WCLibraryViewController *libraryViewController = [[WCLibraryViewController alloc] initWithStyle:UITableViewStylePlain];
 		libraryViewController.dataSource = [WCLibraryDataSource sharedInstance].library;
 		libraryViewController.title = NSLocalizedString(@"LIBRARY", @"Library");
-		libraryViewController.preferredContentSize = CGSizeMake(500.0f, 650.0f);
 		libraryViewController.target = self;
-		libraryViewController.selector = @selector(libraryItemSelected:);
-
-		navController = [[UINavigationController alloc] initWithRootViewController:libraryViewController];
-
-		[[NSNotificationCenter defaultCenter] addObserver:navController selector:@selector(popToRootViewControllerAnimated:) name:LIBRARY_UPDATED_NOTIFICATION object:nil];
+		libraryNavigationController = [[UINavigationController alloc] initWithRootViewController:libraryViewController];
+		libraryNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 	}
 	
-	CGRect sourceRect = [self.view convertRect:libraryButton.frame fromView:bottomToolbar];
-
-	currentPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
-	currentPopover.delegate = self;
-	[currentPopover presentPopoverFromRect:sourceRect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-}
-
-- (void)dismissPopover {
-	[currentPopover dismissPopoverAnimated:NO];
-	currentPopover = nil;
-}
-
-- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-	currentPopover = nil;
+	[self presentViewController:libraryNavigationController animated:YES completion:NULL];
 }
 
 - (void)hideServerViewController:(UIBarButtonItem *)sender {
@@ -263,8 +244,7 @@
 }
 
 - (void)handleDoubleTap:(UIGestureRecognizer *)sender {
-	scaleWidth = !scaleWidth;
-	[self updateZoomParams];
+	[self updateZoomParamsScalingToWidth:YES];
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
@@ -344,8 +324,8 @@
 	}
 }
 
-- (void)progressChanged:(NSNumber *)progress {
-	currentPageNumber = totalPagesNumber * [progress floatValue];
+- (void)sliderValueChanged:(float)value {
+	currentPageNumber = totalPagesNumber * value;
 	
 	[currentPageView.viewForZoom removeFromSuperview];
 	currentPageView.viewForZoom = nil;
@@ -362,55 +342,55 @@
 
 	[UIView setAnimationsEnabled:NO];
 
-	CGRect tmpRect = bottomToolbar.frame;
-	tmpRect.size.width = screenFrame.size.width;
+	CGRect frame = bottomToolbar.frame;
+	frame.size.width = screenFrame.size.width;
 
 	if (toolbarHidden) {
-		tmpRect.origin.y = screenFrame.size.height;
+		frame.origin.y = screenFrame.size.height;
 		bottomToolbar.alpha = 0.0f;
 	}
 	else {
-		tmpRect.origin.y = screenFrame.size.height - tmpRect.size.height;
+		frame.origin.y = screenFrame.size.height - frame.size.height;
 		bottomToolbar.alpha = 1.0f;
 	}
 
-	bottomToolbar.frame = tmpRect;
+	bottomToolbar.frame = frame;
 	
-	tmpRect = topLabel.frame;
-	tmpRect.size.width = screenFrame.size.width;
+	frame = topLabel.frame;
+	frame.size.width = screenFrame.size.width;
 	
 	if (toolbarHidden) {
 		topLabel.alpha = 0.0f;
-		tmpRect.origin.y = -tmpRect.size.height;
+		frame.origin.y = -frame.size.height;
 	}
 	else {
 		topLabel.alpha = 1.0f;
-		tmpRect.origin.y = 0.0f;
+		frame.origin.y = 0.0f;
 	}
 	
-	topLabel.frame = tmpRect;
+	topLabel.frame = frame;
 	
-	tmpRect = libraryButton.frame;
-	tmpRect.origin.x = 20.0f;
-	tmpRect.origin.y = 10.0f;
-	libraryButton.frame = tmpRect;
+	frame = libraryButton.frame;
+	frame.origin.x = 20.0f;
+	frame.origin.y = 10.0f;
+	libraryButton.frame = frame;
 	
-	tmpRect = wifiButton.frame;
-	tmpRect.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0f;
-	tmpRect.origin.y = libraryButton.frame.origin.y;
-	wifiButton.frame = tmpRect;
+	frame = wifiButton.frame;
+	frame.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0f;
+	frame.origin.y = libraryButton.frame.origin.y;
+	wifiButton.frame = frame;
 	
-	tmpRect = infoButton.frame;
-	tmpRect.origin.x = bottomToolbar.frame.size.width - tmpRect.size.width - 20.0f;
-	tmpRect.origin.y = libraryButton.frame.origin.y;
-	infoButton.frame = tmpRect;
+	frame = infoButton.frame;
+	frame.origin.x = bottomToolbar.frame.size.width - frame.size.width - 20.0f;
+	frame.origin.y = libraryButton.frame.origin.y;
+	infoButton.frame = frame;
 	
 	screenFrame.origin = CGPointZero;
 	pagesView.frame = screenFrame;
 	
 	currentPageView.frame = pagesView.bounds;
 	
-	[self updateZoomParams];
+	[self updateZoomParamsScalingToWidth:!isPad && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)];
 	
 	bottomToolbar.pageNumber = currentPageNumber + 1;
 
@@ -425,19 +405,11 @@
 	[self redrawInterface];
 }
 
-- (BOOL)shouldAutorotate {
-	return YES;
-}
-
-- (NSUInteger)supportedInterfaceOrientations {
-	return UIInterfaceOrientationMaskAll;
-}
-
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[self updateZoomParams];
+	[self updateZoomParamsScalingToWidth:!isPad && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)];
 }
 
-- (void)updateZoomParams {
+- (void)updateZoomParamsScalingToWidth:(BOOL)scaleWidth {
 	CGSize imageSize = currentPageView.pageRect.size;
 
 	CGFloat nScaleWidth = currentPageView.frame.size.width / imageSize.width;
@@ -516,8 +488,8 @@
 	bottomToolbar.pageNumber = currentPageNumber + 1;
 
 	[self pageChanged];
-	[self updateZoomParams];
-	
+	[self updateZoomParamsScalingToWidth:!isPad && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)];
+
 	pagesView.userInteractionEnabled = YES;
 	
 	bottomToolbar.pageNumber = currentPageNumber + 1;
@@ -557,12 +529,6 @@
 
 - (BOOL)prefersStatusBarHidden {
 	return YES;
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:navController];
-	self.comic = nil;
-	navController = nil;
 }
 
 @end

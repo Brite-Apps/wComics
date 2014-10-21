@@ -7,14 +7,14 @@
 //
 
 #import "WCSliderToolbar.h"
+#import "WCLibraryViewController.h"
 
 @class WCComic;
 
-@interface WCViewerViewController : UIViewController <UIScrollViewDelegate, UIPopoverControllerDelegate>
+@interface WCViewerViewController : UIViewController <UIScrollViewDelegate, WCSliderToolbarDelegate, WCLibraryViewControllerDelegate>
 
 @property (nonatomic, strong) WCComic *comic;
 
-- (void)dismissPopover;
 - (void)comicRemoved:(NSDictionary *)item;
 
 @end

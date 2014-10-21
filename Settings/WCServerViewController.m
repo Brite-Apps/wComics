@@ -12,27 +12,12 @@
 
 #define FTP_PORT 12345
 
+extern BOOL isPad;
+
 @implementation WCServerViewController {
 	FtpServer *ftpServer;
 	UILabel *urlLabel;
 	UIImageView *wifiImageView;
-}
-
-- (void)redrawInterface {
-	CGRect frame = urlLabel.frame;
-	frame.origin.x = floorf((self.view.bounds.size.width - frame.size.width) * 0.5f);
-	frame.origin.y = 426.0f;
-	urlLabel.frame = frame;
-
-	frame = wifiImageView.bounds;
-	frame.origin.x = floorf((self.view.bounds.size.width - frame.size.width) * 0.5f);
-	frame.origin.y = 80.0f;
-	wifiImageView.frame = frame;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-	[self redrawInterface];
 }
 
 - (void)viewDidLoad {
@@ -69,19 +54,44 @@
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	[self redrawInterface];
+}
+
+- (void)redrawInterface {
+	if (!isPad && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+		wifiImageView.hidden = YES;
+		
+		CGRect frame = urlLabel.frame;
+		frame.origin.x = floorf((self.view.bounds.size.width - frame.size.width) * 0.5f);
+		frame.origin.y = floorf((self.view.bounds.size.height - frame.size.height) * 0.5f);
+		urlLabel.frame = frame;
+	}
+	else {
+		wifiImageView.hidden = NO;
+		
+		CGRect frame = wifiImageView.bounds;
+		frame.origin.x = floorf((self.view.bounds.size.width - frame.size.width) * 0.5f);
+		frame.origin.y = isPad ? 80.0f : 100.0f;
+		wifiImageView.frame = frame;
+		
+		frame = urlLabel.frame;
+		frame.origin.x = floorf((self.view.bounds.size.width - frame.size.width) * 0.5f);
+		frame.origin.y = wifiImageView.frame.origin.y + wifiImageView.bounds.size.height + 50.0f;
+		urlLabel.frame = frame;
+	}
+}
+
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[self redrawInterface];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (BOOL)shouldAutorotate {
-	return YES;
-}
-
 - (NSUInteger)supportedInterfaceOrientations {
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+		return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+	}
+	
 	return UIInterfaceOrientationMaskAll;
 }
 

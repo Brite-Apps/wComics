@@ -12,6 +12,8 @@
 #import "WCComic.h"
 #import "WCSettingsStorage.h"
 
+BOOL isPad;
+
 void uncaughtExceptionHandler(NSException *exception) {
 	TRACE(@"CRASH: %@", exception);
 	TRACE(@"Stack Trace: %@", [exception callStackSymbols]);
@@ -25,6 +27,8 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+
+	isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 
 	viewController = [[WCViewerViewController alloc] init];
 	
@@ -50,7 +54,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-	[viewController dismissPopover];
 	[[WCSettingsStorage sharedInstance] setLastDocument:viewController.comic.file];
 }
 

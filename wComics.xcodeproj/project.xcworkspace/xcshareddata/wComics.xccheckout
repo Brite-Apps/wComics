@@ -11,17 +11,17 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>46F95DC943D2C490A11BE4C36DC99FFCBBB1BEFB</key>
-		<string>ssh://git.geekli.st/Narmo/wcomics.git</string>
+		<string>github.com:Narmo/wComics.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>wComics.xcodeproj/project.xcworkspace</string>
+	<string>wComics.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>46F95DC943D2C490A11BE4C36DC99FFCBBB1BEFB</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://git.geekli.st/Narmo/wcomics.git</string>
+	<string>github.com:Narmo/wComics.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>

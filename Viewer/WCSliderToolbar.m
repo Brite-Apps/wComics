@@ -8,6 +8,8 @@
 
 #import "WCSliderToolbar.h"
 
+extern BOOL isPad;
+
 @implementation WCSliderToolbar {
 	UILabel *pageLabel;
 	UISlider *slider;
@@ -22,7 +24,7 @@
 		pageLabel.textColor = RGB(255, 255, 255);
 		[self addSubview:pageLabel];
 		
-		slider = [[UISlider alloc] initWithFrame:CGRectZero];
+		slider = [[UISlider alloc] init];
 		slider.minimumTrackTintColor = [UIColor darkGrayColor];
 		slider.maximumTrackTintColor = [UIColor whiteColor];
 		slider.continuous = NO;
@@ -50,11 +52,12 @@
 	[super setFrame:frame];
 	[self redrawFrames];
 	
-	CGRect tmpRect = slider.bounds;
-	tmpRect.origin.x = 20.0f;
-	tmpRect.size.width = frame.size.width - 20.0f * 2.0f;
-	tmpRect.origin.y = frame.size.height - tmpRect.size.height - 10.0f;
-	slider.frame = tmpRect;
+	[slider sizeToFit];
+	frame = slider.bounds;
+	frame.size.width = self.bounds.size.width - 20.0f * 2.0f;
+	frame.origin.x = floorf((self.bounds.size.width - frame.size.width) * 0.5f);
+	frame.origin.y = self.bounds.size.height - frame.size.height - 10.0f;
+	slider.frame = frame;
 }
 
 - (void)setPageNumber:(NSInteger)p {
@@ -62,15 +65,21 @@
 	
 	[self redrawFrames];
 
-	NSString *text = [[NSString alloc] initWithFormat:NSLocalizedString(@"PAGE_X_OF_Y", @"Page %d / %d"), _pageNumber, _totalPages];
-	pageLabel.text = text;
-	
+	if (_totalPages > 0) {
+		NSString *format = isPad ? @"PAGE_X_OF_Y" : @"X_OF_Y";
+		NSString *text = [[NSString alloc] initWithFormat:NSLocalizedString(format, @"Page %d / %d"), _pageNumber, _totalPages];
+		pageLabel.text = text;
+	}
+	else {
+		pageLabel.text = nil;
+	}
+
 	[pageLabel sizeToFit];
 	
-	CGRect tmpRect = pageLabel.frame;
-	tmpRect.origin.x = floorf((self.bounds.size.width - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = 5.0f;
-	pageLabel.frame = tmpRect;
+	CGRect frame = pageLabel.frame;
+	frame.origin.x = floorf((self.bounds.size.width - frame.size.width) * 0.5f);
+	frame.origin.y = floorf((self.bounds.size.height * 0.5f - frame.size.height) * 0.5f) - 2.0f;
+	pageLabel.frame = frame;
 	
 	if (_pageNumber == -1) {
 		pageLabel.hidden = YES;
@@ -84,17 +93,11 @@
 
 - (void)setTotalPages:(NSInteger)totalPages {
 	_totalPages = totalPages;
-	
 	slider.maximumValue = 1.0f - (1.0f / (float)totalPages);
 }
 
 - (void)sliderValueChanged:(UISlider *)sender {
-	if ([_target respondsToSelector:_selector]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-		[_target performSelector:_selector withObject:@(sender.value)];
-#pragma clang diagnostic pop
-	}
+	[_target sliderValueChanged:sender.value];
 }
 
 @end

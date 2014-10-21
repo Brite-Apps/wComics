@@ -6,11 +6,17 @@
 //  Copyright (c) 2013 Nik Dyonin. All rights reserved.
 //
 
+@protocol WCSliderToolbarDelegate
+
+- (void)sliderValueChanged:(float)value;
+
+@end
+
+
 @interface WCSliderToolbar : UIView
 
-@property (nonatomic, assign) NSInteger pageNumber;
-@property (nonatomic, assign) NSInteger totalPages;
-@property (nonatomic, weak) id target;
-@property (nonatomic, assign) SEL selector;
+@property (nonatomic) NSInteger pageNumber;
+@property (nonatomic) NSInteger totalPages;
+@property (nonatomic, weak) id<WCSliderToolbarDelegate> target;
 
 @end
