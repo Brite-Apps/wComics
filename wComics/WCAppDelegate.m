@@ -11,8 +11,10 @@
 #import "WCLibraryDataSource.h"
 #import "WCComic.h"
 #import "WCSettingsStorage.h"
+#import "Common.h"
 
 BOOL isPad;
+NSOperationQueue *coversQueue;
 
 void uncaughtExceptionHandler(NSException *exception) {
 	TRACE(@"CRASH: %@", exception);
@@ -29,6 +31,9 @@ void uncaughtExceptionHandler(NSException *exception) {
 	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 
 	isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
+	
+	coversQueue = [[NSOperationQueue alloc] init];
+	coversQueue.maxConcurrentOperationCount = 1;
 
 	viewController = [[WCViewerViewController alloc] init];
 	

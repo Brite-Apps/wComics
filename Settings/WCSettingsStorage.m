@@ -7,6 +7,7 @@
 //
 
 #import "WCSettingsStorage.h"
+#import "Common.h"
 
 @implementation WCSettingsStorage {
 	NSUserDefaults *settings;

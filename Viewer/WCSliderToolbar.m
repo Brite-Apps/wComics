@@ -7,6 +7,7 @@
 //
 
 #import "WCSliderToolbar.h"
+#import "Common.h"
 
 extern BOOL isPad;
 

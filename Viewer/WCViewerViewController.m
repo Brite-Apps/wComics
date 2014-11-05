@@ -15,6 +15,7 @@
 #import "WCComic.h"
 #import "WCSettingsStorage.h"
 #import "WCLibraryDataSource.h"
+#import "Common.h"
 
 extern BOOL isPad;
 

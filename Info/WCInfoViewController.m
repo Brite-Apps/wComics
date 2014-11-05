@@ -7,6 +7,7 @@
 //
 
 #import "WCInfoViewController.h"
+#import "Common.h"
 
 @implementation WCInfoViewController
 

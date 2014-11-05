@@ -7,6 +7,7 @@
 //
 
 #import "WCScrollView.h"
+#import "Common.h"
 
 @implementation WCScrollView
 

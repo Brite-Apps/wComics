@@ -8,6 +8,7 @@
 
 #import "WCItemCell.h"
 #import "WCComic.h"
+#import "Common.h"
 
 @implementation WCItemCell
 

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Nik Dyonin. All rights reserved.
 //
 
+@import UIKit;
+
 @interface WCScrollView : UIScrollView <UIScrollViewDelegate>
 
 @property (nonatomic, assign) UIView *viewForZoom;

@@ -6,6 +6,9 @@
 //  Copyright (c) 2013 Nik Dyonin. All rights reserved.
 //
 
+@import Foundation;
+@import UIKit;
+
 @class URKArchive;
 @class ZKDataArchive;
 

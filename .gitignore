@@ -5,3 +5,5 @@ build/
 *.perspectivev3
 xcuserdata/
 .DS_Store
+Pods
+Podfile.lock

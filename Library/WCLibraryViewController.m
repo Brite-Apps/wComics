@@ -11,6 +11,7 @@
 #import "WCItemCell.h"
 #import "WCComic.h"
 #import "WCSettingsStorage.h"
+#import "Common.h"
 
 @implementation WCLibraryViewController
 

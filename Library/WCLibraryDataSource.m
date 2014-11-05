@@ -7,8 +7,8 @@
 //
 
 #import "WCLibraryDataSource.h"
-#import "ZKDataArchive.h"
 #import "WCComic.h"
+#import "Common.h"
 
 NSComparisonResult compareItems(NSDictionary *item1, NSDictionary *item2, void *context) {
 	NSString *name1 = [item1[@"path"] lastPathComponent];

@@ -7,15 +7,13 @@
 //
 
 #import "WCServerViewController.h"
-#import "FtpServer.h"
-#import "NetworkController.h"
-
-#define FTP_PORT 12345
+#import "GCDWebUploader.h"
+#import "Common.h"
 
 extern BOOL isPad;
 
 @implementation WCServerViewController {
-	FtpServer *ftpServer;
+	GCDWebUploader *webUploader;
 	UILabel *urlLabel;
 	UIImageView *wifiImageView;
 }
@@ -27,8 +25,6 @@ extern BOOL isPad;
 	
 	wifiImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"wifi-big-image"]];
 	[self.view addSubview:wifiImageView];
-
-	NSString *localIPAddress = [NetworkController localWifiIPAddress];
 	
 	urlLabel = [[UILabel alloc] init];
 	urlLabel.backgroundColor = [UIColor clearColor];
@@ -36,16 +32,12 @@ extern BOOL isPad;
 	urlLabel.textColor = RGB(0, 0, 0);
 	urlLabel.font = [UIFont boldSystemFontOfSize:24];
 	urlLabel.textAlignment = NSTextAlignmentCenter;
+	
+	webUploader = [[GCDWebUploader alloc] initWithUploadDirectory:DOCPATH];
+	[webUploader start];
 
-	if (!EQUAL_STR(localIPAddress, @"error")) {
-		ftpServer = [[FtpServer alloc] initWithPort:FTP_PORT withDir:DOCPATH notifyObject:nil];
-		NSString *addr = [[NSString alloc] initWithFormat:NSLocalizedString(@"UPLOAD_STRING", @""), localIPAddress, FTP_PORT];
-		urlLabel.text = addr;
-		
-	}
-	else {
-		urlLabel.text = NSLocalizedString(@"ERROR_STARTING_SERVER", @"");
-	}
+	NSString *addr = [[NSString alloc] initWithFormat:NSLocalizedString(@"UPLOAD_STRING", @""), webUploader.serverURL];
+	urlLabel.text = addr;
 
 	[urlLabel sizeToFit];
 	
@@ -96,9 +88,8 @@ extern BOOL isPad;
 }
 
 - (void)dealloc {
-	[ftpServer stopFtpServer];
-	ftpServer = nil;
-	
+	[webUploader stop];
+	webUploader = nil;
 	[[UIApplication sharedApplication] setIdleTimerDisabled:NO];
 }
 
