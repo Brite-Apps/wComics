@@ -1,8 +1,8 @@
 #include "rar.hpp"
 
-#ifndef GUI
-#include "log.cpp"
-#endif
+//#ifndef GUI
+//#include "log.cpp"
+//#endif
 
 static int KbdAnsi(char *Addr,int Size);
 
