@@ -1,10 +1,11 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '7.0'
+platform :ios, '8.0'
 
-source 'https://github.com/CocoaPods/Specs.git'
-
-target 'wComics' do
+link_with 'wComics'
 
 pod 'GCDWebServer/WebUploader'
 
-end
+# post_install do | installer |
+# 	require 'fileutils'
+# 	FileUtils.cp_r('Pods/Target Support Files/Pods/Pods-Acknowledgements.plist', 'Resources/Settings.bundle/Acknowledgements.plist', :remove_destination => true)
+# end

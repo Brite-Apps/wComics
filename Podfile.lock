@@ -1,12 +1,12 @@
 PODS:
-  - GCDWebServer/Core (3.2)
-  - GCDWebServer/WebUploader (3.2):
+  - GCDWebServer/Core (3.3)
+  - GCDWebServer/WebUploader (3.3):
     - GCDWebServer/Core
 
 DEPENDENCIES:
   - GCDWebServer/WebUploader
 
 SPEC CHECKSUMS:
-  GCDWebServer: c8e5000a2c5023d56e82deead30eb346f8dfcb65
+  GCDWebServer: 106463756391d814b6f506927bee0d6a75a0b427
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.39.0
