@@ -146,13 +146,13 @@ extern NSOperationQueue *coversQueue;
 			if (size.width < maxSide) {
 				CGFloat c = maxSide / size.width;
 				size.width = maxSide;
-				size.height = floorf(size.height * c);
+				size.height = floor(size.height * c);
 			}
 
 			if (size.height < maxSide) {
 				CGFloat c = maxSide / size.height;
 				size.height = maxSide;
-				size.width = floorf(size.width * c);
+				size.width = floor(size.width * c);
 			}
 			
 			CGPDFPageRef pdfPage = CGPDFDocumentGetPage(pdfDoc, index + 1);
@@ -240,18 +240,18 @@ extern NSOperationQueue *coversQueue;
 								continue;
 							}
 							else {
-								CGFloat c = 31.0f / cover.size.width;
+								CGFloat c = 31.0 / cover.size.width;
 								CGSize newSize = CGSizeMake(cover.size.width * c, cover.size.height * c);
 								
-								if (newSize.width > 31.0f) {
-									c = 31.0f / newSize.width;
-									newSize.width = 31.0f;
+								if (newSize.width > 31.0) {
+									c = 31.0 / newSize.width;
+									newSize.width = 31.0;
 									newSize.height *= c;
 								}
 								
-								if (newSize.height > 40.0f) {
-									c = 40.0f / newSize.height;
-									newSize.height = 40.0f;
+								if (newSize.height > 40.0) {
+									c = 40.0 / newSize.height;
+									newSize.height = 40.0;
 									newSize.width *= c;
 								}
 								
@@ -259,7 +259,7 @@ extern NSOperationQueue *coversQueue;
 								[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
 								UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
 								UIGraphicsEndImageContext();
-								NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8f);
+								NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8);
 								
 								__block NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
 								[newCoverData writeToFile:coverFile options:0 error:nil];
@@ -292,18 +292,18 @@ extern NSOperationQueue *coversQueue;
 						
 						CGSize size = pageRect.size;
 						
-						CGFloat c = 31.0f / size.width;
+						CGFloat c = 31.0 / size.width;
 						CGSize newSize = CGSizeMake(size.width * c, size.height * c);
 						
-						if (newSize.width > 31.0f) {
-							c = 31.0f / newSize.width;
-							newSize.width = 31.0f;
+						if (newSize.width > 31.0) {
+							c = 31.0 / newSize.width;
+							newSize.width = 31.0;
 							newSize.height *= c;
 						}
 						
-						if (newSize.height > 40.0f) {
-							c = 40.0f / newSize.height;
-							newSize.height = 40.0f;
+						if (newSize.height > 40.0) {
+							c = 40.0 / newSize.height;
+							newSize.height = 40.0;
 							newSize.width *= c;
 						}
 						
@@ -328,7 +328,7 @@ extern NSOperationQueue *coversQueue;
 						
 						UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
 						
-						NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8f);
+						NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8);
 						__block NSString *coverFile = [NSString stringWithFormat:@"%@/covers/%@_wcomics_cover_file", DOCPATH, [path lastPathComponent]];
 						[newCoverData writeToFile:coverFile options:0 error:nil];
 						

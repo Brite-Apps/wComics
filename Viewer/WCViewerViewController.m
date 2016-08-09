@@ -48,17 +48,17 @@ extern BOOL isPad;
 	toolbarHidden = YES;
 	
 	CGRect frame;
-	frame.origin.x = 0.0f;
+	frame.origin.x = 0.0;
 	frame.origin.y = self.view.bounds.size.height;
 	frame.size.width = self.view.bounds.size.width;
-	frame.size.height = 100.0f;
+	frame.size.height = 100.0;
 	
 	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
-	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8f);
+	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8);
 	bottomToolbar.target = self;
 	[self.view addSubview:bottomToolbar];
 	
-	frame.size.height = 44.0f;
+	frame.size.height = 44.0;
 	frame.origin.y = -frame.size.height;
 	
 	topLabel = [[UILabel alloc] initWithFrame:frame];
@@ -279,12 +279,12 @@ extern BOOL isPad;
 			 CGRect frame = bottomToolbar.frame;
 			 frame.origin.y = weakSelf.view.bounds.size.height;
 			 bottomToolbar.frame = frame;
-			 bottomToolbar.alpha = 0.0f;
+			 bottomToolbar.alpha = 0.0;
 			 
 			 frame = topLabel.frame;
 			 frame.origin.y = -frame.size.height;
 			 topLabel.frame = frame;
-			 topLabel.alpha = 0.0f;
+			 topLabel.alpha = 0.0;
 		 }];
 	}
 	else {
@@ -294,12 +294,12 @@ extern BOOL isPad;
 			 CGRect frame = bottomToolbar.frame;
 			 frame.origin.y = weakSelf.view.bounds.size.height - frame.size.height;
 			 bottomToolbar.frame = frame;
-			 bottomToolbar.alpha = 1.0f;
+			 bottomToolbar.alpha = 1.0;
 			 
 			 frame = topLabel.frame;
-			 frame.origin.y = 0.0f;
+			 frame.origin.y = 0.0;
 			 topLabel.frame = frame;
-			 topLabel.alpha = 1.0f;
+			 topLabel.alpha = 1.0;
 		 }];
 	}
 }
@@ -348,11 +348,11 @@ extern BOOL isPad;
 
 	if (toolbarHidden) {
 		frame.origin.y = screenFrame.size.height;
-		bottomToolbar.alpha = 0.0f;
+		bottomToolbar.alpha = 0.0;
 	}
 	else {
 		frame.origin.y = screenFrame.size.height - frame.size.height;
-		bottomToolbar.alpha = 1.0f;
+		bottomToolbar.alpha = 1.0;
 	}
 
 	bottomToolbar.frame = frame;
@@ -361,28 +361,28 @@ extern BOOL isPad;
 	frame.size.width = screenFrame.size.width;
 	
 	if (toolbarHidden) {
-		topLabel.alpha = 0.0f;
+		topLabel.alpha = 0.0;
 		frame.origin.y = -frame.size.height;
 	}
 	else {
-		topLabel.alpha = 1.0f;
-		frame.origin.y = 0.0f;
+		topLabel.alpha = 1.0;
+		frame.origin.y = 0.0;
 	}
 	
 	topLabel.frame = frame;
 	
 	frame = libraryButton.frame;
-	frame.origin.x = 20.0f;
-	frame.origin.y = 10.0f;
+	frame.origin.x = 20.0;
+	frame.origin.y = 10.0;
 	libraryButton.frame = frame;
 	
 	frame = wifiButton.frame;
-	frame.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0f;
+	frame.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0;
 	frame.origin.y = libraryButton.frame.origin.y;
 	wifiButton.frame = frame;
 	
 	frame = infoButton.frame;
-	frame.origin.x = bottomToolbar.frame.size.width - frame.size.width - 20.0f;
+	frame.origin.x = bottomToolbar.frame.size.width - frame.size.width - 20.0;
 	frame.origin.y = libraryButton.frame.origin.y;
 	infoButton.frame = frame;
 	
@@ -427,7 +427,7 @@ extern BOOL isPad;
 	}
 
 	[currentPageView scrollViewDidZoom:currentPageView];
-	[currentPageView scrollRectToVisible:CGRectMake(0.0f, 0.0f, 1.0f, 1.0f) animated:NO];
+	[currentPageView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:NO];
 }
 
 - (void)displayPage:(NSInteger)pageNum animationDirection:(NSInteger)animationDirection {
@@ -451,7 +451,7 @@ extern BOOL isPad;
 			CGRect frame = currentPageView.frame;
 			frame.origin.x = -frame.size.width;
 			currentPageView.frame = frame;
-			currentPageView.alpha = 0.0f;
+			currentPageView.alpha = 0.0;
 		}
 		else {
 			[pagesView insertSubview:currentPageView belowSubview:oldPageView];
@@ -461,11 +461,11 @@ extern BOOL isPad;
 	pagesView.userInteractionEnabled = NO;
 
 	UIImage *img = [_comic imageAtIndex:pageNum];
-	CGRect pageRect = CGRectMake(0.0f, 0.0f, img.size.width, img.size.height);
+	CGRect pageRect = CGRectMake(0.0, 0.0, img.size.width, img.size.height);
 
 	CGFloat c = currentPageView.frame.size.height / pageRect.size.height;
-	pageRect.size.width = floorf(c * pageRect.size.width * 0.5f);
-	pageRect.size.height = floorf(c * pageRect.size.height * 0.5f);
+	pageRect.size.width = floor(c * pageRect.size.width * 0.5);
+	pageRect.size.height = floor(c * pageRect.size.height * 0.5);
 	
 	currentPageView.pageRect = pageRect;
 	
@@ -474,7 +474,7 @@ extern BOOL isPad;
 	CATiledLayer *tiledLayer = [[CATiledLayer alloc] init];
 	tiledLayer.bounds = pageRect;
 	tiledLayer.delegate = nil;
-	tiledLayer.tileSize = CGSizeMake(256.0f, 256.0f);
+	tiledLayer.tileSize = CGSizeMake(256.0, 256.0);
 	tiledLayer.levelsOfDetail = 5;
 	tiledLayer.levelsOfDetailBias = 5;
 	tiledLayer.backgroundColor = RGB(255, 255, 255).CGColor;
@@ -501,15 +501,15 @@ extern BOOL isPad;
 		 animations:^{
 			 if (animationDirection == 1) {
 				 CGRect frame = currentPageView.frame;
-				 frame.origin.x = 0.0f;
+				 frame.origin.x = 0.0;
 				 currentPageView.frame = frame;
-				 currentPageView.alpha = 1.0f;
+				 currentPageView.alpha = 1.0;
 			 }
 			 else {
 				 CGRect frame = oldPageView.frame;
 				 frame.origin.x = (animationDirection == - 1) ? -frame.size.width : frame.size.width;
 				 oldPageView.frame = frame;
-				 oldPageView.alpha = 0.0f;
+				 oldPageView.alpha = 0.0;
 			 }
 		 }
 		 completion:^(BOOL finished) {

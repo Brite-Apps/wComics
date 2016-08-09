@@ -11,8 +11,8 @@
 
 #define DOCPATH [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 #define EQUAL_STR(a, b) [a isEqualToString:b]
-#define RGB(a, b, c) [UIColor colorWithRed:(a / 255.0f) green:(b / 255.0f) blue:(c / 255.0f) alpha:1.0f]
-#define RGBA(a, b, c, d) [UIColor colorWithRed:(a / 255.0f) green:(b / 255.0f) blue:(c / 255.0f) alpha:d]
+#define RGB(a, b, c) [UIColor colorWithRed:(a / 255.0) green:(b / 255.0) blue:(c / 255.0) alpha:1.0]
+#define RGBA(a, b, c, d) [UIColor colorWithRed:(a / 255.0) green:(b / 255.0) blue:(c / 255.0) alpha:d]
 
 #ifdef DEBUG
 #define TRACE(a, ...) NSLog(a, ##__VA_ARGS__)

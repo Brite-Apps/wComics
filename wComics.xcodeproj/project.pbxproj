@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		621543AA79E34ADC16F65DBD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B4464D81EB0DC1484F03F5 /* libPods.a */; };
 		AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6B17A032570046F92A /* Foundation.framework */; };
 		AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6D17A032570046F92A /* CoreGraphics.framework */; };
 		AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6F17A032570046F92A /* UIKit.framework */; };
@@ -77,11 +76,12 @@
 		AFF056AE1A0A79C8002B5710 /* volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFF056631A0A79C8002B5710 /* volume.cpp */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
 		AFF056B61A0A7C2B002B5710 /* MiniZip.m in Sources */ = {isa = PBXBuildFile; fileRef = AFF056B31A0A7C2B002B5710 /* MiniZip.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AFF056B71A0A7C2B002B5710 /* UnRAR.m in Sources */ = {isa = PBXBuildFile; fileRef = AFF056B51A0A7C2B002B5710 /* UnRAR.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CA97EF6AA852823D5F7FD7FE /* libPods-wComics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4943CF44C9BE3CE70D51119B /* libPods-wComics.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.release.xcconfig"; path = "Pods/Target Support Files/Pods-wComics/Pods-wComics.release.xcconfig"; sourceTree = "<group>"; };
-		474FEF52D62C822EE378DB50 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		4943CF44C9BE3CE70D51119B /* libPods-wComics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wComics.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9B6B6817A032570046F92A /* wComics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wComics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9B6B6B17A032570046F92A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AF9B6B6D17A032570046F92A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -243,8 +243,6 @@
 		AFF056B41A0A7C2B002B5710 /* UnRAR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnRAR.h; sourceTree = "<group>"; };
 		AFF056B51A0A7C2B002B5710 /* UnRAR.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnRAR.m; sourceTree = "<group>"; };
 		B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.debug.xcconfig"; path = "Pods/Target Support Files/Pods-wComics/Pods-wComics.debug.xcconfig"; sourceTree = "<group>"; };
-		C0B4464D81EB0DC1484F03F5 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D808B24C7093CA2137469A1E /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,7 +253,7 @@
 				AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */,
 				AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */,
 				AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */,
-				621543AA79E34ADC16F65DBD /* libPods.a in Frameworks */,
+				CA97EF6AA852823D5F7FD7FE /* libPods-wComics.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,8 +265,6 @@
 			children = (
 				B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */,
 				3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */,
-				D808B24C7093CA2137469A1E /* Pods.debug.xcconfig */,
-				474FEF52D62C822EE378DB50 /* Pods.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -303,8 +299,8 @@
 			children = (
 				AF9B6B6D17A032570046F92A /* CoreGraphics.framework */,
 				AF9B6B6B17A032570046F92A /* Foundation.framework */,
-				C0B4464D81EB0DC1484F03F5 /* libPods.a */,
 				AF9B6B6F17A032570046F92A /* UIKit.framework */,
+				4943CF44C9BE3CE70D51119B /* libPods-wComics.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -551,13 +547,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AF9B6B9417A032570046F92A /* Build configuration list for PBXNativeTarget "wComics" */;
 			buildPhases = (
-				529A25359B853E3AD0F58887 /* Check Pods Manifest.lock */,
-				AFD1C7911C2B7F5100659B82 /* ShellScript */,
+				529A25359B853E3AD0F58887 /* [CP] Check Pods Manifest.lock */,
 				AF9B6B6417A032570046F92A /* Sources */,
 				AF9B6B6517A032570046F92A /* Frameworks */,
 				AF9B6B6617A032570046F92A /* Resources */,
-				89728362AF6C4517A93002AD /* Copy Pods Resources */,
-				17FA44441CE9AC14AB4FBB4A /* Embed Pods Frameworks */,
+				89728362AF6C4517A93002AD /* [CP] Copy Pods Resources */,
+				17FA44441CE9AC14AB4FBB4A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -615,29 +610,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		17FA44441CE9AC14AB4FBB4A /* Embed Pods Frameworks */ = {
+		17FA44441CE9AC14AB4FBB4A /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-wComics/Pods-wComics-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		529A25359B853E3AD0F58887 /* Check Pods Manifest.lock */ = {
+		529A25359B853E3AD0F58887 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -645,33 +640,20 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		89728362AF6C4517A93002AD /* Copy Pods Resources */ = {
+		89728362AF6C4517A93002AD /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-wComics/Pods-wComics-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		AFD1C7911C2B7F5100659B82 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "versionNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"${INFOPLIST_FILE}\")\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${INFOPLIST_FILE}\")\nbuildNumber=$(echo $buildNumber | awk -F. '{print $NF}')\nbuildNumber=$(($buildNumber + 1))\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $versionNumber.$buildNumber\" \"${INFOPLIST_FILE}\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -834,7 +816,7 @@
 		};
 		AF9B6B9517A032570046F92A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D808B24C7093CA2137469A1E /* Pods.debug.xcconfig */;
+			baseConfigurationReference = B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -853,7 +835,7 @@
 		};
 		AF9B6B9617A032570046F92A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 474FEF52D62C822EE378DB50 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

@@ -17,6 +17,9 @@
 		self.textLabel.font = [UIFont systemFontOfSize:18];
 		self.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 		self.textLabel.numberOfLines = 1;
+		
+		self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+		
 		self.selectionStyle = UITableViewCellSelectionStyleGray;
 	}
 	return self;
@@ -33,7 +36,6 @@
 			if (isDir) {
 				self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 				self.imageView.image = [UIImage imageNamed:@"folder"];
-				[self.imageView sizeToFit];
 			}
 			else {
 				self.accessoryType = UITableViewCellAccessoryNone;
@@ -63,8 +65,6 @@
 						 }
 					 }];
 				}
-				
-				[self.imageView sizeToFit];
 			}
 			
 			NSString *title = [_item[@"path"] lastPathComponent];
@@ -76,21 +76,22 @@
 			self.textLabel.text = title;
 		}
 	}
+	
+	[self setNeedsLayout];
 }
 
 - (void)layoutSubviews {
 	[super layoutSubviews];
-
-	CGRect tmpRect = self.imageView.bounds;
-	tmpRect.origin.x = 8.0f + floorf((31.0f - tmpRect.size.width) / 2.0f);
-	tmpRect.origin.y = floorf((44.0f - tmpRect.size.height) / 2.0f);
-	self.imageView.frame = tmpRect;
 	
-	tmpRect.origin.x = self.imageView.frame.origin.x + 31.0f + 10.0f;
-	tmpRect.origin.y = 0.0f;
-	tmpRect.size.width = 421.0f;
-	tmpRect.size.height = 43.0f;
-	self.textLabel.frame = tmpRect;
+	const CGFloat xOffset = self.textLabel.frame.origin.x - (self.imageView.frame.origin.x + self.imageView.bounds.size.width);
+	
+	CGRect frame = self.imageView.frame;
+	frame.size.width = 32.0;
+	self.imageView.frame = frame;
+	
+	frame = self.textLabel.frame;
+	frame.origin.x = self.imageView.frame.origin.x + self.imageView.bounds.size.width + xOffset;
+	self.textLabel.frame = frame;
 }
 
 - (void)dealloc {

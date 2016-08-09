@@ -15,7 +15,7 @@
 	if ((self = [super initWithFrame:frame]) != nil) {
 		self.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 		self.scrollEnabled = YES;
-		self.maximumZoomScale = 5.0f;
+		self.maximumZoomScale = 5.0;
 		self.delegate = self;
 		self.delaysContentTouches = NO;
 		self.backgroundColor = RGB(0, 0, 0);
@@ -26,9 +26,9 @@
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-	CGFloat offsetX = MAX((scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5f, 0.0f);
-	CGFloat offsetY = MAX((scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5f, 0.0f);
-	_viewForZoom.center = CGPointMake(scrollView.contentSize.width * 0.5f + offsetX, scrollView.contentSize.height * 0.5f + offsetY);
+	CGFloat offsetX = MAX((scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5, 0.0);
+	CGFloat offsetY = MAX((scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5, 0.0);
+	_viewForZoom.center = CGPointMake(scrollView.contentSize.width * 0.5 + offsetX, scrollView.contentSize.height * 0.5 + offsetY);
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {

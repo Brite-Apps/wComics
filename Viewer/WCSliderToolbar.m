@@ -29,8 +29,8 @@ extern BOOL isPad;
 		slider.minimumTrackTintColor = [UIColor darkGrayColor];
 		slider.maximumTrackTintColor = [UIColor whiteColor];
 		slider.continuous = NO;
-		slider.minimumValue = 0.0f;
-		slider.maximumValue = 1.0f;
+		slider.minimumValue = 0.0;
+		slider.maximumValue = 1.0;
 		[slider sizeToFit];
 		[slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
 		[self addSubview:slider];
@@ -42,7 +42,7 @@ extern BOOL isPad;
 	float progress = ((float)_pageNumber - 1) / ((float)_totalPages - 1);
 
 	if (_pageNumber == -1) {
-		progress = 0.0f;
+		progress = 0.0;
 		pageLabel.text = nil;
 	}
 	
@@ -55,9 +55,9 @@ extern BOOL isPad;
 	
 	[slider sizeToFit];
 	frame = slider.bounds;
-	frame.size.width = self.bounds.size.width - 20.0f * 2.0f;
-	frame.origin.x = floorf((self.bounds.size.width - frame.size.width) * 0.5f);
-	frame.origin.y = self.bounds.size.height - frame.size.height - 10.0f;
+	frame.size.width = self.bounds.size.width - 20.0 * 2.0;
+	frame.origin.x = floor((self.bounds.size.width - frame.size.width) * 0.5);
+	frame.origin.y = self.bounds.size.height - frame.size.height - 10.0;
 	slider.frame = frame;
 }
 
@@ -78,8 +78,8 @@ extern BOOL isPad;
 	[pageLabel sizeToFit];
 	
 	CGRect frame = pageLabel.frame;
-	frame.origin.x = floorf((self.bounds.size.width - frame.size.width) * 0.5f);
-	frame.origin.y = floorf((self.bounds.size.height * 0.5f - frame.size.height) * 0.5f) - 2.0f;
+	frame.origin.x = floor((self.bounds.size.width - frame.size.width) * 0.5);
+	frame.origin.y = floor((self.bounds.size.height * 0.5 - frame.size.height) * 0.5) - 2.0;
 	pageLabel.frame = frame;
 	
 	if (_pageNumber == -1) {
@@ -94,7 +94,7 @@ extern BOOL isPad;
 
 - (void)setTotalPages:(NSInteger)totalPages {
 	_totalPages = totalPages;
-	slider.maximumValue = 1.0f - (1.0f / (float)totalPages);
+	slider.maximumValue = 1.0 - (1.0 / (float)totalPages);
 }
 
 - (void)sliderValueChanged:(UISlider *)sender {
