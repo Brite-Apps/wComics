@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF449D4F1D5A931100A8EB23 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF449D4E1D5A931100A8EB23 /* Settings.bundle */; };
 		AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6B17A032570046F92A /* Foundation.framework */; };
 		AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6D17A032570046F92A /* CoreGraphics.framework */; };
 		AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6F17A032570046F92A /* UIKit.framework */; };
@@ -82,6 +83,7 @@
 /* Begin PBXFileReference section */
 		3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.release.xcconfig"; path = "Pods/Target Support Files/Pods-wComics/Pods-wComics.release.xcconfig"; sourceTree = "<group>"; };
 		4943CF44C9BE3CE70D51119B /* libPods-wComics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wComics.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF449D4E1D5A931100A8EB23 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		AF9B6B6817A032570046F92A /* wComics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wComics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9B6B6B17A032570046F92A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AF9B6B6D17A032570046F92A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -390,6 +392,7 @@
 				AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */,
 				AF9B6BC317A033AE0046F92A /* info.html */,
 				AF9B6BC117A033AE0046F92A /* Localizable.strings */,
+				AF449D4E1D5A931100A8EB23 /* Settings.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -601,6 +604,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF449D4F1D5A931100A8EB23 /* Settings.bundle in Resources */,
 				AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */,
 				AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */,
 				AF9B6BC717A033AE0046F92A /* info.html in Resources */,
