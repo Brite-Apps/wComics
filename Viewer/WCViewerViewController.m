@@ -21,7 +21,7 @@ extern BOOL isPad;
 
 @implementation WCViewerViewController {
 	UIView *pagesView;
-	__block WCScrollView *currentPageView;
+	WCScrollView *currentPageView;
 	
 	NSInteger currentPageNumber;
 	NSInteger totalPagesNumber;
@@ -29,7 +29,7 @@ extern BOOL isPad;
 	BOOL animating;
 
 	UILabel *topLabel;
-	__block WCSliderToolbar *bottomToolbar;
+	WCSliderToolbar *bottomToolbar;
 	
 	UIButton *libraryButton;
 	UIButton *wifiButton;
@@ -48,17 +48,17 @@ extern BOOL isPad;
 	toolbarHidden = YES;
 	
 	CGRect frame;
-	frame.origin.x = 0.0;
+	frame.origin.x = 0;
 	frame.origin.y = self.view.bounds.size.height;
 	frame.size.width = self.view.bounds.size.width;
-	frame.size.height = 100.0;
+	frame.size.height = 100;
 	
-	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:CGRectIntegral(frame)];
+	bottomToolbar = [[WCSliderToolbar alloc] initWithFrame:frame];
 	bottomToolbar.backgroundColor = RGBA(0, 0, 0, 0.8);
 	bottomToolbar.target = self;
 	[self.view addSubview:bottomToolbar];
 	
-	frame.size.height = 44.0;
+	frame.size.height = 44;
 	frame.origin.y = -frame.size.height;
 	
 	topLabel = [[UILabel alloc] initWithFrame:frame];
@@ -118,16 +118,13 @@ extern BOOL isPad;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[self redrawInterface];
+	[self redrawInterfaceWithSize:self.view.bounds.size];
 }
 
 - (void)showErrorAlert {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"WARNING", @"Warning alert title")
-													message:NSLocalizedString(@"CANNOT_OPEN_FILE", @"Cannot open file")
-												   delegate:nil
-										  cancelButtonTitle:@"OK"
-										  otherButtonTitles:nil];
-	[alert show];
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"WARNING", @"Warning alert title") message:NSLocalizedString(@"CANNOT_OPEN_FILE", @"Cannot open file") preferredStyle:UIAlertControllerStyleAlert];
+	[alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {}]];
+	[self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)setComic:(WCComic *)aComic {
@@ -154,8 +151,8 @@ extern BOOL isPad;
 				return;
 			}
 
-			if (_comic) {
-				[[WCSettingsStorage sharedInstance] saveCurrentPage:currentPageNumber forFile:_comic.file];
+			if (self.comic) {
+				[[WCSettingsStorage sharedInstance] saveCurrentPage:currentPageNumber forFile:self.comic.file];
 			}
 
 			currentPageNumber = [[WCSettingsStorage sharedInstance] currentPageForFile:aComic.file];
@@ -164,12 +161,12 @@ extern BOOL isPad;
 			bottomToolbar.pageNumber = currentPageNumber + 1;
 			bottomToolbar.totalPages = totalPagesNumber;
 
-			[_comic close];
+			[self.comic close];
 			_comic = aComic;
 
-			[[WCSettingsStorage sharedInstance] setLastDocument:_comic.file];
+			[[WCSettingsStorage sharedInstance] setLastDocument:self.comic.file];
 
-			topLabel.text = _comic.title;
+			topLabel.text = self.comic.title;
 
 			[currentPageView.viewForZoom removeFromSuperview];
 			currentPageView.viewForZoom = nil;
@@ -198,15 +195,14 @@ extern BOOL isPad;
 }
 
 - (void)comicItemSelected:(NSDictionary *)item {
-	__weak typeof(_comic) weakComicRef = _comic;
-	__weak typeof(self) weakSeflRef = self;
+	__weak typeof(self) weakSelf = self;
 	
 	[self dismissViewControllerAnimated:YES completion:^{
-		if (!EQUAL_STR([item[@"path"] stringByResolvingSymlinksInPath], [weakComicRef.file stringByResolvingSymlinksInPath])) {
+		if (!EQUAL_STR([item[@"path"] stringByResolvingSymlinksInPath], [weakSelf.comic.file stringByResolvingSymlinksInPath])) {
 			WCComic *newComic = [[WCComic alloc] initWithFile:item[@"path"]];
 			
 			if (newComic) {
-				weakSeflRef.comic = newComic;
+				weakSelf.comic = newComic;
 			}
 		}
 	}];
@@ -249,12 +245,12 @@ extern BOOL isPad;
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer *)sender {
-	if (!_comic && !toolbarHidden) {
+	if (!self.comic && !toolbarHidden) {
 		return;
 	}
 	
 	CGPoint location = [sender locationInView:self.view];
-	CGFloat quarterWidth = self.view.bounds.size.width * 0.25f;
+	CGFloat quarterWidth = self.view.bounds.size.width * 0.25;
 	
 	if (location.x <= quarterWidth) {
 		[self displayPage:(currentPageNumber - 1) animationDirection:1];
@@ -271,41 +267,43 @@ extern BOOL isPad;
 	toolbarHidden = !toolbarHidden;
 	
 	__weak typeof(self) weakSelf = self;
+	__weak __typeof(bottomToolbar) weakToolbar = bottomToolbar;
+	__weak __typeof(topLabel) weakLabel = topLabel;
 	
 	if (toolbarHidden) {
 		[UIView
 		 animateWithDuration:0.3
 		 animations:^{
-			 CGRect frame = bottomToolbar.frame;
+			 CGRect frame = weakToolbar.frame;
 			 frame.origin.y = weakSelf.view.bounds.size.height;
-			 bottomToolbar.frame = frame;
-			 bottomToolbar.alpha = 0.0;
+			 weakToolbar.frame = frame;
+			 weakToolbar.alpha = 0;
 			 
-			 frame = topLabel.frame;
+			 frame = weakLabel.frame;
 			 frame.origin.y = -frame.size.height;
-			 topLabel.frame = frame;
-			 topLabel.alpha = 0.0;
+			 weakLabel.frame = frame;
+			 weakLabel.alpha = 0;
 		 }];
 	}
 	else {
 		[UIView
 		 animateWithDuration:0.3
 		 animations:^{
-			 CGRect frame = bottomToolbar.frame;
-			 frame.origin.y = weakSelf.view.bounds.size.height - frame.size.height;
-			 bottomToolbar.frame = frame;
-			 bottomToolbar.alpha = 1.0;
+			 CGRect frame = weakToolbar.frame;
+			 frame.origin.y = weakSelf.view.bounds.size.height - frame.size.height - weakSelf.view.safeAreaInsets.bottom;
+			 weakToolbar.frame = frame;
+			 weakToolbar.alpha = 1;
 			 
-			 frame = topLabel.frame;
-			 frame.origin.y = 0.0;
-			 topLabel.frame = frame;
-			 topLabel.alpha = 1.0;
+			 frame = weakLabel.frame;
+			 frame.origin.y = weakSelf.view.safeAreaInsets.top;
+			 weakLabel.frame = frame;
+			 weakLabel.alpha = 1;
 		 }];
 	}
 }
 
 - (void)handleSwipe:(UISwipeGestureRecognizer *)sender {
-	if (_comic) {
+	if (self.comic) {
 		if (sender.state == UIGestureRecognizerStateRecognized) {
 			if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
 				[self displayPage:(currentPageNumber + 1) animationDirection:-1];
@@ -320,7 +318,7 @@ extern BOOL isPad;
 - (void)comicRemoved:(NSDictionary *)item {
 	NSString *path = item[@"path"];
 	
-	if (EQUAL_STR([_comic.file stringByResolvingSymlinksInPath], [path stringByResolvingSymlinksInPath]) || [self.comic somewhereInSubdir:path]) {
+	if (EQUAL_STR([self.comic.file stringByResolvingSymlinksInPath], [path stringByResolvingSymlinksInPath]) || [self.comic somewhereInSubdir:path]) {
 		self.comic = nil;
 	}
 }
@@ -335,11 +333,13 @@ extern BOOL isPad;
 }
 
 - (void)pageChanged {
-	[[WCSettingsStorage sharedInstance] saveCurrentPage:currentPageNumber forFile:_comic.file];
+	[[WCSettingsStorage sharedInstance] saveCurrentPage:currentPageNumber forFile:self.comic.file];
 }
 
-- (void)redrawInterface {
-	CGRect screenFrame = self.view.bounds;
+- (void)redrawInterfaceWithSize:(CGSize)size {
+	CGRect screenFrame;
+	screenFrame.origin = CGPointZero;
+	screenFrame.size = size;
 
 	[UIView setAnimationsEnabled:NO];
 
@@ -348,11 +348,11 @@ extern BOOL isPad;
 
 	if (toolbarHidden) {
 		frame.origin.y = screenFrame.size.height;
-		bottomToolbar.alpha = 0.0;
+		bottomToolbar.alpha = 0;
 	}
 	else {
 		frame.origin.y = screenFrame.size.height - frame.size.height;
-		bottomToolbar.alpha = 1.0;
+		bottomToolbar.alpha = 1;
 	}
 
 	bottomToolbar.frame = frame;
@@ -361,28 +361,28 @@ extern BOOL isPad;
 	frame.size.width = screenFrame.size.width;
 	
 	if (toolbarHidden) {
-		topLabel.alpha = 0.0;
+		topLabel.alpha = 0;
 		frame.origin.y = -frame.size.height;
 	}
 	else {
-		topLabel.alpha = 1.0;
-		frame.origin.y = 0.0;
+		topLabel.alpha = 1;
+		frame.origin.y = 0;
 	}
 	
 	topLabel.frame = frame;
 	
 	frame = libraryButton.frame;
-	frame.origin.x = 20.0;
-	frame.origin.y = 10.0;
+	frame.origin.x = 20;
+	frame.origin.y = 10;
 	libraryButton.frame = frame;
 	
 	frame = wifiButton.frame;
-	frame.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15.0;
+	frame.origin.x = libraryButton.frame.origin.x + libraryButton.frame.size.width + 15;
 	frame.origin.y = libraryButton.frame.origin.y;
 	wifiButton.frame = frame;
 	
 	frame = infoButton.frame;
-	frame.origin.x = bottomToolbar.frame.size.width - frame.size.width - 20.0;
+	frame.origin.x = bottomToolbar.frame.size.width - frame.size.width - 20;
 	frame.origin.y = libraryButton.frame.origin.y;
 	infoButton.frame = frame;
 	
@@ -398,16 +398,9 @@ extern BOOL isPad;
 	[UIView setAnimationsEnabled:YES];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[self redrawInterface];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[self updateZoomParamsScalingToWidth:!isPad && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)];
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+	[self redrawInterfaceWithSize:size];
+	[self updateZoomParamsScalingToWidth:!isPad && (size.width > size.height)];
 }
 
 - (void)updateZoomParamsScalingToWidth:(BOOL)scaleWidth {
@@ -427,11 +420,11 @@ extern BOOL isPad;
 	}
 
 	[currentPageView scrollViewDidZoom:currentPageView];
-	[currentPageView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:NO];
+	[currentPageView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
 }
 
 - (void)displayPage:(NSInteger)pageNum animationDirection:(NSInteger)animationDirection {
-	if (!_comic) {
+	if (!self.comic) {
 		bottomToolbar.pageNumber = -1;
 	}
 
@@ -451,7 +444,7 @@ extern BOOL isPad;
 			CGRect frame = currentPageView.frame;
 			frame.origin.x = -frame.size.width;
 			currentPageView.frame = frame;
-			currentPageView.alpha = 0.0;
+			currentPageView.alpha = 0;
 		}
 		else {
 			[pagesView insertSubview:currentPageView belowSubview:oldPageView];
@@ -460,8 +453,8 @@ extern BOOL isPad;
 
 	pagesView.userInteractionEnabled = NO;
 
-	UIImage *img = [_comic imageAtIndex:pageNum];
-	CGRect pageRect = CGRectMake(0.0, 0.0, img.size.width, img.size.height);
+	UIImage *img = [self.comic imageAtIndex:pageNum];
+	CGRect pageRect = CGRectMake(0, 0, img.size.width, img.size.height);
 
 	CGFloat c = currentPageView.frame.size.height / pageRect.size.height;
 	pageRect.size.width = floor(c * pageRect.size.width * 0.5);
@@ -474,7 +467,7 @@ extern BOOL isPad;
 	CATiledLayer *tiledLayer = [[CATiledLayer alloc] init];
 	tiledLayer.bounds = pageRect;
 	tiledLayer.delegate = nil;
-	tiledLayer.tileSize = CGSizeMake(256.0, 256.0);
+	tiledLayer.tileSize = CGSizeMake(256, 256);
 	tiledLayer.levelsOfDetail = 5;
 	tiledLayer.levelsOfDetailBias = 5;
 	tiledLayer.backgroundColor = RGB(255, 255, 255).CGColor;
@@ -496,30 +489,33 @@ extern BOOL isPad;
 	bottomToolbar.pageNumber = currentPageNumber + 1;
 	
 	if (oldPageView) {
+		__weak __typeof(currentPageView) weakCurrentPageView = currentPageView;
+		
 		[UIView
 		 animateWithDuration:0.3
 		 animations:^{
 			 if (animationDirection == 1) {
-				 CGRect frame = currentPageView.frame;
-				 frame.origin.x = 0.0;
-				 currentPageView.frame = frame;
-				 currentPageView.alpha = 1.0;
+				 CGRect frame = weakCurrentPageView.frame;
+				 frame.origin.x = 0;
+				 weakCurrentPageView.frame = frame;
+				 weakCurrentPageView.alpha = 1;
 			 }
 			 else {
 				 CGRect frame = oldPageView.frame;
 				 frame.origin.x = (animationDirection == - 1) ? -frame.size.width : frame.size.width;
 				 oldPageView.frame = frame;
-				 oldPageView.alpha = 0.0;
+				 oldPageView.alpha = 0;
 			 }
 		 }
 		 completion:^(BOOL finished) {
-			 [oldPageView removeFromSuperview], oldPageView = nil;
+			[oldPageView removeFromSuperview];
+			oldPageView = nil;
 		 }];
 	}
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	if (_comic) {
+	if (self.comic) {
 		animating = YES;
 
 		if (!decelerate) {

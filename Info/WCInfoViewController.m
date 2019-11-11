@@ -29,7 +29,7 @@
 	NSString *scheme = [[request URL] scheme];
 	
 	if (EQUAL_STR(scheme, @"http") || EQUAL_STR(scheme, @"https") || EQUAL_STR(scheme, @"mailto")) {
-		[[UIApplication sharedApplication] openURL:[request URL]];
+		[[UIApplication sharedApplication] openURL:request.URL options:@{} completionHandler:nil];
 		return NO;
 	}
 
