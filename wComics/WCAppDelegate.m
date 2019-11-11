@@ -16,11 +16,6 @@
 BOOL isPad;
 NSOperationQueue *coversQueue;
 
-void uncaughtExceptionHandler(NSException *exception) {
-	TRACE(@"CRASH: %@", exception);
-	TRACE(@"Stack Trace: %@", [exception callStackSymbols]);
-}
-
 @implementation WCAppDelegate {
 	UIWindow *window;
 	WCViewerViewController *viewController;
@@ -28,8 +23,6 @@ void uncaughtExceptionHandler(NSException *exception) {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-
 	isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 	
 	coversQueue = [[NSOperationQueue alloc] init];
@@ -37,7 +30,7 @@ void uncaughtExceptionHandler(NSException *exception) {
 
 	viewController = [[WCViewerViewController alloc] init];
 	
-	window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
 	window.rootViewController = viewController;
 
 	[window makeKeyAndVisible];
@@ -49,9 +42,9 @@ void uncaughtExceptionHandler(NSException *exception) {
 	return YES;
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 	if (url) {
-		WCComic *comic = [[WCComic alloc] initWithFile:[url path]];
+		WCComic *comic = [[WCComic alloc] initWithFile:url.path];
 		viewController.comic = comic;
 	}
 	
@@ -82,18 +75,18 @@ void uncaughtExceptionHandler(NSException *exception) {
 	__weak typeof(self) weakSelf = self;
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-		@autoreleasepool {
-			NSString *coverDir = [DOCPATH stringByAppendingPathComponent:@"covers"];
-			[[NSFileManager defaultManager] createDirectoryAtPath:coverDir withIntermediateDirectories:YES attributes:nil error:nil];
-			[[WCLibraryDataSource sharedInstance] updateLibrary];
-			
-			if (justStarted) {
-				justStarted = NO;
+		__strong __typeof(weakSelf) strongSelf = weakSelf;
+		
+		NSString *coverDir = [DOCPATH stringByAppendingPathComponent:@"covers"];
+		[[NSFileManager defaultManager] createDirectoryAtPath:coverDir withIntermediateDirectories:YES attributes:nil error:nil];
+		[[WCLibraryDataSource sharedInstance] updateLibrary];
+		
+		if (strongSelf->justStarted) {
+			strongSelf->justStarted = NO;
 
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[weakSelf checkOpen];
-				});
-			}
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[strongSelf checkOpen];
+			});
 		}
 	});
 }

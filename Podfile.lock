@@ -1,32 +1,18 @@
 PODS:
-  - CocoaLumberjack (2.3.0):
-    - CocoaLumberjack/Default (= 2.3.0)
-    - CocoaLumberjack/Extensions (= 2.3.0)
-  - CocoaLumberjack/Core (2.3.0)
-  - CocoaLumberjack/Default (2.3.0):
-    - CocoaLumberjack/Core
-  - CocoaLumberjack/Extensions (2.3.0):
-    - CocoaLumberjack/Default
-  - GCDWebServer/CocoaLumberjack (3.3.3):
-    - CocoaLumberjack (~> 2)
-    - GCDWebServer/Core
-  - GCDWebServer/Core (3.3.3)
-  - GCDWebServer/WebUploader (3.3.3):
-    - GCDWebServer/WebUploader/CocoaLumberjack (= 3.3.3)
-    - GCDWebServer/WebUploader/Core (= 3.3.3)
-  - GCDWebServer/WebUploader/CocoaLumberjack (3.3.3):
-    - GCDWebServer/CocoaLumberjack
-    - GCDWebServer/WebUploader/Core
-  - GCDWebServer/WebUploader/Core (3.3.3):
+  - GCDWebServer/Core (3.5.3)
+  - GCDWebServer/WebUploader (3.5.3):
     - GCDWebServer/Core
 
 DEPENDENCIES:
   - GCDWebServer/WebUploader
 
+SPEC REPOS:
+  trunk:
+    - GCDWebServer
+
 SPEC CHECKSUMS:
-  CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
-  GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
+  GCDWebServer: c0ab22c73e1b84f358d1e2f74bf6afd1c60829f2
 
-PODFILE CHECKSUM: c41433fba742bd5299fbcf94bf803e90c584d098
+PODFILE CHECKSUM: fe3a319ddca3bcb04c3756fcb1444ee75aa20a34
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.8.4
