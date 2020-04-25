@@ -18,6 +18,8 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+	self.preferredContentSize = CGSizeMake(600, 700);
+	
 	UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"CLOSE", @"Close") style:UIBarButtonItemStyleDone target:self action:@selector(dismissModalViewController)];
 	self.navigationItem.rightBarButtonItem = closeItem;
 }
@@ -99,8 +101,6 @@
 		lvc.dataSource = item[@"children"];
 		lvc.title = [item[@"path"] lastPathComponent];
 		lvc.target = _target;
-		lvc.preferredContentSize = self.view.bounds.size;
-		self.preferredContentSize = self.view.bounds.size;
 		[self.navigationController pushViewController:lvc animated:YES];
 	}
 	else {
