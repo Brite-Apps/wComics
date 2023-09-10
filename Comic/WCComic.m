@@ -165,6 +165,10 @@ extern NSOperationQueue *coversQueue;
 			CGContextScaleCTM(ctx, 1, -1);
 			CGContextTranslateCTM(ctx, 0, -size.height);
 			
+			const CGFloat *cg = CGColorGetComponents(UIColor.whiteColor.CGColor);
+			CGContextSetFillColor(ctx, cg);
+			CGContextFillRect(ctx, CGRectMake(0, 0, size.width, size.height));
+			
 			CGRect mediaRect = CGPDFPageGetBoxRect(pdfPage, kCGPDFCropBox);
 			CGContextScaleCTM(ctx, size.width / mediaRect.size.width, size.height / mediaRect.size.height);
 			CGContextTranslateCTM(ctx, -mediaRect.origin.x, -mediaRect.origin.y);
@@ -256,7 +260,15 @@ extern NSOperationQueue *coversQueue;
 								}
 								
 								UIGraphicsBeginImageContextWithOptions(newSize, YES, [UIScreen mainScreen].scale);
+								
+								CGContextRef context = UIGraphicsGetCurrentContext();
+								
+								const CGFloat *cg = CGColorGetComponents(UIColor.whiteColor.CGColor);
+								CGContextSetFillColor(context, cg);
+								CGContextFillRect(context, CGRectMake(0, 0, newSize.width, newSize.height));
+
 								[cover drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+
 								UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
 								UIGraphicsEndImageContext();
 								NSData *newCoverData = UIImageJPEGRepresentation(newImage, 0.8);
@@ -314,6 +326,10 @@ extern NSOperationQueue *coversQueue;
 						CGRect bounds = CGContextGetClipBoundingBox(context);
 						CGContextTranslateCTM(context, 0, bounds.size.height);
 						CGContextScaleCTM(context, 1.0, -1.0);
+						
+						const CGFloat *cg = CGColorGetComponents(UIColor.whiteColor.CGColor);
+						CGContextSetFillColor(context, cg);
+						CGContextFillRect(context, CGRectMake(0, 0, newSize.width, newSize.height));
 						
 						CGContextSaveGState(context);
 						
