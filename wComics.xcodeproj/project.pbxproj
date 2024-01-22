@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		787857004B1F515971E2EEDA /* libPods-wComics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB199DF15B6EB47CC2C666B1 /* libPods-wComics.a */; };
 		AF149D9C2379FAA500CFF0C0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */; };
 		AF449D4F1D5A931100A8EB23 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF449D4E1D5A931100A8EB23 /* Settings.bundle */; };
 		AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6B17A032570046F92A /* Foundation.framework */; };
@@ -78,12 +79,10 @@
 		AFF056AE1A0A79C8002B5710 /* volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFF056631A0A79C8002B5710 /* volume.cpp */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
 		AFF056B61A0A7C2B002B5710 /* MiniZip.m in Sources */ = {isa = PBXBuildFile; fileRef = AFF056B31A0A7C2B002B5710 /* MiniZip.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AFF056B71A0A7C2B002B5710 /* UnRAR.m in Sources */ = {isa = PBXBuildFile; fileRef = AFF056B51A0A7C2B002B5710 /* UnRAR.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		CA97EF6AA852823D5F7FD7FE /* libPods-wComics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4943CF44C9BE3CE70D51119B /* libPods-wComics.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.release.xcconfig"; path = "Pods/Target Support Files/Pods-wComics/Pods-wComics.release.xcconfig"; sourceTree = "<group>"; };
-		4943CF44C9BE3CE70D51119B /* libPods-wComics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wComics.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		65B2C26A5644F7C843B7CE66 /* Pods-wComics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.debug.xcconfig"; path = "Target Support Files/Pods-wComics/Pods-wComics.debug.xcconfig"; sourceTree = "<group>"; };
 		AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		AF449D4E1D5A931100A8EB23 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		AF9B6B6817A032570046F92A /* wComics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wComics.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,7 +245,8 @@
 		AFF056B31A0A7C2B002B5710 /* MiniZip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiniZip.m; sourceTree = "<group>"; };
 		AFF056B41A0A7C2B002B5710 /* UnRAR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnRAR.h; sourceTree = "<group>"; };
 		AFF056B51A0A7C2B002B5710 /* UnRAR.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnRAR.m; sourceTree = "<group>"; };
-		B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.debug.xcconfig"; path = "Pods/Target Support Files/Pods-wComics/Pods-wComics.debug.xcconfig"; sourceTree = "<group>"; };
+		E92A0CE08A363385D7B8444F /* Pods-wComics.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.release.xcconfig"; path = "Target Support Files/Pods-wComics/Pods-wComics.release.xcconfig"; sourceTree = "<group>"; };
+		EB199DF15B6EB47CC2C666B1 /* libPods-wComics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wComics.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,22 +257,13 @@
 				AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */,
 				AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */,
 				AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */,
-				CA97EF6AA852823D5F7FD7FE /* libPods-wComics.a in Frameworks */,
+				787857004B1F515971E2EEDA /* libPods-wComics.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		319A4615FEFBEA6F8D0858C8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */,
-				3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		AF9B6B5F17A032570046F92A = {
 			isa = PBXGroup;
 			children = (
@@ -286,7 +277,7 @@
 				AF9B6BC017A033AE0046F92A /* Resources */,
 				AF9B6B6A17A032570046F92A /* Frameworks */,
 				AF9B6B6917A032570046F92A /* Products */,
-				319A4615FEFBEA6F8D0858C8 /* Pods */,
+				D90E8F82F6A91B4486D947FE /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -304,7 +295,7 @@
 				AF9B6B6D17A032570046F92A /* CoreGraphics.framework */,
 				AF9B6B6B17A032570046F92A /* Foundation.framework */,
 				AF9B6B6F17A032570046F92A /* UIKit.framework */,
-				4943CF44C9BE3CE70D51119B /* libPods-wComics.a */,
+				EB199DF15B6EB47CC2C666B1 /* libPods-wComics.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -546,6 +537,15 @@
 			path = "UnRAR-3.9.10";
 			sourceTree = "<group>";
 		};
+		D90E8F82F6A91B4486D947FE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				65B2C26A5644F7C843B7CE66 /* Pods-wComics.debug.xcconfig */,
+				E92A0CE08A363385D7B8444F /* Pods-wComics.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -553,11 +553,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AF9B6B9417A032570046F92A /* Build configuration list for PBXNativeTarget "wComics" */;
 			buildPhases = (
-				529A25359B853E3AD0F58887 /* [CP] Check Pods Manifest.lock */,
+				1BF3C35BDDFFC3B77B9A8211 /* [CP] Check Pods Manifest.lock */,
 				AF9B6B6417A032570046F92A /* Sources */,
 				AF9B6B6517A032570046F92A /* Frameworks */,
 				AF9B6B6617A032570046F92A /* Resources */,
-				89728362AF6C4517A93002AD /* [CP] Copy Pods Resources */,
+				2A3D3561DC162B81CBF3FBEE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -576,7 +576,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = WC;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = "Nik S Dyonin";
 			};
 			buildConfigurationList = AF9B6B6317A032570046F92A /* Build configuration list for PBXProject "wComics" */;
@@ -614,16 +614,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		529A25359B853E3AD0F58887 /* [CP] Check Pods Manifest.lock */ = {
+		1BF3C35BDDFFC3B77B9A8211 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-wComics-checkManifestLockResult.txt",
 			);
@@ -632,7 +636,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		89728362AF6C4517A93002AD /* [CP] Copy Pods Resources */ = {
+		2A3D3561DC162B81CBF3FBEE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -742,6 +746,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -771,6 +776,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -797,6 +803,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -826,6 +833,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -843,11 +851,12 @@
 		};
 		AF9B6B9517A032570046F92A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B46BA5E493B5872BF66DA194 /* Pods-wComics.debug.xcconfig */;
+			baseConfigurationReference = 65B2C26A5644F7C843B7CE66 /* Pods-wComics.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1.1.0;
-				DEVELOPMENT_TEAM = 2645H5QGRR;
+				DEVELOPMENT_TEAM = W87XU23WC6;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
 					USE_FILE32API,
@@ -855,7 +864,7 @@
 				);
 				INFOPLIST_FILE = "wComics/wComics-Info.plist";
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nikd.wcomics;
+				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -864,11 +873,12 @@
 		};
 		AF9B6B9617A032570046F92A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B33E0CFBC2EBA74B4872A0A /* Pods-wComics.release.xcconfig */;
+			baseConfigurationReference = E92A0CE08A363385D7B8444F /* Pods-wComics.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1.1.0;
-				DEVELOPMENT_TEAM = 2645H5QGRR;
+				DEVELOPMENT_TEAM = W87XU23WC6;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
 					USE_FILE32API,
@@ -876,7 +886,7 @@
 				);
 				INFOPLIST_FILE = "wComics/wComics-Info.plist";
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nikd.wcomics;
+				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
