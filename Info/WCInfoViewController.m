@@ -9,31 +9,41 @@
 #import "WCInfoViewController.h"
 #import "Common.h"
 
+@import WebKit;
+
 @implementation WCInfoViewController
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
-	UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-	webView.backgroundColor = RGB(255, 255, 255);
-	self.view = webView;
-	webView.dataDetectorTypes = UIDataDetectorTypeNone;
-	webView.scalesPageToFit = YES;
-	webView.delegate = self;
 	
+	WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+	configuration.dataDetectorTypes = WKDataDetectorTypeNone;
+	
+	WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+	webView.backgroundColor = RGB(255, 255, 255);
+	webView.navigationDelegate = self;
+	self.view = webView;
+
 	NSString *htmlString = [[NSString alloc] initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"info" ofType:@"html"] encoding:NSUTF8StringEncoding error:nil];
 	[webView loadHTMLString:htmlString baseURL:nil];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	NSString *scheme = [[request URL] scheme];
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+	NSURL *url = navigationAction.request.URL;
+	
+	if (url == nil) {
+		decisionHandler(WKNavigationActionPolicyCancel);
+	}
+	
+	NSString *scheme = url.scheme;
 	
 	if (EQUAL_STR(scheme, @"http") || EQUAL_STR(scheme, @"https") || EQUAL_STR(scheme, @"mailto")) {
-		[[UIApplication sharedApplication] openURL:request.URL options:@{} completionHandler:nil];
-		return NO;
+		[UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+		decisionHandler(WKNavigationActionPolicyCancel);
+		return;
 	}
-
-	return YES;
+	
+	decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

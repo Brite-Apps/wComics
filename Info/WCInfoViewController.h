@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+@import WebKit;
 
-@interface WCInfoViewController : UIViewController <UIWebViewDelegate>
+@interface WCInfoViewController : UIViewController <WKNavigationDelegate>
 
 @end
