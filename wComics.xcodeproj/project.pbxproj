@@ -10,23 +10,24 @@
 		787857004B1F515971E2EEDA /* libPods-wComics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB199DF15B6EB47CC2C666B1 /* libPods-wComics.a */; };
 		AF149D9C2379FAA500CFF0C0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */; };
 		AF449D4F1D5A931100A8EB23 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF449D4E1D5A931100A8EB23 /* Settings.bundle */; };
+		AF6F83432CAB35C5004B2B43 /* SliderToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83422CAB35C0004B2B43 /* SliderToolbar.swift */; };
+		AF6F83452CAB38C9004B2B43 /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83442CAB38C4004B2B43 /* ScrollView.swift */; };
+		AF6F83472CAB39CA004B2B43 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83462CAB39C7004B2B43 /* ItemCell.swift */; };
+		AF6F83492CAB3C7A004B2B43 /* LibraryDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83482CAB3C75004B2B43 /* LibraryDataSource.swift */; };
+		AF6F834B2CAB3CC6004B2B43 /* ComicItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F834A2CAB3CC3004B2B43 /* ComicItem.swift */; };
+		AF6F834D2CAB4354004B2B43 /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F834C2CAB434F004B2B43 /* LibraryViewController.swift */; };
+		AF6F834F2CAB4502004B2B43 /* SettingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F834E2CAB44FE004B2B43 /* SettingsStorage.swift */; };
+		AF6F83512CAB4DC2004B2B43 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83502CAB4DBD004B2B43 /* InfoViewController.swift */; };
+		AF6F83532CAB4EB1004B2B43 /* ServerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6F83522CAB4EA7004B2B43 /* ServerViewController.swift */; };
 		AF9B6B6C17A032570046F92A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6B17A032570046F92A /* Foundation.framework */; };
 		AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6D17A032570046F92A /* CoreGraphics.framework */; };
 		AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6F17A032570046F92A /* UIKit.framework */; };
-		AF9B6B7817A032570046F92A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6B7717A032570046F92A /* main.m */; };
-		AF9B6B7C17A032570046F92A /* WCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6B7B17A032570046F92A /* WCAppDelegate.m */; };
-		AF9B6BA017A032830046F92A /* WCComic.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6B9E17A032830046F92A /* WCComic.m */; };
-		AF9B6BA417A0329C0046F92A /* WCInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BA317A0329C0046F92A /* WCInfoViewController.m */; };
-		AF9B6BB817A033A40046F92A /* WCItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BA717A033A40046F92A /* WCItemCell.m */; };
-		AF9B6BB917A033A40046F92A /* WCLibraryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BA917A033A40046F92A /* WCLibraryDataSource.m */; };
-		AF9B6BBA17A033A40046F92A /* WCLibraryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BAB17A033A40046F92A /* WCLibraryViewController.m */; };
-		AF9B6BBB17A033A40046F92A /* WCServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BAE17A033A40046F92A /* WCServerViewController.m */; };
-		AF9B6BBC17A033A40046F92A /* WCSettingsStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BB017A033A40046F92A /* WCSettingsStorage.m */; };
-		AF9B6BBD17A033A40046F92A /* WCScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BB317A033A40046F92A /* WCScrollView.m */; };
-		AF9B6BBE17A033A40046F92A /* WCSliderToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BB517A033A40046F92A /* WCSliderToolbar.m */; };
-		AF9B6BBF17A033A40046F92A /* WCViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B6BB717A033A40046F92A /* WCViewerViewController.m */; };
 		AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AF9B6BC117A033AE0046F92A /* Localizable.strings */; };
 		AF9B6BC717A033AE0046F92A /* info.html in Resources */ = {isa = PBXBuildFile; fileRef = AF9B6BC317A033AE0046F92A /* info.html */; };
+		AFCB35382CA749FB005D8574 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB35372CA749F6005D8574 /* AppDelegate.swift */; };
+		AFCB353B2CA74A6C005D8574 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353A2CA74A69005D8574 /* Common.swift */; };
+		AFCB353D2CA74AB9005D8574 /* ViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */; };
+		AFCB353F2CA74AE1005D8574 /* Comic.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353E2CA74ADF005D8574 /* Comic.swift */; };
 		AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */; };
 		AFF056671A0A79C8002B5710 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E01A0A79C8002B5710 /* ioapi.c */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
 		AFF056681A0A79C8002B5710 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E21A0A79C8002B5710 /* mztools.c */; };
@@ -85,37 +86,28 @@
 		65B2C26A5644F7C843B7CE66 /* Pods-wComics.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wComics.debug.xcconfig"; path = "Target Support Files/Pods-wComics/Pods-wComics.debug.xcconfig"; sourceTree = "<group>"; };
 		AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		AF449D4E1D5A931100A8EB23 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		AF6F83422CAB35C0004B2B43 /* SliderToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderToolbar.swift; sourceTree = "<group>"; };
+		AF6F83442CAB38C4004B2B43 /* ScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
+		AF6F83462CAB39C7004B2B43 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
+		AF6F83482CAB3C75004B2B43 /* LibraryDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryDataSource.swift; sourceTree = "<group>"; };
+		AF6F834A2CAB3CC3004B2B43 /* ComicItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicItem.swift; sourceTree = "<group>"; };
+		AF6F834C2CAB434F004B2B43 /* LibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
+		AF6F834E2CAB44FE004B2B43 /* SettingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStorage.swift; sourceTree = "<group>"; };
+		AF6F83502CAB4DBD004B2B43 /* InfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
+		AF6F83522CAB4EA7004B2B43 /* ServerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerViewController.swift; sourceTree = "<group>"; };
 		AF9B6B6817A032570046F92A /* wComics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wComics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9B6B6B17A032570046F92A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AF9B6B6D17A032570046F92A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		AF9B6B6F17A032570046F92A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		AF9B6B7317A032570046F92A /* wComics-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "wComics-Info.plist"; sourceTree = "<group>"; };
-		AF9B6B7717A032570046F92A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		AF9B6B7A17A032570046F92A /* WCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WCAppDelegate.h; sourceTree = "<group>"; };
-		AF9B6B7B17A032570046F92A /* WCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WCAppDelegate.m; sourceTree = "<group>"; };
-		AF9B6B9D17A032830046F92A /* WCComic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCComic.h; sourceTree = "<group>"; };
-		AF9B6B9E17A032830046F92A /* WCComic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCComic.m; sourceTree = "<group>"; };
-		AF9B6BA217A0329C0046F92A /* WCInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCInfoViewController.h; sourceTree = "<group>"; };
-		AF9B6BA317A0329C0046F92A /* WCInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCInfoViewController.m; sourceTree = "<group>"; };
-		AF9B6BA617A033A40046F92A /* WCItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCItemCell.h; sourceTree = "<group>"; };
-		AF9B6BA717A033A40046F92A /* WCItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCItemCell.m; sourceTree = "<group>"; };
-		AF9B6BA817A033A40046F92A /* WCLibraryDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCLibraryDataSource.h; sourceTree = "<group>"; };
-		AF9B6BA917A033A40046F92A /* WCLibraryDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCLibraryDataSource.m; sourceTree = "<group>"; };
-		AF9B6BAA17A033A40046F92A /* WCLibraryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCLibraryViewController.h; sourceTree = "<group>"; };
-		AF9B6BAB17A033A40046F92A /* WCLibraryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCLibraryViewController.m; sourceTree = "<group>"; };
-		AF9B6BAD17A033A40046F92A /* WCServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCServerViewController.h; sourceTree = "<group>"; };
-		AF9B6BAE17A033A40046F92A /* WCServerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCServerViewController.m; sourceTree = "<group>"; };
-		AF9B6BAF17A033A40046F92A /* WCSettingsStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCSettingsStorage.h; sourceTree = "<group>"; };
-		AF9B6BB017A033A40046F92A /* WCSettingsStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCSettingsStorage.m; sourceTree = "<group>"; };
-		AF9B6BB217A033A40046F92A /* WCScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCScrollView.h; sourceTree = "<group>"; };
-		AF9B6BB317A033A40046F92A /* WCScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCScrollView.m; sourceTree = "<group>"; };
-		AF9B6BB417A033A40046F92A /* WCSliderToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCSliderToolbar.h; sourceTree = "<group>"; };
-		AF9B6BB517A033A40046F92A /* WCSliderToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCSliderToolbar.m; sourceTree = "<group>"; };
-		AF9B6BB617A033A40046F92A /* WCViewerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WCViewerViewController.h; sourceTree = "<group>"; };
-		AF9B6BB717A033A40046F92A /* WCViewerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WCViewerViewController.m; sourceTree = "<group>"; };
 		AF9B6BC217A033AE0046F92A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF9B6BC317A033AE0046F92A /* info.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = info.html; sourceTree = "<group>"; };
 		AF9B6BC417A033AE0046F92A /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AFCB35372CA749F6005D8574 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AFCB35392CA749FE005D8574 /* wComics-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "wComics-Bridging-Header.h"; sourceTree = "<group>"; };
+		AFCB353A2CA74A69005D8574 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerViewController.swift; sourceTree = "<group>"; };
+		AFCB353E2CA74ADF005D8574 /* Comic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic.swift; sourceTree = "<group>"; };
 		AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		AFF055DF1A0A79C8002B5710 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		AFF055E01A0A79C8002B5710 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -240,7 +232,6 @@
 		AFF056641A0A79C8002B5710 /* volume.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = volume.hpp; sourceTree = "<group>"; };
 		AFF056651A0A79C8002B5710 /* win32acl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win32acl.cpp; sourceTree = "<group>"; };
 		AFF056661A0A79C8002B5710 /* win32stm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win32stm.cpp; sourceTree = "<group>"; };
-		AFF056B11A0A7B02002B5710 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		AFF056B21A0A7C2B002B5710 /* MiniZip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MiniZip.h; sourceTree = "<group>"; };
 		AFF056B31A0A7C2B002B5710 /* MiniZip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiniZip.m; sourceTree = "<group>"; };
 		AFF056B41A0A7C2B002B5710 /* UnRAR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnRAR.h; sourceTree = "<group>"; };
@@ -303,9 +294,10 @@
 		AF9B6B7117A032570046F92A /* wComics */ = {
 			isa = PBXGroup;
 			children = (
+				AFCB35372CA749F6005D8574 /* AppDelegate.swift */,
+				AFCB353A2CA74A69005D8574 /* Common.swift */,
 				AF9B6B7217A032570046F92A /* Supporting Files */,
-				AF9B6B7A17A032570046F92A /* WCAppDelegate.h */,
-				AF9B6B7B17A032570046F92A /* WCAppDelegate.m */,
+				AFCB35392CA749FE005D8574 /* wComics-Bridging-Header.h */,
 			);
 			path = wComics;
 			sourceTree = "<group>";
@@ -313,9 +305,7 @@
 		AF9B6B7217A032570046F92A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				AF9B6B7717A032570046F92A /* main.m */,
 				AF9B6B7317A032570046F92A /* wComics-Info.plist */,
-				AFF056B11A0A7B02002B5710 /* Common.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -323,12 +313,11 @@
 		AF9B6B9A17A032830046F92A /* Comic */ = {
 			isa = PBXGroup;
 			children = (
+				AFCB353E2CA74ADF005D8574 /* Comic.swift */,
 				AFF056B21A0A7C2B002B5710 /* MiniZip.h */,
 				AFF056B31A0A7C2B002B5710 /* MiniZip.m */,
 				AFF056B41A0A7C2B002B5710 /* UnRAR.h */,
 				AFF056B51A0A7C2B002B5710 /* UnRAR.m */,
-				AF9B6B9D17A032830046F92A /* WCComic.h */,
-				AF9B6B9E17A032830046F92A /* WCComic.m */,
 			);
 			path = Comic;
 			sourceTree = "<group>";
@@ -336,8 +325,7 @@
 		AF9B6BA117A0329C0046F92A /* Info */ = {
 			isa = PBXGroup;
 			children = (
-				AF9B6BA217A0329C0046F92A /* WCInfoViewController.h */,
-				AF9B6BA317A0329C0046F92A /* WCInfoViewController.m */,
+				AF6F83502CAB4DBD004B2B43 /* InfoViewController.swift */,
 			);
 			path = Info;
 			sourceTree = "<group>";
@@ -345,12 +333,10 @@
 		AF9B6BA517A033A40046F92A /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				AF9B6BA617A033A40046F92A /* WCItemCell.h */,
-				AF9B6BA717A033A40046F92A /* WCItemCell.m */,
-				AF9B6BA817A033A40046F92A /* WCLibraryDataSource.h */,
-				AF9B6BA917A033A40046F92A /* WCLibraryDataSource.m */,
-				AF9B6BAA17A033A40046F92A /* WCLibraryViewController.h */,
-				AF9B6BAB17A033A40046F92A /* WCLibraryViewController.m */,
+				AF6F834A2CAB3CC3004B2B43 /* ComicItem.swift */,
+				AF6F83462CAB39C7004B2B43 /* ItemCell.swift */,
+				AF6F83482CAB3C75004B2B43 /* LibraryDataSource.swift */,
+				AF6F834C2CAB434F004B2B43 /* LibraryViewController.swift */,
 			);
 			path = Library;
 			sourceTree = SOURCE_ROOT;
@@ -358,10 +344,8 @@
 		AF9B6BAC17A033A40046F92A /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				AF9B6BAD17A033A40046F92A /* WCServerViewController.h */,
-				AF9B6BAE17A033A40046F92A /* WCServerViewController.m */,
-				AF9B6BAF17A033A40046F92A /* WCSettingsStorage.h */,
-				AF9B6BB017A033A40046F92A /* WCSettingsStorage.m */,
+				AF6F83522CAB4EA7004B2B43 /* ServerViewController.swift */,
+				AF6F834E2CAB44FE004B2B43 /* SettingsStorage.swift */,
 			);
 			path = Settings;
 			sourceTree = SOURCE_ROOT;
@@ -369,12 +353,9 @@
 		AF9B6BB117A033A40046F92A /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				AF9B6BB217A033A40046F92A /* WCScrollView.h */,
-				AF9B6BB317A033A40046F92A /* WCScrollView.m */,
-				AF9B6BB417A033A40046F92A /* WCSliderToolbar.h */,
-				AF9B6BB517A033A40046F92A /* WCSliderToolbar.m */,
-				AF9B6BB617A033A40046F92A /* WCViewerViewController.h */,
-				AF9B6BB717A033A40046F92A /* WCViewerViewController.m */,
+				AF6F83442CAB38C4004B2B43 /* ScrollView.swift */,
+				AF6F83422CAB35C0004B2B43 /* SliderToolbar.swift */,
+				AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */,
 			);
 			path = Viewer;
 			sourceTree = SOURCE_ROOT;
@@ -578,6 +559,11 @@
 				CLASSPREFIX = WC;
 				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = "Nik S Dyonin";
+				TargetAttributes = {
+					AF9B6B6717A032570046F92A = {
+						LastSwiftMigration = 1600;
+					};
+				};
 			};
 			buildConfigurationList = AF9B6B6317A032570046F92A /* Build configuration list for PBXProject "wComics" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -661,17 +647,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF9B6BB817A033A40046F92A /* WCItemCell.m in Sources */,
 				AFF056A81A0A79C8002B5710 /* unpack.cpp in Sources */,
-				AF9B6B7C17A032570046F92A /* WCAppDelegate.m in Sources */,
 				AFF056821A0A79C8002B5710 /* isnt.cpp in Sources */,
 				AFF0567F1A0A79C8002B5710 /* find.cpp in Sources */,
 				AFF056731A0A79C8002B5710 /* crypt.cpp in Sources */,
-				AF9B6BBA17A033A40046F92A /* WCLibraryViewController.m in Sources */,
+				AF6F83492CAB3C7A004B2B43 /* LibraryDataSource.swift in Sources */,
 				AFF056A61A0A79C8002B5710 /* unicode.cpp in Sources */,
+				AF6F83472CAB39CA004B2B43 /* ItemCell.swift in Sources */,
 				AFF056931A0A79C8002B5710 /* rarvm.cpp in Sources */,
-				AF9B6BA017A032830046F92A /* WCComic.m in Sources */,
+				AF6F83452CAB38C9004B2B43 /* ScrollView.swift in Sources */,
 				AFF0568E1A0A79C8002B5710 /* options.cpp in Sources */,
+				AF6F834B2CAB3CC6004B2B43 /* ComicItem.swift in Sources */,
 				AFF0567A1A0A79C8002B5710 /* extract.cpp in Sources */,
 				AFF0569B1A0A79C8002B5710 /* rs.cpp in Sources */,
 				AFF0569D1A0A79C8002B5710 /* scantree.cpp in Sources */,
@@ -682,37 +668,37 @@
 				AFF056951A0A79C8002B5710 /* rawread.cpp in Sources */,
 				AFF056991A0A79C8002B5710 /* resource.cpp in Sources */,
 				AFF0569A1A0A79C8002B5710 /* rijndael.cpp in Sources */,
-				AF9B6BBE17A033A40046F92A /* WCSliderToolbar.m in Sources */,
 				AFF056711A0A79C8002B5710 /* consio.cpp in Sources */,
 				AFF056A51A0A79C8002B5710 /* ulinks.cpp in Sources */,
 				AFF056901A0A79C8002B5710 /* pathfn.cpp in Sources */,
 				AFF056841A0A79C8002B5710 /* list.cpp in Sources */,
 				AFF056911A0A79C8002B5710 /* rar.cpp in Sources */,
 				AFF056811A0A79C8002B5710 /* global.cpp in Sources */,
+				AF6F834F2CAB4502004B2B43 /* SettingsStorage.swift in Sources */,
+				AFCB353B2CA74A6C005D8574 /* Common.swift in Sources */,
 				AFF056791A0A79C8002B5710 /* extinfo.cpp in Sources */,
-				AF9B6BBC17A033A40046F92A /* WCSettingsStorage.m in Sources */,
 				AFF056801A0A79C8002B5710 /* getbits.cpp in Sources */,
 				AFF056A31A0A79C8002B5710 /* system.cpp in Sources */,
 				AFF0569E1A0A79C8002B5710 /* sha1.cpp in Sources */,
 				AFF0569C1A0A79C8002B5710 /* savepos.cpp in Sources */,
+				AF6F83532CAB4EB1004B2B43 /* ServerViewController.swift in Sources */,
 				AFF0566A1A0A79C8002B5710 /* zip.c in Sources */,
 				AFF0566C1A0A79C8002B5710 /* archive.cpp in Sources */,
+				AF6F834D2CAB4354004B2B43 /* LibraryViewController.swift in Sources */,
 				AFF056671A0A79C8002B5710 /* ioapi.c in Sources */,
 				AFF056A01A0A79C8002B5710 /* strfn.cpp in Sources */,
 				AFF056721A0A79C8002B5710 /* crc.cpp in Sources */,
 				AFF0566D1A0A79C8002B5710 /* arcread.cpp in Sources */,
+				AF6F83512CAB4DC2004B2B43 /* InfoViewController.swift in Sources */,
+				AFCB35382CA749FB005D8574 /* AppDelegate.swift in Sources */,
 				AFF056771A0A79C8002B5710 /* encname.cpp in Sources */,
 				AFF056961A0A79C8002B5710 /* rdwrfn.cpp in Sources */,
-				AF9B6BBB17A033A40046F92A /* WCServerViewController.m in Sources */,
-				AF9B6B7817A032570046F92A /* main.m in Sources */,
-				AF9B6BB917A033A40046F92A /* WCLibraryDataSource.m in Sources */,
 				AFF056741A0A79C8002B5710 /* dll.cpp in Sources */,
 				AFF0569F1A0A79C8002B5710 /* smallfn.cpp in Sources */,
-				AF9B6BBD17A033A40046F92A /* WCScrollView.m in Sources */,
-				AF9B6BA417A0329C0046F92A /* WCInfoViewController.m in Sources */,
-				AF9B6BBF17A033A40046F92A /* WCViewerViewController.m in Sources */,
+				AF6F83432CAB35C5004B2B43 /* SliderToolbar.swift in Sources */,
 				AFF0567E1A0A79C8002B5710 /* filestr.cpp in Sources */,
 				AFF0567C1A0A79C8002B5710 /* file.cpp in Sources */,
+				AFCB353D2CA74AB9005D8574 /* ViewerViewController.swift in Sources */,
 				AFF056691A0A79C8002B5710 /* unzip.c in Sources */,
 				AFF056B61A0A7C2B002B5710 /* MiniZip.m in Sources */,
 				AFF056921A0A79C8002B5710 /* rarpch.cpp in Sources */,
@@ -720,6 +706,7 @@
 				AFF0566F1A0A79C8002B5710 /* cmddata.cpp in Sources */,
 				AFF056B71A0A7C2B002B5710 /* UnRAR.m in Sources */,
 				AFF056AE1A0A79C8002B5710 /* volume.cpp in Sources */,
+				AFCB353F2CA74AE1005D8574 /* Comic.swift in Sources */,
 				AFF056681A0A79C8002B5710 /* mztools.c in Sources */,
 				AFF056A11A0A79C8002B5710 /* strlist.cpp in Sources */,
 				AFF0567D1A0A79C8002B5710 /* filefn.cpp in Sources */,
@@ -854,6 +841,7 @@
 			baseConfigurationReference = 65B2C26A5644F7C843B7CE66 /* Pods-wComics.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = W87XU23WC6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -863,9 +851,13 @@
 					RARDLL,
 				);
 				INFOPLIST_FILE = "wComics/wComics-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -876,6 +868,7 @@
 			baseConfigurationReference = E92A0CE08A363385D7B8444F /* Pods-wComics.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = W87XU23WC6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -885,9 +878,12 @@
 					RARDLL,
 				);
 				INFOPLIST_FILE = "wComics/wComics-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
