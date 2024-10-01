@@ -10,7 +10,7 @@ wComics is a simple comic viewer for iOS.
 
 Comic files can be uploaded with any browser. Start the web server from application and connect to it using any browser.
 
-Files can also be uploaded through iTunes with [File Sharing](http://support.apple.com/kb/HT4094).
+Files can also be opened from your internal or cloud storage.
 
 # License
 
