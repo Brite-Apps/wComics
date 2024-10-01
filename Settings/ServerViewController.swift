@@ -43,11 +43,11 @@ class ServerViewController: UIViewController {
 		view.addSubview(urlLabel)
 		
 		NSLayoutConstraint.activate([
-			wifiImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-			wifiImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-			wifiImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 44),
+			wifiImageView.widthAnchor.constraint(equalToConstant: 240),
 			wifiImageView.heightAnchor.constraint(equalTo: wifiImageView.widthAnchor, multiplier: 1),
-			
+			wifiImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+			wifiImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 44),
+
 			urlLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
 			urlLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
 			urlLabel.topAnchor.constraint(equalTo: wifiImageView.bottomAnchor, constant: 50),

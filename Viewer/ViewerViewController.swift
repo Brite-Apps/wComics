@@ -60,7 +60,7 @@ class ViewerViewController: UIViewController  {
 	}
 	
 	private static let toolbarHeight: CGFloat = 72
-	private static let topLabelHeight: CGFloat = 44
+	private static let topLabelHeight: CGFloat = 48
 	private let pagesView = UIView()
 	private var currentPageView = ScrollView()
 	private var currentPage = 0
@@ -86,13 +86,13 @@ class ViewerViewController: UIViewController  {
 		
 		view.addSubview(bottomToolbar)
 
-		topLabel.backgroundColor = .clear
 		topLabel.backgroundColor = bottomToolbar.backgroundColor
 		topLabel.numberOfLines = 1
 		topLabel.font = UIFont.preferredFont(forTextStyle: .headline)
 		topLabel.textColor = .white
 		topLabel.textAlignment = .center
 		topLabel.text = "wComics"
+		topLabel.lineBreakMode = .byTruncatingTail
 		topLabel.translatesAutoresizingMaskIntoConstraints = false
 		
 		view.addSubview(topLabel)
@@ -169,13 +169,13 @@ class ViewerViewController: UIViewController  {
 			currentPageView.topAnchor.constraint(equalTo: pagesView.topAnchor),
 			currentPageView.bottomAnchor.constraint(equalTo: pagesView.bottomAnchor),
 			
-			libraryButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: 0),
+			libraryButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			libraryButton.leadingAnchor.constraint(equalTo: bottomToolbar.leadingAnchor, constant: 20),
 			
-			wifiButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: 0),
+			wifiButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			wifiButton.leadingAnchor.constraint(equalTo: libraryButton.trailingAnchor, constant: 15),
 			
-			infoButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: 0),
+			infoButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			infoButton.trailingAnchor.constraint(equalTo: bottomToolbar.trailingAnchor, constant: -20),
 		])
 		
