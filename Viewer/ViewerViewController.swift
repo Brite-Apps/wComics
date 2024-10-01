@@ -465,4 +465,12 @@ extension ViewerViewController: LibraryViewControllerDelegate {
 			comic = nil
 		}
 	}
+	
+	func forceUpdateLibrary() {
+		libraryNavigationController = nil
+		
+		Task {
+			await LibraryDataSource.instance.updateLibrary()
+		}
+	}
 }

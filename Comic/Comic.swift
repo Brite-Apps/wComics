@@ -40,7 +40,7 @@ class Comic: Comparable {
 		
 		self.file = file
 		self.title = ((file as NSString).lastPathComponent as NSString).deletingPathExtension
-		
+
 		if let zipArchive = MiniZip(archiveAtPath: file) {
 			self.zipArchive = zipArchive
 			
