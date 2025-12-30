@@ -241,8 +241,10 @@ class ViewerViewController: UIViewController  {
 	
 	@objc private func stopServer() {
 		dismiss(animated: true)
-		
-		(UIApplication.shared.delegate as? AppDelegate)?.updateLibrary()
+
+		Task {
+			await LibraryDataSource.instance.updateLibrary()
+		}
 	}
 	
 	@objc private func showInfo() {
@@ -401,7 +403,8 @@ class ViewerViewController: UIViewController  {
 		
 		pageChanged()
 		
-		updateZoomParamsScaling(scaleWidth: UIDevice.current.userInterfaceIdiom != .pad && ((UIApplication.shared.delegate as? AppDelegate)?.window?.windowScene?.interfaceOrientation ?? .portrait).isLandscape)
+		let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
+		updateZoomParamsScaling(scaleWidth: UIDevice.current.userInterfaceIdiom != .pad && isLandscape)
 		
 		pagesView.isUserInteractionEnabled = true
 		
