@@ -4,7 +4,7 @@
 //  wComics
 //
 //  Created by Nikita Denin on 27.09.24.
-//  Copyright © 2024 Nik S Dyonin. All rights reserved.
+//  Copyright © 2024 Nikita Denin. All rights reserved.
 //
 
 import Foundation

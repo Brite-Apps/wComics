@@ -3,7 +3,7 @@
 //  wComics
 //
 //  Created by Nikita Denin on 27.09.24.
-//  Copyright © 2024 Nik S Dyonin. All rights reserved.
+//  Copyright © 2024 Nikita Denin. All rights reserved.
 //
 
 import UIKit
@@ -97,19 +97,28 @@ class ViewerViewController: UIViewController  {
 		
 		view.addSubview(topLabel)
 		
-		libraryButton.setImage(UIImage(named: "library"), for: .normal)
+		libraryButton.setImage(UIImage(named: "folder")?.withRenderingMode(.alwaysTemplate), for: .normal)
+		libraryButton.tintColor = .white
+		libraryButton.imageView?.tintColor = .white
+		libraryButton.imageView?.contentMode = .scaleAspectFit
 		libraryButton.addTarget(self, action: #selector(showLibrary), for: .touchUpInside)
 		libraryButton.translatesAutoresizingMaskIntoConstraints = false
 		
 		bottomToolbar.addSubview(libraryButton)
 		
-		wifiButton.setImage(UIImage(named: "wifi"), for: .normal)
+		wifiButton.setImage(UIImage(named: "wifi")?.withRenderingMode(.alwaysTemplate), for: .normal)
+		wifiButton.tintColor = .white
+		wifiButton.imageView?.tintColor = .white
+		wifiButton.imageView?.contentMode = .scaleAspectFit
 		wifiButton.addTarget(self, action: #selector(startServer), for: .touchUpInside)
 		wifiButton.translatesAutoresizingMaskIntoConstraints = false
 		
 		bottomToolbar.addSubview(wifiButton)
 		
-		infoButton.setImage(UIImage(named: "info"), for: .normal)
+		infoButton.setImage(UIImage(named: "info")?.withRenderingMode(.alwaysTemplate), for: .normal)
+		infoButton.tintColor = .white
+		infoButton.imageView?.tintColor = .white
+		infoButton.imageView?.contentMode = .scaleAspectFit
 		infoButton.addTarget(self, action: #selector(showInfo), for: .touchUpInside)
 		infoButton.translatesAutoresizingMaskIntoConstraints = false
 		
@@ -171,12 +180,18 @@ class ViewerViewController: UIViewController  {
 			
 			libraryButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			libraryButton.leadingAnchor.constraint(equalTo: bottomToolbar.leadingAnchor, constant: 20),
+			libraryButton.widthAnchor.constraint(equalToConstant: 32),
+			libraryButton.heightAnchor.constraint(equalToConstant: 32),
 			
 			wifiButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			wifiButton.leadingAnchor.constraint(equalTo: libraryButton.trailingAnchor, constant: 15),
+			wifiButton.widthAnchor.constraint(equalToConstant: 32),
+			wifiButton.heightAnchor.constraint(equalToConstant: 32),
 			
 			infoButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
 			infoButton.trailingAnchor.constraint(equalTo: bottomToolbar.trailingAnchor, constant: -20),
+			infoButton.widthAnchor.constraint(equalToConstant: 32),
+			infoButton.heightAnchor.constraint(equalToConstant: 32),
 		])
 		
 		if comic == nil {
