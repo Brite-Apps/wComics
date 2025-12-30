@@ -39,11 +39,11 @@
 		AF9B84EE2F04168800FA1AA3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AF9B84DD2F04168800FA1AA3 /* README.md */; };
 		AF9B84EF2F04168800FA1AA3 /* GCDWebUploader.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF9B84D92F04168800FA1AA3 /* GCDWebUploader.bundle */; };
 		AFCB35382CA749FB005D8574 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB35372CA749F6005D8574 /* AppDelegate.swift */; };
-		AFD3C0012D1B8C4A00BEEF01 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */; };
 		AFCB353B2CA74A6C005D8574 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353A2CA74A69005D8574 /* Common.swift */; };
 		AFCB353D2CA74AB9005D8574 /* ViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */; };
 		AFCB353F2CA74AE1005D8574 /* Comic.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353E2CA74ADF005D8574 /* Comic.swift */; };
 		AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */; };
+		AFD3C0012D1B8C4A00BEEF01 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */; };
 		AFF056671A0A79C8002B5710 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E01A0A79C8002B5710 /* ioapi.c */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
 		AFF056681A0A79C8002B5710 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E21A0A79C8002B5710 /* mztools.c */; };
 		AFF056691A0A79C8002B5710 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E41A0A79C8002B5710 /* unzip.c */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
@@ -116,7 +116,6 @@
 		AF9B6BC217A033AE0046F92A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF9B6BC417A033AE0046F92A /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF9B84B82F04168800FA1AA3 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
-		AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AF9B84B92F04168800FA1AA3 /* GCDWebServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebServer.m; sourceTree = "<group>"; };
 		AF9B84BA2F04168800FA1AA3 /* GCDWebServerConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServerConnection.h; sourceTree = "<group>"; };
 		AF9B84BB2F04168800FA1AA3 /* GCDWebServerConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebServerConnection.m; sourceTree = "<group>"; };
@@ -155,6 +154,7 @@
 		AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerViewController.swift; sourceTree = "<group>"; };
 		AFCB353E2CA74ADF005D8574 /* Comic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic.swift; sourceTree = "<group>"; };
 		AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AFF055DF1A0A79C8002B5710 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		AFF055E01A0A79C8002B5710 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		AFF055E11A0A79C8002B5710 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -929,7 +929,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
@@ -955,7 +955,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
