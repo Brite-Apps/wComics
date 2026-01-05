@@ -167,10 +167,20 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		let destinationUrl = URL(fileURLWithPath: (DOCPATH as NSString).appendingPathComponent(fileUrl.lastPathComponent))
 		
 		do {
-			try FileManager.default.copyItem(at: fileUrl, to: destinationUrl)
-			let item = ComicItem(path: destinationUrl.path, isDir: false)
-			delegate?.comicItemSelected(item)
-			delegate?.forceUpdateLibrary()
+			if fileUrl.startAccessingSecurityScopedResource() {
+				try FileManager.default.copyItem(at: fileUrl, to: destinationUrl)
+				
+				fileUrl.stopAccessingSecurityScopedResource()
+				
+				let item = ComicItem(path: destinationUrl.path, isDir: false)
+				delegate?.comicItemSelected(item)
+				delegate?.forceUpdateLibrary()
+			}
+			else {
+				let alert = UIAlertController(title: "WARNING".localized(), message: "\("CANNOT_OPEN_FILE".localized()): \("YOU_DO_NOT_HAVE_ACCESS_TO_THIS_FILE".localized())", preferredStyle: .alert)
+				alert.addAction(UIAlertAction(title: "OK".localized(), style: .default))
+				present(alert, animated: true)
+			}
 		}
 		catch {
 			let alert = UIAlertController(title: "WARNING".localized(), message: "\("CANNOT_OPEN_FILE".localized()): \(error.localizedDescription)", preferredStyle: .alert)
