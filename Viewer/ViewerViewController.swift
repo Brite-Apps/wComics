@@ -23,11 +23,7 @@ class ViewerViewController: UIViewController  {
 						showErrorAlert()
 						return
 					}
-					
-					if let currentComic = comic {
-						SettingsStorage.instance.saveCurrentPage(currentPage, for: currentComic.file)
-					}
-					
+
 					currentPage = SettingsStorage.instance.currentPage(for: newValue.file) ?? 0
 					totalPages = newValue.numberOfPages
 					
