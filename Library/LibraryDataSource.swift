@@ -20,8 +20,7 @@ class LibraryDataSource {
 		let item = ComicItem(path: path, isDir: isDirectory)
 		
 		if let parent = parent {
-			var children = parent.children
-			children.append(item)
+			parent.children.append(item)
 		}
 		else {
 			library.append(item)
