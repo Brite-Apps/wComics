@@ -84,7 +84,7 @@ class SliderToolbar: UIView {
 			
 			pageLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
 			pageLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-			pageLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+			pageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -14),
 		])
 	}
 	
