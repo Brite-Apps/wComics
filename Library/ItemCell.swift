@@ -17,34 +17,33 @@ class ItemCell: UITableViewCell {
 			coverTask = nil
 			
 			if let item = item {
-				guard !item.isDir else {
+				if item.isDir {
 					accessoryType = .disclosureIndicator
 					imageView?.image = UIImage(named: "folder")
-
-					return
 				}
-				
-				accessoryType = .none
-				
-				let coverFile = "\(DOCPATH)/covers/\((item.path as NSString).lastPathComponent)_wcomics_cover_file"
-				
-				var hasCover = false
-				
-				if FileManager.default.fileExists(atPath: coverFile) {
-					if let data = try? Data(contentsOf: URL(fileURLWithPath: coverFile)), let cover = UIImage(data: data, scale: UIScreen.main.scale), cover.size.width > 0 {
-						imageView?.image = cover
-						hasCover = true
-					}
-				}
-				
-				if !hasCover {
-					imageView?.image = UIImage(named: "document")
+				else {
+					accessoryType = .none
 					
-					coverTask = Task {
-						if let (image, path) = await Comic.createCoverImage(for: item.path) {
-							if path == coverFile {
-								await MainActor.run {
-									imageView?.image = image
+					let coverFile = "\(DOCPATH)/covers/\((item.path as NSString).lastPathComponent)_wcomics_cover_file"
+					
+					var hasCover = false
+					
+					if FileManager.default.fileExists(atPath: coverFile) {
+						if let data = try? Data(contentsOf: URL(fileURLWithPath: coverFile)), let cover = UIImage(data: data, scale: UIScreen.main.scale), cover.size.width > 0 {
+							imageView?.image = cover
+							hasCover = true
+						}
+					}
+					
+					if !hasCover {
+						imageView?.image = UIImage(named: "document")
+						
+						coverTask = Task {
+							if let (image, path) = await Comic.createCoverImage(for: item.path) {
+								if path == coverFile {
+									await MainActor.run {
+										imageView?.image = image
+									}
 								}
 							}
 						}
