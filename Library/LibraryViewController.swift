@@ -37,8 +37,10 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		
 		preferredContentSize = CGSize(width: 600, height: 700)
 		
-		let cloudItem = UIBarButtonItem(image: UIImage(systemName: "icloud"), style: .plain, target: self, action: #selector(pickFromCloud))
-		navigationItem.leftBarButtonItem = cloudItem
+		if self.dataSource == LibraryDataSource.instance.library {
+			let cloudItem = UIBarButtonItem(image: UIImage(systemName: "icloud"), style: .plain, target: self, action: #selector(pickFromCloud))
+			navigationItem.leftBarButtonItem = cloudItem
+		}
 		
 		let closeItem = UIBarButtonItem(title: "CLOSE".localized(), style: .done, target: self, action: #selector(close))
 		navigationItem.rightBarButtonItem = closeItem
@@ -108,9 +110,12 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		
 		cell.item = item
 
-		let currentComic = delegate?.currentComic()
-		
-		if !item.isDir {
+		if item.isDir {
+			cell.accessoryType = .none
+		}
+		else {
+			let currentComic = delegate?.currentComic()
+			
 			if (currentComic?.file as? NSString)?.resolvingSymlinksInPath == (item.path as NSString).resolvingSymlinksInPath {
 				cell.accessoryType = .checkmark
 			}
