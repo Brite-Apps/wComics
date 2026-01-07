@@ -1,7 +1,5 @@
 wComics is a simple comic viewer for iOS.
 
-# App Store
-
 [![Available on the App Store](https://raw.githubusercontent.com/Brite-Apps/wComics/master/appstore.svg)](https://apps.apple.com/us/app/wcomics/id6476523177)
 
 # Supported formats
