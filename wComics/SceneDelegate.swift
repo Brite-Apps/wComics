@@ -46,6 +46,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		updateLibrary()
 	}
 
+	@available(macCatalyst 16.0, *)
+	func windowScene(_ windowScene: UIWindowScene, didUpdateEffectiveGeometry previousEffectiveGeometry: UIWindowScene.Geometry) {
+		let size: CGSize
+
+		if #available(macCatalyst 26.0, *) {
+			size = windowScene.effectiveGeometry.coordinateSpace.bounds.size
+		}
+		else {
+			size = window?.bounds.size ?? windowScene.screen.bounds.size
+		}
+
+		viewController.handleSceneGeometryChange(to: size)
+	}
+
 	private func openComic(at url: URL) {
 		if let comic = Comic(file: url.path) {
 			viewController.comic = comic

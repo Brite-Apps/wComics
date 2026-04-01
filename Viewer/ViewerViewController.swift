@@ -73,6 +73,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	private var libraryNavigationController: UINavigationController?
 	private var hasPresentedLibraryDirectoryPrompt = false
 	private var hasPresentedLibraryDirectoryUnavailableAlert = false
+	private var lastPagesViewSize = CGSize.zero
 	override var prefersStatusBarHidden: Bool { true }
 	
 	override func viewDidLoad() {
@@ -213,6 +214,12 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		presentLibraryDirectorySetupIfNeeded()
 	}
 
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+
+		refreshCurrentPageLayoutIfNeeded(for: pagesView.bounds.size)
+	}
+
 	override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 		if action == #selector(showLibrary) || action == #selector(showInfo) {
 			return true
@@ -295,8 +302,14 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	
 	override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
 		super.viewWillTransition(to: size, with: coordinator)
-		
-		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: size))
+
+		lastPagesViewSize = .zero
+	}
+
+	func handleSceneGeometryChange(to size: CGSize) {
+		lastPagesViewSize = .zero
+		guard isViewLoaded else { return }
+		refreshCurrentPageLayoutIfNeeded(for: size)
 	}
 	
 	@objc func showLibrary() {
@@ -429,7 +442,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	}
 	
 	private func displayPage(_ page: Int, animationDirection: Int) {
-		guard let comic = comic else { return }
+		guard comic != nil else { return }
 		guard 0..<totalPages ~= page else { return }
 		
 		var oldPageView: ScrollView? = nil
@@ -474,42 +487,12 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		
 		pagesView.isUserInteractionEnabled = false
 		
-		if let img = comic.imageAtIndex(page, screenSize: pagesView.bounds.size) {
-			var pageRect = CGRect(origin: .zero, size: img.size)
-			let c = pagesView.bounds.height / pageRect.height
-			pageRect.size.width = floor(c * pageRect.width * 0.5)
-			pageRect.size.height = floor(c * pageRect.height * 0.5)
-			
-			currentPageView.pageRect = pageRect
-			
-			let pageContentView = UIView(frame: pageRect)
-			pageContentView.backgroundColor = .white
-			
-			let tiledLayer = CATiledLayer()
-			tiledLayer.bounds = pageRect
-			tiledLayer.delegate = nil
-			tiledLayer.tileSize = CGSize(width: 256, height: 256)
-			tiledLayer.levelsOfDetail = 5
-			tiledLayer.levelsOfDetailBias = 5
-			tiledLayer.backgroundColor = UIColor.white.cgColor
-			tiledLayer.frame = pageRect
-			
-			pageContentView.layer.addSublayer(tiledLayer)
-			
-			tiledLayer.contents = img.cgImage
-			
-			currentPageView.addSubview(pageContentView)
-			
-			currentPageView.viewForZoom = pageContentView
-		}
-		
 		currentPage = page
 		
 		bottomToolbar.pageNumber = currentPage + 1
 		
 		pageChanged()
-		
-		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: pagesView.bounds.size))
+		renderCurrentPage()
 		
 		pagesView.isUserInteractionEnabled = true
 		
@@ -541,6 +524,62 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	private func pageChanged() {
 		guard let comic = comic else { return }
 		SettingsStorage.instance.saveCurrentPage(currentPage, for: comic.file)
+	}
+
+	private func renderCurrentPage() {
+		guard let comic = comic else { return }
+
+		currentPageView.viewForZoom?.removeFromSuperview()
+		currentPageView.viewForZoom = nil
+		currentPageView.pageRect = .zero
+
+		guard let img = comic.imageAtIndex(currentPage, screenSize: pagesView.bounds.size) else { return }
+
+		var pageRect = CGRect(origin: .zero, size: img.size)
+		let c = pagesView.bounds.height / pageRect.height
+		pageRect.size.width = floor(c * pageRect.width * 0.5)
+		pageRect.size.height = floor(c * pageRect.height * 0.5)
+
+		currentPageView.pageRect = pageRect
+
+		let pageContentView = UIView(frame: pageRect)
+		pageContentView.backgroundColor = .white
+
+		let tiledLayer = CATiledLayer()
+		tiledLayer.bounds = pageRect
+		tiledLayer.delegate = nil
+		tiledLayer.tileSize = CGSize(width: 256, height: 256)
+		tiledLayer.levelsOfDetail = 5
+		tiledLayer.levelsOfDetailBias = 5
+		tiledLayer.backgroundColor = UIColor.white.cgColor
+		tiledLayer.frame = pageRect
+
+		pageContentView.layer.addSublayer(tiledLayer)
+
+		tiledLayer.contents = img.cgImage
+
+		currentPageView.addSubview(pageContentView)
+
+		currentPageView.viewForZoom = pageContentView
+
+		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: pagesView.bounds.size))
+	}
+
+	private func refreshCurrentPageLayoutIfNeeded(for size: CGSize) {
+		guard size != .zero else { return }
+		guard lastPagesViewSize != size else { return }
+
+		lastPagesViewSize = size
+
+		guard comic != nil, currentPageView.pageRect != .zero else { return }
+
+		renderCurrentPage()
+		currentPageView.setNeedsLayout()
+		currentPageView.layoutIfNeeded()
+		currentPageView.layer.setNeedsDisplay()
+		currentPageView.viewForZoom?.setNeedsLayout()
+		currentPageView.viewForZoom?.layoutIfNeeded()
+		currentPageView.viewForZoom?.layer.setNeedsDisplay()
 	}
 
 	private func shouldScalePageToWidth(for size: CGSize) -> Bool {
