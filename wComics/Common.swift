@@ -10,6 +10,13 @@ import Foundation
 import UIKit
 
 let DOCPATH = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+let IS_MAC_CATALYST: Bool = {
+#if targetEnvironment(macCatalyst)
+	return true
+#else
+	return false
+#endif
+}()
 
 extension String {
 	func localized() -> String {

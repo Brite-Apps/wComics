@@ -6,24 +6,23 @@
 //  Copyright © 2024 Nikita Denin. All rights reserved.
 //
 
-@MainActor
-class LibraryDataSource {
+final class LibraryDataSource: @unchecked Sendable {
 	static let instance = LibraryDataSource()
 	static let libraryUpdatedNotification = Notification.Name("LibraryUpdated")
-	var library = [ComicItem]()
+	private(set) var library = [ComicItem]()
 
 	private init() {
 		// singleton stub
 	}
 
-	private func processItem(path: String, isDirectory: Bool, parent: ComicItem?) {
+	private static func processItem(path: String, isDirectory: Bool, rootItems: inout [ComicItem], parent: ComicItem?) {
 		let item = ComicItem(path: path, isDir: isDirectory)
 		
 		if let parent = parent {
 			parent.children.append(item)
 		}
 		else {
-			library.append(item)
+			rootItems.append(item)
 		}
 		
 		if isDirectory {
@@ -33,14 +32,14 @@ class LibraryDataSource {
 					var isDir: ObjCBool = false
 					
 					if FileManager.default.fileExists(atPath: p, isDirectory: &isDir) {
-						processItem(path: p, isDirectory: isDir.boolValue, parent: item)
+						processItem(path: p, isDirectory: isDir.boolValue, rootItems: &rootItems, parent: item)
 					}
 				}
 			}
 		}
 	}
 	
-	private func sort(items: inout [ComicItem]) {
+	private static func sort(items: inout [ComicItem]) {
 		var dirs = [ComicItem]()
 		var comics = [ComicItem]()
 		
@@ -63,26 +62,34 @@ class LibraryDataSource {
 		items.append(contentsOf: comics)
 	}
 	
-	func updateLibrary() async {
-		library.removeAll()
+	func updateLibrary(rootPath: String) async {
+		var updatedLibrary = [ComicItem]()
 		
-		if let itemsList = try? FileManager.default.contentsOfDirectory(atPath: DOCPATH), !itemsList.isEmpty {
+		if let itemsList = try? FileManager.default.contentsOfDirectory(atPath: rootPath), !itemsList.isEmpty {
 			for itemName in itemsList {
 				guard itemName != "covers" else { continue }
 				guard !itemName.hasPrefix(".") else { continue }
 				
-				let itemPath = (DOCPATH as NSString).appendingPathComponent(itemName)
+				let itemPath = (rootPath as NSString).appendingPathComponent(itemName)
 				var isDirectory: ObjCBool = false
 				
 				if FileManager.default.fileExists(atPath: itemPath, isDirectory: &isDirectory) {
-					processItem(path: itemPath, isDirectory: isDirectory.boolValue, parent: nil)
+					Self.processItem(path: itemPath, isDirectory: isDirectory.boolValue, rootItems: &updatedLibrary, parent: nil)
 				}
 			}
 		}
 		
-		sort(items: &library)
+		Self.sort(items: &updatedLibrary)
 		
 		await MainActor.run {
+			library = updatedLibrary
+			NotificationCenter.default.post(name: Self.libraryUpdatedNotification, object: nil)
+		}
+	}
+
+	func clearLibrary() async {
+		await MainActor.run {
+			library.removeAll()
 			NotificationCenter.default.post(name: Self.libraryUpdatedNotification, object: nil)
 		}
 	}

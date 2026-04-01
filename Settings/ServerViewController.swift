@@ -53,7 +53,9 @@ class ServerViewController: UIViewController {
 			urlLabel.topAnchor.constraint(equalTo: wifiImageView.bottomAnchor, constant: 50),
 		])
 
-		UIApplication.shared.isIdleTimerDisabled = true
+		if !IS_MAC_CATALYST {
+			UIApplication.shared.isIdleTimerDisabled = true
+		}
 	}
 
 	deinit {
@@ -61,7 +63,9 @@ class ServerViewController: UIViewController {
 		
 		Task {
 			await MainActor.run {
-				UIApplication.shared.isIdleTimerDisabled = false
+				if !IS_MAC_CATALYST {
+					UIApplication.shared.isIdleTimerDisabled = false
+				}
 			}
 		}
 	}

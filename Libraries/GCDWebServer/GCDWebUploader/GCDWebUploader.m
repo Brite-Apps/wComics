@@ -66,8 +66,15 @@ NS_ASSUME_NONNULL_END
 
 - (instancetype)initWithUploadDirectory:(NSString*)path {
   if ((self = [super init])) {
-    NSString* bundlePath = [[NSBundle bundleForClass:[GCDWebUploader class]] pathForResource:@"GCDWebUploader" ofType:@"bundle"];
-    if (bundlePath == nil) {
+    NSBundle* classBundle = [NSBundle bundleForClass:[GCDWebUploader class]];
+    NSString* bundlePath = [classBundle pathForResource:@"GCDWebUploader" ofType:@"bundle"];
+    if (bundlePath.length == 0) {
+      bundlePath = [[NSBundle mainBundle] pathForResource:@"GCDWebUploader" ofType:@"bundle"];
+    }
+    if (bundlePath.length == 0) {
+      bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"GCDWebUploader.bundle"];
+    }
+    if (bundlePath.length == 0 || ![[NSFileManager defaultManager] fileExistsAtPath:bundlePath]) {
       return nil;
     }
     NSBundle* siteBundle = [NSBundle bundleWithPath:bundlePath];

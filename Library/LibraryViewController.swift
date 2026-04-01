@@ -6,7 +6,6 @@
 //  Copyright © 2024 Nikita Denin. All rights reserved.
 //
 
-import MobileCoreServices
 import UIKit
 import UniformTypeIdentifiers
 
@@ -15,6 +14,7 @@ protocol LibraryViewControllerDelegate: AnyObject {
 	@MainActor func currentComic() -> Comic?
 	@MainActor func comicRemoved(_ item: ComicItem)
 	@MainActor func forceUpdateLibrary()
+	@MainActor func selectLibraryDirectory()
 }
 
 class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
@@ -38,8 +38,14 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		preferredContentSize = CGSize(width: 600, height: 700)
 		
 		if self.dataSource == LibraryDataSource.instance.library {
-			let cloudItem = UIBarButtonItem(image: UIImage(systemName: "icloud"), style: .plain, target: self, action: #selector(pickFromCloud))
-			navigationItem.leftBarButtonItem = cloudItem
+			if IS_MAC_CATALYST {
+				let folderItem = UIBarButtonItem(image: UIImage(systemName: "folder"), style: .plain, target: self, action: #selector(selectLibraryDirectory))
+				navigationItem.leftBarButtonItem = folderItem
+			}
+			else {
+				let cloudItem = UIBarButtonItem(image: UIImage(systemName: "icloud"), style: .plain, target: self, action: #selector(pickFromCloud))
+				navigationItem.leftBarButtonItem = cloudItem
+			}
 		}
 		
 		let closeItem = UIBarButtonItem(title: "CLOSE".localized(), style: .done, target: self, action: #selector(close))
@@ -90,6 +96,10 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	@objc private func close() {
 		dismiss(animated: true)
 	}
+
+	@objc private func selectLibraryDirectory() {
+		delegate?.selectLibraryDirectory()
+	}
 	
 	private func reloadEmptyState() {
 		emptyLabel.isHidden = !dataSource.isEmpty
@@ -128,7 +138,7 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	}
 	
 	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-		return true
+		return !IS_MAC_CATALYST
 	}
 	
 	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {

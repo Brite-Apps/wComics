@@ -8,7 +8,9 @@
 
 import UIKit
 
-class ViewerViewController: UIViewController  {
+class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
+	override var canBecomeFirstResponder: Bool { true }
+
 	@MainActor
 	var comic: Comic? {
 		willSet {
@@ -69,6 +71,8 @@ class ViewerViewController: UIViewController  {
 	private let infoButton = UIButton(type: .custom)
 	private var toolbarHidden = true
 	private var libraryNavigationController: UINavigationController?
+	private var hasPresentedLibraryDirectoryPrompt = false
+	private var hasPresentedLibraryDirectoryUnavailableAlert = false
 	override var prefersStatusBarHidden: Bool { true }
 	
 	override func viewDidLoad() {
@@ -93,32 +97,38 @@ class ViewerViewController: UIViewController  {
 		
 		view.addSubview(topLabel)
 		
-		libraryButton.setImage(UIImage(named: "folder")?.withRenderingMode(.alwaysTemplate), for: .normal)
-		libraryButton.tintColor = .white
-		libraryButton.imageView?.tintColor = .white
-		libraryButton.imageView?.contentMode = .scaleAspectFit
-		libraryButton.addTarget(self, action: #selector(showLibrary), for: .touchUpInside)
-		libraryButton.translatesAutoresizingMaskIntoConstraints = false
+		if !IS_MAC_CATALYST {
+			libraryButton.setImage(UIImage(named: "folder")?.withRenderingMode(.alwaysTemplate), for: .normal)
+			libraryButton.tintColor = .white
+			libraryButton.imageView?.tintColor = .white
+			libraryButton.imageView?.contentMode = .scaleAspectFit
+			libraryButton.addTarget(self, action: #selector(showLibrary), for: .touchUpInside)
+			libraryButton.translatesAutoresizingMaskIntoConstraints = false
+			
+			bottomToolbar.addSubview(libraryButton)
+		}
 		
-		bottomToolbar.addSubview(libraryButton)
+		if !IS_MAC_CATALYST {
+			wifiButton.setImage(UIImage(named: "wifi")?.withRenderingMode(.alwaysTemplate), for: .normal)
+			wifiButton.tintColor = .white
+			wifiButton.imageView?.tintColor = .white
+			wifiButton.imageView?.contentMode = .scaleAspectFit
+			wifiButton.addTarget(self, action: #selector(startServer), for: .touchUpInside)
+			wifiButton.translatesAutoresizingMaskIntoConstraints = false
+			
+			bottomToolbar.addSubview(wifiButton)
+		}
 		
-		wifiButton.setImage(UIImage(named: "wifi")?.withRenderingMode(.alwaysTemplate), for: .normal)
-		wifiButton.tintColor = .white
-		wifiButton.imageView?.tintColor = .white
-		wifiButton.imageView?.contentMode = .scaleAspectFit
-		wifiButton.addTarget(self, action: #selector(startServer), for: .touchUpInside)
-		wifiButton.translatesAutoresizingMaskIntoConstraints = false
-		
-		bottomToolbar.addSubview(wifiButton)
-		
-		infoButton.setImage(UIImage(named: "info")?.withRenderingMode(.alwaysTemplate), for: .normal)
-		infoButton.tintColor = .white
-		infoButton.imageView?.tintColor = .white
-		infoButton.imageView?.contentMode = .scaleAspectFit
-		infoButton.addTarget(self, action: #selector(showInfo), for: .touchUpInside)
-		infoButton.translatesAutoresizingMaskIntoConstraints = false
-		
-		bottomToolbar.addSubview(infoButton)
+		if !IS_MAC_CATALYST {
+			infoButton.setImage(UIImage(named: "info")?.withRenderingMode(.alwaysTemplate), for: .normal)
+			infoButton.tintColor = .white
+			infoButton.imageView?.tintColor = .white
+			infoButton.imageView?.contentMode = .scaleAspectFit
+			infoButton.addTarget(self, action: #selector(showInfo), for: .touchUpInside)
+			infoButton.translatesAutoresizingMaskIntoConstraints = false
+			
+			bottomToolbar.addSubview(infoButton)
+		}
 		
 		bottomToolbar.pageNumber = -1
 		
@@ -173,26 +183,107 @@ class ViewerViewController: UIViewController  {
 			currentPageView.trailingAnchor.constraint(equalTo: pagesView.trailingAnchor),
 			currentPageView.topAnchor.constraint(equalTo: pagesView.topAnchor),
 			currentPageView.bottomAnchor.constraint(equalTo: pagesView.bottomAnchor),
-			
-			libraryButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
-			libraryButton.leadingAnchor.constraint(equalTo: bottomToolbar.leadingAnchor, constant: 20),
-			libraryButton.widthAnchor.constraint(equalToConstant: 32),
-			libraryButton.heightAnchor.constraint(equalToConstant: 32),
-			
-			wifiButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
-			wifiButton.leadingAnchor.constraint(equalTo: libraryButton.trailingAnchor, constant: 15),
-			wifiButton.widthAnchor.constraint(equalToConstant: 32),
-			wifiButton.heightAnchor.constraint(equalToConstant: 32),
-			
-			infoButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
-			infoButton.trailingAnchor.constraint(equalTo: bottomToolbar.trailingAnchor, constant: -20),
-			infoButton.widthAnchor.constraint(equalToConstant: 32),
-			infoButton.heightAnchor.constraint(equalToConstant: 32),
 		])
+		
+		if !IS_MAC_CATALYST {
+			NSLayoutConstraint.activate([
+				libraryButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
+				libraryButton.leadingAnchor.constraint(equalTo: bottomToolbar.leadingAnchor, constant: 20),
+				libraryButton.widthAnchor.constraint(equalToConstant: 32),
+				libraryButton.heightAnchor.constraint(equalToConstant: 32),
+				wifiButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
+				wifiButton.leadingAnchor.constraint(equalTo: libraryButton.trailingAnchor, constant: 15),
+				wifiButton.widthAnchor.constraint(equalToConstant: 32),
+				wifiButton.heightAnchor.constraint(equalToConstant: 32),
+				infoButton.bottomAnchor.constraint(equalTo: bottomToolbar.bottomAnchor, constant: -6),
+				infoButton.trailingAnchor.constraint(equalTo: bottomToolbar.trailingAnchor, constant: -20),
+				infoButton.widthAnchor.constraint(equalToConstant: 32),
+				infoButton.heightAnchor.constraint(equalToConstant: 32),
+			])
+		}
 		
 		if comic == nil {
 			toggleToolbars()
 		}
+	}
+
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		becomeFirstResponder()
+		presentLibraryDirectorySetupIfNeeded()
+	}
+
+	override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+		if action == #selector(showLibrary) || action == #selector(showInfo) {
+			return true
+		}
+
+		return super.canPerformAction(action, withSender: sender)
+	}
+
+	private func libraryDirectoryAlertPresenter() -> UIViewController? {
+		if let presentedViewController {
+			if presentedViewController is UIAlertController || presentedViewController is UIDocumentPickerViewController {
+				return nil
+			}
+			return presentedViewController
+		}
+
+		return self
+	}
+
+	@MainActor
+	func presentLibraryDirectorySetupIfNeeded() {
+		guard IS_MAC_CATALYST else {
+			return
+		}
+
+		guard SettingsStorage.instance.libraryDirectoryURL() == nil else {
+			return
+		}
+
+		guard !hasPresentedLibraryDirectoryPrompt else {
+			return
+		}
+
+		guard let presenter = libraryDirectoryAlertPresenter() else { return }
+
+		hasPresentedLibraryDirectoryPrompt = true
+
+		let alert = UIAlertController(title: "Select Library Folder", message: "Choose the folder that contains your comics to build the library.", preferredStyle: .alert)
+		alert.addAction(UIAlertAction(title: "Select Folder", style: .default) { [weak self] _ in
+			self?.hasPresentedLibraryDirectoryPrompt = false
+			self?.presentLibraryDirectoryPicker()
+		})
+		alert.addAction(UIAlertAction(title: "Later", style: .cancel) { [weak self] _ in
+			self?.hasPresentedLibraryDirectoryPrompt = false
+		})
+		presenter.present(alert, animated: true)
+	}
+
+	@MainActor
+	func presentLibraryDirectoryUnavailableAlert(for url: URL) {
+		guard IS_MAC_CATALYST else {
+			return
+		}
+
+		guard !hasPresentedLibraryDirectoryUnavailableAlert else {
+			return
+		}
+
+		guard let presenter = libraryDirectoryAlertPresenter() else { return }
+
+		hasPresentedLibraryDirectoryUnavailableAlert = true
+
+		let alert = UIAlertController(title: "Library Folder Unavailable", message: "The selected library folder is currently unavailable.\n\n\(url.path)", preferredStyle: .alert)
+		alert.addAction(UIAlertAction(title: "Keep Current", style: .cancel) { [weak self] _ in
+			self?.hasPresentedLibraryDirectoryUnavailableAlert = false
+		})
+		alert.addAction(UIAlertAction(title: "Select New Folder", style: .default) { [weak self] _ in
+			self?.hasPresentedLibraryDirectoryUnavailableAlert = false
+			self?.presentLibraryDirectoryPicker()
+		})
+		presenter.present(alert, animated: true)
 	}
 	
 	private func showErrorAlert() {
@@ -205,10 +296,23 @@ class ViewerViewController: UIViewController  {
 	override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
 		super.viewWillTransition(to: size, with: coordinator)
 		
-		updateZoomParamsScaling(scaleWidth: UIDevice.current.userInterfaceIdiom != .pad && size.width > size.height)
+		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: size))
 	}
 	
-	@objc private func showLibrary() {
+	@objc func showLibrary() {
+		if IS_MAC_CATALYST {
+			switch SettingsStorage.instance.libraryDirectoryState() {
+			case .notSelected:
+				presentLibraryDirectorySetupIfNeeded()
+				return
+			case .unavailable(let url):
+				presentLibraryDirectoryUnavailableAlert(for: url)
+				return
+			case .available:
+				break
+			}
+		}
+
 		if libraryNavigationController == nil {
 			let libraryViewController = LibraryViewController(dataSource: LibraryDataSource.instance.library)
 			libraryViewController.title = "LIBRARY".localized()
@@ -219,6 +323,14 @@ class ViewerViewController: UIViewController  {
 		}
 		
 		present(libraryNavigationController!, animated: true)
+	}
+
+	private func presentLibraryDirectoryPicker() {
+		let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder], asCopy: false)
+		picker.allowsMultipleSelection = false
+		picker.delegate = self
+		let presenter = presentedViewController ?? self
+		presenter.present(picker, animated: true)
 	}
 	
 	@objc private func startServer() {
@@ -238,12 +350,10 @@ class ViewerViewController: UIViewController  {
 	@objc private func stopServer() {
 		dismiss(animated: true)
 
-		Task {
-			await LibraryDataSource.instance.updateLibrary()
-		}
+		forceUpdateLibrary()
 	}
 	
-	@objc private func showInfo() {
+	@objc func showInfo() {
 		let v = InfoViewController()
 
 		let nav = UINavigationController(rootViewController: v)
@@ -399,8 +509,7 @@ class ViewerViewController: UIViewController  {
 		
 		pageChanged()
 		
-		let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
-		updateZoomParamsScaling(scaleWidth: UIDevice.current.userInterfaceIdiom != .pad && isLandscape)
+		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: pagesView.bounds.size))
 		
 		pagesView.isUserInteractionEnabled = true
 		
@@ -433,6 +542,10 @@ class ViewerViewController: UIViewController  {
 		guard let comic = comic else { return }
 		SettingsStorage.instance.saveCurrentPage(currentPage, for: comic.file)
 	}
+
+	private func shouldScalePageToWidth(for size: CGSize) -> Bool {
+		return UIDevice.current.userInterfaceIdiom != .pad && size.width > size.height
+	}
 	
 	@objc private func handleSwipe(_ sender: UISwipeGestureRecognizer) {
 		guard comic != nil else { return }
@@ -461,6 +574,19 @@ extension ViewerViewController: SliderToolbarDelegate {
 
 extension ViewerViewController: LibraryViewControllerDelegate {
 	func comicItemSelected(_ item: ComicItem) {
+		if IS_MAC_CATALYST {
+			switch SettingsStorage.instance.libraryDirectoryState() {
+			case .notSelected:
+				presentLibraryDirectorySetupIfNeeded()
+				return
+			case .unavailable(let url):
+				presentLibraryDirectoryUnavailableAlert(for: url)
+				return
+			case .available:
+				break
+			}
+		}
+
 		dismiss(animated: true) { [weak self] in
 			if (item.path as NSString).resolvingSymlinksInPath != (self?.comic?.file as? NSString)?.resolvingSymlinksInPath {
 				if let newComic = Comic(file: item.path) {
@@ -484,7 +610,49 @@ extension ViewerViewController: LibraryViewControllerDelegate {
 		libraryNavigationController = nil
 		
 		Task {
-			await LibraryDataSource.instance.updateLibrary()
+			let libraryDirectoryState = await MainActor.run { () -> LibraryDirectoryState in
+				if IS_MAC_CATALYST {
+					return SettingsStorage.instance.libraryDirectoryState()
+				}
+				return .available(URL(fileURLWithPath: DOCPATH, isDirectory: true))
+			}
+
+			switch libraryDirectoryState {
+			case .available(let url):
+				await LibraryDataSource.instance.updateLibrary(rootPath: url.path)
+			case .notSelected:
+				await LibraryDataSource.instance.clearLibrary()
+				await MainActor.run {
+					self.comic = nil
+					self.presentLibraryDirectorySetupIfNeeded()
+				}
+			case .unavailable(let url):
+				await LibraryDataSource.instance.clearLibrary()
+				await MainActor.run {
+					self.comic = nil
+					self.presentLibraryDirectoryUnavailableAlert(for: url)
+				}
+			}
 		}
+	}
+
+	func selectLibraryDirectory() {
+		presentLibraryDirectoryPicker()
+	}
+}
+
+extension ViewerViewController {
+	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+		guard let url = urls.first else { return }
+
+		SettingsStorage.instance.saveLibraryDirectory(url)
+		hasPresentedLibraryDirectoryPrompt = false
+		hasPresentedLibraryDirectoryUnavailableAlert = false
+		forceUpdateLibrary()
+	}
+
+	func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+		hasPresentedLibraryDirectoryPrompt = false
+		hasPresentedLibraryDirectoryUnavailableAlert = false
 	}
 }

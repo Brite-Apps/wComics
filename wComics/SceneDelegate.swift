@@ -75,7 +75,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 			try? FileManager.default.createDirectory(atPath: coverDir, withIntermediateDirectories: true)
 
-			await LibraryDataSource.instance.updateLibrary()
+			let libraryDirectoryState = await MainActor.run { () -> LibraryDirectoryState in
+				if IS_MAC_CATALYST {
+					return SettingsStorage.instance.libraryDirectoryState()
+				}
+				return .available(URL(fileURLWithPath: DOCPATH, isDirectory: true))
+			}
+
+			let rootURL: URL
+			switch libraryDirectoryState {
+			case .available(let url):
+				rootURL = url
+			case .notSelected:
+				await LibraryDataSource.instance.clearLibrary()
+				await MainActor.run {
+					viewController.comic = nil
+					viewController.presentLibraryDirectorySetupIfNeeded()
+				}
+				return
+			case .unavailable(let url):
+				await LibraryDataSource.instance.clearLibrary()
+				await MainActor.run {
+					viewController.comic = nil
+					viewController.presentLibraryDirectoryUnavailableAlert(for: url)
+				}
+				return
+			}
+
+			let didAccessSecurityScopedResource = rootURL.startAccessingSecurityScopedResource()
+			defer {
+				if didAccessSecurityScopedResource {
+					rootURL.stopAccessingSecurityScopedResource()
+				}
+			}
+
+			await LibraryDataSource.instance.updateLibrary(rootPath: rootURL.path)
 
 			await MainActor.run {
 				checkOpen()

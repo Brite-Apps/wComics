@@ -672,6 +672,7 @@
 				TargetAttributes = {
 					AF9B6B6717A032570046F92A = {
 						LastSwiftMigration = 1600;
+						SupportsMacCatalyst = 1;
 					};
 				};
 			};
@@ -942,6 +943,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -968,6 +971,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
