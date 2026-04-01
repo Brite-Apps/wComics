@@ -58,13 +58,29 @@ class SettingsStorage {
 		return URL(fileURLWithPath: libraryDirectoryPath, isDirectory: true)
 	}
 
+	private func libraryDirectoryBookmarkResolutionOptions() -> URL.BookmarkResolutionOptions {
+#if targetEnvironment(macCatalyst)
+		return [.withSecurityScope]
+#else
+		return []
+#endif
+	}
+
+	private func libraryDirectoryBookmarkCreationOptions() -> URL.BookmarkCreationOptions {
+#if targetEnvironment(macCatalyst)
+		return [.withSecurityScope]
+#else
+		return []
+#endif
+	}
+
 	func libraryDirectoryURL() -> URL? {
 		guard let bookmarkData = settings.data(forKey: "libraryDirectoryBookmark") else {
 			return storedLibraryDirectoryURL()
 		}
 
 		var isStale = false
-		guard let url = try? URL(resolvingBookmarkData: bookmarkData, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) else {
+		guard let url = try? URL(resolvingBookmarkData: bookmarkData, options: libraryDirectoryBookmarkResolutionOptions(), relativeTo: nil, bookmarkDataIsStale: &isStale) else {
 			return storedLibraryDirectoryURL()
 		}
 
@@ -99,7 +115,7 @@ class SettingsStorage {
 
 	func saveLibraryDirectory(_ url: URL) {
 		libraryDirectoryPath = url.path
-		if let bookmarkData = try? url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil) {
+		if let bookmarkData = try? url.bookmarkData(options: libraryDirectoryBookmarkCreationOptions(), includingResourceValuesForKeys: nil, relativeTo: nil) {
 			settings.set(bookmarkData, forKey: "libraryDirectoryBookmark")
 		}
 		else {

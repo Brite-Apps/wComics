@@ -46,11 +46,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		updateLibrary()
 	}
 
-	@available(macCatalyst 16.0, *)
+	@available(iOS 16.0, macCatalyst 16.0, *)
 	func windowScene(_ windowScene: UIWindowScene, didUpdateEffectiveGeometry previousEffectiveGeometry: UIWindowScene.Geometry) {
 		let size: CGSize
 
-		if #available(macCatalyst 26.0, *) {
+		if #available(iOS 26.0, macCatalyst 26.0, *) {
 			size = windowScene.effectiveGeometry.coordinateSpace.bounds.size
 		}
 		else {
