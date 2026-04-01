@@ -11,6 +11,16 @@ import UIKit
 class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	override var canBecomeFirstResponder: Bool { true }
 
+	override var keyCommands: [UIKeyCommand]? {
+		let previousPageCommand = UIKeyCommand(input: UIKeyCommand.inputLeftArrow, modifierFlags: [], action: #selector(handlePreviousPageKeyCommand))
+		let nextPageCommand = UIKeyCommand(input: UIKeyCommand.inputRightArrow, modifierFlags: [], action: #selector(handleNextPageKeyCommand))
+		let togglePanelsCommand = UIKeyCommand(input: " ", modifierFlags: [], action: #selector(handleTogglePanelsKeyCommand))
+		previousPageCommand.wantsPriorityOverSystemBehavior = true
+		nextPageCommand.wantsPriorityOverSystemBehavior = true
+		togglePanelsCommand.wantsPriorityOverSystemBehavior = true
+		return [previousPageCommand, nextPageCommand, togglePanelsCommand]
+	}
+
 	@MainActor
 	var comic: Comic? {
 		willSet {
@@ -214,6 +224,28 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		presentLibraryDirectorySetupIfNeeded()
 	}
 
+	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+		for press in presses {
+			guard let key = press.key else { continue }
+
+			switch key.keyCode {
+				case .keyboardLeftArrow:
+					showPreviousPage()
+					return
+				case .keyboardRightArrow:
+					showNextPage()
+					return
+				case .keyboardSpacebar:
+					togglePanelsIfNeeded()
+					return
+				default:
+					break
+			}
+		}
+
+		super.pressesBegan(presses, with: event)
+	}
+
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 
@@ -414,10 +446,10 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		let quarterWidth = view.bounds.width * 0.25
 		
 		if location.x <= quarterWidth {
-			displayPage(currentPage - 1, animationDirection: 1)
+			showPreviousPage()
 		}
 		else if location.x >= view.bounds.width - quarterWidth {
-			displayPage(currentPage + 1, animationDirection: -1)
+			showNextPage()
 		}
 		else {
 			toggleToolbars()
@@ -585,17 +617,42 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	private func shouldScalePageToWidth(for size: CGSize) -> Bool {
 		return UIDevice.current.userInterfaceIdiom != .pad && size.width > size.height
 	}
+
+	private func togglePanelsIfNeeded() {
+		guard comic != nil else { return }
+		toggleToolbars()
+	}
+
+	private func showPreviousPage() {
+		displayPage(currentPage - 1, animationDirection: 1)
+	}
+
+	private func showNextPage() {
+		displayPage(currentPage + 1, animationDirection: -1)
+	}
 	
 	@objc private func handleSwipe(_ sender: UISwipeGestureRecognizer) {
 		guard comic != nil else { return }
 		guard sender.state == .recognized else { return }
 		
 		if sender.direction == .left {
-			displayPage(currentPage + 1, animationDirection: -1)
+			showNextPage()
 		}
 		else if sender.direction == .right {
-			displayPage(currentPage - 1, animationDirection: 1)
+			showPreviousPage()
 		}
+	}
+
+	@objc private func handlePreviousPageKeyCommand() {
+		showPreviousPage()
+	}
+
+	@objc private func handleNextPageKeyCommand() {
+		showNextPage()
+	}
+
+	@objc private func handleTogglePanelsKeyCommand() {
+		togglePanelsIfNeeded()
 	}
 }
 
