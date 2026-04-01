@@ -44,6 +44,7 @@
 		AFCB353F2CA74AE1005D8574 /* Comic.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353E2CA74ADF005D8574 /* Comic.swift */; };
 		AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */; };
 		AFD3C0012D1B8C4A00BEEF01 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */; };
+		AFD69D662F7D98BA001E5A68 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = AFD69D652F7D98BA001E5A68 /* AppIcon.icon */; };
 		AFF056671A0A79C8002B5710 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E01A0A79C8002B5710 /* ioapi.c */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
 		AFF056681A0A79C8002B5710 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E21A0A79C8002B5710 /* mztools.c */; };
 		AFF056691A0A79C8002B5710 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = AFF055E41A0A79C8002B5710 /* unzip.c */; settings = {COMPILER_FLAGS = "-Wno-all"; }; };
@@ -155,6 +156,7 @@
 		AFCB353E2CA74ADF005D8574 /* Comic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comic.swift; sourceTree = "<group>"; };
 		AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		AFD3C0002D1B8C4A00BEEF01 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		AFD69D652F7D98BA001E5A68 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; name = AppIcon.icon; path = Graphics/IconComposer/AppIcon.icon; sourceTree = SOURCE_ROOT; };
 		AFF055DF1A0A79C8002B5710 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		AFF055E01A0A79C8002B5710 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		AFF055E11A0A79C8002B5710 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */,
 				AF9B6BC117A033AE0046F92A /* Localizable.strings */,
 				AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */,
+				AFD69D652F7D98BA001E5A68 /* AppIcon.icon */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -703,6 +706,7 @@
 				AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */,
 				AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */,
 				AF149D9C2379FAA500CFF0C0 /* Launch Screen.storyboard in Resources */,
+				AFD69D662F7D98BA001E5A68 /* AppIcon.icon in Resources */,
 				AF9B84ED2F04168800FA1AA3 /* LICENSE in Resources */,
 				AF9B84EE2F04168800FA1AA3 /* README.md in Resources */,
 				AF9B84EF2F04168800FA1AA3 /* GCDWebUploader.bundle in Resources */,
@@ -943,8 +947,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -971,8 +975,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.briteapps.wcomics;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
