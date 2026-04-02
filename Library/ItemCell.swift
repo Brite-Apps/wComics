@@ -115,9 +115,8 @@ class ItemCell: UICollectionViewCell {
 		]
 
 		listConstraints = [
-			imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
 			imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-			imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+			imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 			imageView.widthAnchor.constraint(equalToConstant: 52),
 			imageView.heightAnchor.constraint(equalToConstant: 68),
 			titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 12),

@@ -51,6 +51,17 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 		
 		reloadEmptyState()
 	}
+
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+
+		if showsLibraryRootActions {
+			dataSource = LibraryDataSource.instance.library
+			reloadEmptyState()
+		}
+
+		collectionView.reloadData()
+	}
 	
 	private func setupCollectionView() {
 		collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
