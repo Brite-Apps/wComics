@@ -13,6 +13,7 @@ class ItemCell: UICollectionViewCell {
 	private let imageView = UIImageView()
 	private let titleLabel = UILabel()
 	private let checkmarkView = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
+	private let chevronView = UIImageView(image: UIImage(systemName: "chevron.right"))
 	private var gridConstraints = [NSLayoutConstraint]()
 	private var listConstraints = [NSLayoutConstraint]()
 
@@ -34,7 +35,7 @@ class ItemCell: UICollectionViewCell {
 				
 				if item.isDir {
 					imageView.image = UIImage(named: "folder")
-					imageView.contentMode = .center
+					imageView.contentMode = presentationMode == .list ? .scaleAspectFit : .center
 				}
 				else {
 					imageView.contentMode = .scaleAspectFill
@@ -59,12 +60,14 @@ class ItemCell: UICollectionViewCell {
 					}
 				}
 			}
+
+			updateAccessoryViews()
 		}
 	}
 	
 	var isCurrent: Bool = false {
 		didSet {
-			checkmarkView.isHidden = !isCurrent
+			updateAccessoryViews()
 		}
 	}
 	
@@ -88,7 +91,7 @@ class ItemCell: UICollectionViewCell {
 		contentView.addSubview(imageView)
 		
 		titleLabel.translatesAutoresizingMaskIntoConstraints = false
-		titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
+		titleLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
 		titleLabel.textAlignment = .center
 		titleLabel.numberOfLines = 2
 		titleLabel.textColor = .label
@@ -98,6 +101,11 @@ class ItemCell: UICollectionViewCell {
 		checkmarkView.tintColor = .systemBlue
 		checkmarkView.isHidden = true
 		contentView.addSubview(checkmarkView)
+
+		chevronView.translatesAutoresizingMaskIntoConstraints = false
+		chevronView.tintColor = .tertiaryLabel
+		chevronView.isHidden = true
+		contentView.addSubview(chevronView)
 		
 		gridConstraints = [
 			imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -117,15 +125,20 @@ class ItemCell: UICollectionViewCell {
 		listConstraints = [
 			imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
 			imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-			imageView.widthAnchor.constraint(equalToConstant: 52),
-			imageView.heightAnchor.constraint(equalToConstant: 68),
-			titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 12),
+			imageView.widthAnchor.constraint(equalToConstant: 40),
+			imageView.heightAnchor.constraint(equalToConstant: 40),
+			titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
 			titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-			titleLabel.trailingAnchor.constraint(equalTo: checkmarkView.leadingAnchor, constant: -12),
+			titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: checkmarkView.leadingAnchor, constant: -10),
+			titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: chevronView.leadingAnchor, constant: -10),
 			checkmarkView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-			checkmarkView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+			checkmarkView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
 			checkmarkView.widthAnchor.constraint(equalToConstant: 20),
-			checkmarkView.heightAnchor.constraint(equalToConstant: 20)
+			checkmarkView.heightAnchor.constraint(equalToConstant: 20),
+			chevronView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+			chevronView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+			chevronView.widthAnchor.constraint(equalToConstant: 10),
+			chevronView.heightAnchor.constraint(equalToConstant: 16)
 		]
 
 		updateLayoutForPresentationMode()
@@ -153,5 +166,16 @@ class ItemCell: UICollectionViewCell {
 			titleLabel.numberOfLines = 1
 			NSLayoutConstraint.activate(listConstraints)
 		}
+
+		updateAccessoryViews()
+		if item?.isDir == true {
+			imageView.contentMode = presentationMode == .list ? .scaleAspectFit : .center
+		}
+	}
+
+	private func updateAccessoryViews() {
+		let isFolder = item?.isDir == true
+		checkmarkView.isHidden = !isCurrent
+		chevronView.isHidden = presentationMode != .list || !isFolder
 	}
 }

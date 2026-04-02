@@ -186,7 +186,7 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 				group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
 				group.interItemSpacing = .fixed(spacing)
 			case .list:
-				let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(84))
+				let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(72))
 				group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 			}
 
