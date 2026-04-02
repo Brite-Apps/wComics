@@ -952,7 +952,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -979,7 +979,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "wComics/wComics-Bridging-Header.h";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

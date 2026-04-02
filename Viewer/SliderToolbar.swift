@@ -67,8 +67,10 @@ class SliderToolbar: UIView {
 		
 		addSubview(pageLabel)
 
-		slider.minimumTrackTintColor = .darkGray
-		slider.maximumTrackTintColor = .white
+		if !isRunningInMacIdiom {
+			slider.minimumTrackTintColor = .darkGray
+			slider.maximumTrackTintColor = .white
+		}
 		slider.isContinuous = false
 		slider.minimumValue = 0
 		slider.maximumValue = 1
@@ -90,6 +92,13 @@ class SliderToolbar: UIView {
 	
 	@objc private func sliderValueChanged() {
 		delegate?.sliderValueChanged(value: slider.value)
+	}
+
+	private var isRunningInMacIdiom: Bool {
+		if #available(iOS 14.0, *) {
+			return traitCollection.userInterfaceIdiom == .mac
+		}
+		return IS_MAC_CATALYST
 	}
 	
 	private func redrawSlider() {

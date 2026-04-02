@@ -615,6 +615,12 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	}
 
 	private func shouldScalePageToWidth(for size: CGSize) -> Bool {
+		if #available(iOS 14.0, *) {
+			if traitCollection.userInterfaceIdiom == .mac {
+				return false
+			}
+		}
+
 		return UIDevice.current.userInterfaceIdiom != .pad && size.width > size.height
 	}
 
