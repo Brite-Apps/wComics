@@ -8,7 +8,7 @@
 
 class ComicItem: Comparable, Equatable {
 	static func == (lhs: ComicItem, rhs: ComicItem) -> Bool {
-		return (lhs.path as NSString).lastPathComponent.lowercased() < (rhs.path as NSString).lastPathComponent.lowercased()
+		return lhs.path == rhs.path
 	}
 	
 	static func < (lhs: ComicItem, rhs: ComicItem) -> Bool {

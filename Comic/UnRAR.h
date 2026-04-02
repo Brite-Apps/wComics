@@ -14,6 +14,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface UnRAR : NSObject {
 @private
   NSString* _archivePath;
@@ -21,8 +23,10 @@
 }
 @property(nonatomic) BOOL skipInvisibleFiles;
 + (BOOL) extractRARArchiveAtPath:(NSString*)inPath toPath:(NSString*)outPath;
-- (id) initWithArchiveAtPath:(NSString*)path;
-- (NSArray*) retrieveFileList;
+- (nullable instancetype) initWithArchiveAtPath:(NSString*)path;
+- (nullable NSArray*) retrieveFileList;
 - (BOOL) extractToPath:(NSString*)outPath;
 - (BOOL) extractFile:(NSString*)inPath toPath:(NSString*)outPath;  // Destination path must include file name;
 @end
+
+NS_ASSUME_NONNULL_END

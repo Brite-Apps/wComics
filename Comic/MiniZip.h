@@ -14,6 +14,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MiniZip : NSObject {
 @private
   void* _unzFile;
@@ -24,9 +26,11 @@
 @property(nonatomic) BOOL skipInvisibleFiles;
 + (BOOL) extractZipArchiveAtPath:(NSString*)inPath toPath:(NSString*)outPath;
 + (BOOL) extractZipArchiveData:(NSData*)inData toPath:(NSString*)outPath;
-- (id) initWithArchiveAtPath:(NSString*)path;
-- (id) initWithArchiveData:(NSData*)data;
-- (NSArray*) retrieveFileList;
+- (nullable instancetype) initWithArchiveAtPath:(NSString*)path;
+- (nullable instancetype) initWithArchiveData:(NSData*)data;
+- (nullable NSArray*) retrieveFileList;
 - (BOOL) extractToPath:(NSString*)outPath;
 - (BOOL) extractFile:(NSString*)inPath toPath:(NSString*)outPath;  // Destination path must include file name
 @end
+
+NS_ASSUME_NONNULL_END

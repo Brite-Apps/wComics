@@ -1,4 +1,3 @@
-
 //
 //  Comic.swift
 //  wComics
@@ -9,12 +8,13 @@
 
 import Foundation
 import UIKit
+import PDFKit
 
 enum ArchType {
 	case zip, rar, pdf, none
 }
 
-class Comic: Comparable {
+class Comic: Comparable, @unchecked Sendable {
 	static func < (lhs: Comic, rhs: Comic) -> Bool {
 		return lhs.file < rhs.file
 	}
@@ -29,343 +29,232 @@ class Comic: Comparable {
 	
 	private var zipArchive: MiniZip?
 	private var rarArchive: UnRAR?
-	private var pdfDoc: CGPDFDocument?
+	private var pdfDoc: PDFDocument?
 	private var filesList = [String]()
 	private var archType = ArchType.none
 	
+	nonisolated(unsafe) private static let imageCache = NSCache<NSString, UIImage>()
 	private static let validExtensions = ["jpg", "jpeg", "png", "gif", "tiff", "tif"]
 	
 	init?(file: String) {
-		guard FileManager.default.fileExists(atPath: file) else { return nil }
+		let fileURL = URL(fileURLWithPath: file)
+		guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
 		
 		self.file = file
-		self.title = ((file as NSString).lastPathComponent as NSString).deletingPathExtension
+		self.title = fileURL.deletingPathExtension().lastPathComponent
 
 		if let zipArchive = MiniZip(archiveAtPath: file) {
 			self.zipArchive = zipArchive
-			
 			zipArchive.skipInvisibleFiles = true
 			
-			if let files = zipArchive.retrieveFileList()?.compactMap({ file in
-				if let file = file as? NSString {
-					let ext = file.pathExtension.lowercased()
-					
-					if Self.validExtensions.contains(ext) {
-						return file as String
-					}
+			if let files = zipArchive.retrieveFileList() as? [String] {
+				let filteredFiles = files.filter { file in
+					let ext = (file as NSString).pathExtension.lowercased()
+					return Self.validExtensions.contains(ext)
 				}
 				
-				return nil
-			}) {
-				filesList.append(contentsOf: files)
-				numberOfPages = filesList.count
-				archType = .zip
-			}
-		}
-		
-		if archType != .zip {
-			if let rarArchive = UnRAR(archiveAtPath: file) {
-				self.rarArchive = rarArchive
-				
-				rarArchive.skipInvisibleFiles = true
-
-				if let files = rarArchive.retrieveFileList()?.compactMap({ file in
-					if let file = file as? NSString {
-						let ext = file.pathExtension.lowercased()
-						
-						if Self.validExtensions.contains(ext) {
-							return file as String
-						}
-					}
-					
-					return nil
-				}) {
-					filesList.append(contentsOf: files)
+				if !filteredFiles.isEmpty {
+					filesList = filteredFiles.sorted()
 					numberOfPages = filesList.count
-					archType = .rar
+					archType = .zip
 				}
 			}
 		}
 		
 		if archType == .none {
-			if let pdfUrl = CFURLCreateWithFileSystemPath(nil, (file as NSString) as CFString, .cfurlposixPathStyle, false) {
-				if let pdfDoc = CGPDFDocument(pdfUrl) {
-					self.pdfDoc = pdfDoc
-					archType = .pdf
-					numberOfPages = pdfDoc.numberOfPages
+			if let rarArchive = UnRAR(archiveAtPath: file) {
+				self.rarArchive = rarArchive
+				rarArchive.skipInvisibleFiles = true
+
+				if let files = rarArchive.retrieveFileList() as? [String] {
+					let filteredFiles = files.filter { file in
+						let ext = (file as NSString).pathExtension.lowercased()
+						return Self.validExtensions.contains(ext)
+					}
+					
+					if !filteredFiles.isEmpty {
+						filesList = filteredFiles.sorted()
+						numberOfPages = filesList.count
+						archType = .rar
+					}
 				}
-				
+			}
+		}
+		
+		if archType == .none {
+			if let pdfDoc = PDFDocument(url: fileURL) {
+				self.pdfDoc = pdfDoc
+				archType = .pdf
+				numberOfPages = pdfDoc.pageCount
 			}
 		}
 		
 		if archType == .none {
 			return nil
 		}
-		
-		filesList.sort()
 	}
 
-	func imageAtIndex(_ index: Int, screenSize: CGSize) -> UIImage? {
+	private let extractionQueue = DispatchQueue(label: "com.wcomics.extraction")
+	
+	func imageAtIndex(_ index: Int, screenSize: CGSize, scale: CGFloat) -> UIImage? {
 		guard index >= 0, index < numberOfPages else { return nil }
+		
+		let cacheKey = "\(file)_\(index)_\(Int(screenSize.width))x\(Int(screenSize.height))@\(Int(scale))x" as NSString
+		if let cachedImage = Self.imageCache.object(forKey: cacheKey) {
+			return cachedImage
+		}
 		
 		var img: UIImage? = nil
 		
 		switch archType {
-			case .zip:
-				guard let zipArchive = zipArchive else { return nil }
-				
-				let temp = (NSTemporaryDirectory() as NSString).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
-				
-				if zipArchive.extractFile(filesList[index], toPath: temp) {
-					if let data = try? Data(contentsOf: URL(fileURLWithPath: temp)) {
-						img = UIImage(data: data)
-					}
-				}
-				
-				try? FileManager.default.removeItem(atPath: temp)
-			case .rar:
-				guard let rarArchive = rarArchive else { return nil }
-				let temp = (NSTemporaryDirectory() as NSString).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
-				
-				if rarArchive.extractFile(filesList[index], toPath: temp) {
-					if let data = try? Data(contentsOf: URL(fileURLWithPath: temp)) {
-						img = UIImage(data: data)
-					}
-				}
-				
-				try? FileManager.default.removeItem(atPath: temp)
-			case .pdf:
-				guard let pdfDoc = pdfDoc else { return nil }
-
-				if let pdfPage = pdfDoc.page(at: index + 1) {
-					let pageRect = CGRectIntegral(pdfPage.getBoxRect(.cropBox))
-					var size = pageRect.size;
-					let maxSide = max(screenSize.width, screenSize.height)
+			case .zip, .rar:
+				extractionQueue.sync {
+					let archive: ArchiveProvider? = archType == .zip ? zipArchive : rarArchive
+					guard let archive = archive else { return }
 					
-					if size.width < maxSide {
-						let c = maxSide / size.width
-						size.width = maxSide
-						size.height = floor(size.height * c)
-					}
+					let tempFileName = ProcessInfo.processInfo.globallyUniqueString
+					let tempPath = (NSTemporaryDirectory() as NSString).appendingPathComponent(tempFileName)
 					
-					if size.height < maxSide {
-						let c = maxSide / size.height
-						size.height = maxSide
-						size.width = floor(size.width * c)
-					}
-					
-					UIGraphicsBeginImageContextWithOptions(size, true, 0)
-					
-					if let ctx = UIGraphicsGetCurrentContext() {
-						ctx.scaleBy(x: 1, y: -1)
-						ctx.translateBy(x: 0, y: -size.height)
-						
-						if let cg = UIColor.white.cgColor.components {
-							ctx.setFillColor(cg)
-							ctx.fill(CGRectMake(0, 0, size.width, size.height))
+					if archive.extractFile(filesList[index], toPath: tempPath) {
+						if let data = try? Data(contentsOf: URL(fileURLWithPath: tempPath)) {
+							img = UIImage(data: data)
 						}
-						
-						let mediaRect = pdfPage.getBoxRect(.cropBox)
-
-						ctx.scaleBy(x: size.width / mediaRect.size.width, y: size.height / mediaRect.size.height)
-						ctx.translateBy(x: -mediaRect.origin.x, y: -mediaRect.origin.y)
-						
-						ctx.drawPDFPage(pdfPage)
-						
-						img = UIGraphicsGetImageFromCurrentImageContext()
+						try? FileManager.default.removeItem(atPath: tempPath)
 					}
-					
-					UIGraphicsEndImageContext();
 				}
+				
+			case .pdf:
+				guard let pdfDoc = pdfDoc, let page = pdfDoc.page(at: index) else { return nil }
+				
+				let pageRect = page.bounds(for: .cropBox)
+				let maxSide = max(screenSize.width, screenSize.height) * scale
+				let scaleFactor = maxSide / max(pageRect.width, pageRect.height)
+				let thumbnailSize = CGSize(width: pageRect.width * scaleFactor, height: pageRect.height * scaleFactor)
+				
+				img = page.thumbnail(of: thumbnailSize, for: .cropBox)
+				
 			case .none:
 				break
+		}
+		
+		if let img = img {
+			Self.imageCache.setObject(img, forKey: cacheKey)
 		}
 		
 		return img
 	}
 	
 	func somewhereInSubdir(of dir: String) -> Bool {
-		guard let files = try? FileManager.default.contentsOfDirectory(atPath: dir) else { return false }
-
-		for item in files {
-			var isDir: ObjCBool = false
-			let fullPath = (dir as NSString).appendingPathComponent(item)
-			
-			if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir) {
-				if isDir.boolValue {
-					if somewhereInSubdir(of: fullPath) {
-						return true
-					}
-				}
-				else {
-					if (self.file as NSString).resolvingSymlinksInPath == (fullPath as NSString).resolvingSymlinksInPath {
-						return true
-					}
-				}
-			}
-		}
+		let fileURL = URL(fileURLWithPath: file).resolvingSymlinksInPath()
+		let dirURL = URL(fileURLWithPath: dir).resolvingSymlinksInPath()
 		
-		return false
+		return fileURL.path.hasPrefix(dirURL.path)
 	}
 	
 	static func createCoverImage(for path: String) async -> (UIImage, String)? {
+		let pathURL = URL(fileURLWithPath: path)
+		let coverPath = "\(DOCPATH)/covers/\(pathURL.lastPathComponent)_wcomics_cover_file"
+		
+		if let data = try? Data(contentsOf: URL(fileURLWithPath: coverPath)), let image = UIImage(data: data) {
+			return (image, coverPath)
+		}
+
+		var coverImage: UIImage? = nil
+
 		if let archive = ArchiveWrapper(archiveAtPath: path) {
 			archive.skipInvisibleFiles = true
 			
-			guard let files = archive.retrieveFileList()?.sorted() else { return nil }
-			
-			for file in files {
-				let ext = (file as NSString).pathExtension.lowercased()
-				
-				if Self.validExtensions.contains(ext) {
-					let temp = (NSTemporaryDirectory() as NSString).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
-					
-					if archive.extractFile(file, toPath: temp) {
-						guard let d = try? Data(contentsOf: URL(fileURLWithPath: file)) else { continue }
-						guard let cover = UIImage(data: d) else { continue }
+			if let files = archive.retrieveFileList()?.sorted() {
+				for file in files {
+					let ext = (file as NSString).pathExtension.lowercased()
+					if Self.validExtensions.contains(ext) {
+						let tempPath = (NSTemporaryDirectory() as NSString).appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
 						
-						if cover.size.width == 0 {
-							continue
-						}
-						
-						var c = 31.0 / cover.size.width
-						var newSize = CGSize(width: cover.size.width * c, height: cover.size.height * c)
-						
-						if newSize.width > 31.0 {
-							c = 31.0 / newSize.width
-							newSize.width = 31.0
-							newSize.height *= c
-						}
-						
-						if newSize.height > 40.0 {
-							c = 40.0 / newSize.height
-							newSize.height = 40.0
-							newSize.width *= c
-						}
-						
-						UIGraphicsBeginImageContextWithOptions(newSize, true, 0)
-						
-						guard let context = UIGraphicsGetCurrentContext() else { continue }
-						
-						if let cg = UIColor.white.cgColor.components {
-							context.setFillColor(cg)
-							context.fill(CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-						}
-						
-						cover.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-						
-						let newImage = UIGraphicsGetImageFromCurrentImageContext()
-
-						UIGraphicsEndImageContext()
-
-						if let newImage = newImage {
-							if let newCoverData = newImage.jpegData(compressionQuality: 0.8) {
-								let coverFile = "\(DOCPATH)/covers/\((path as NSString).lastPathComponent)_wcomics_cover_file"
-								try? newCoverData.write(to: URL(fileURLWithPath: coverFile))
-								return (newImage, coverFile)
+						if archive.extractFile(file, toPath: tempPath) {
+							if let d = try? Data(contentsOf: URL(fileURLWithPath: tempPath)), let img = UIImage(data: d) {
+								coverImage = img
 							}
+							try? FileManager.default.removeItem(atPath: tempPath)
 						}
+						
+						if coverImage != nil { break }
 					}
 				}
 			}
 		}
-		else {
-			guard let pdfURL = CFURLCreateWithFileSystemPath(nil, (path as NSString) as CFString, .cfurlposixPathStyle, false) else { return nil }
-			guard let pdfDoc = CGPDFDocument(pdfURL) else { return nil }
-			guard let pdfPage = pdfDoc.page(at: 1) else { return nil }
-			let pageRect = CGRectIntegral(pdfPage.getBoxRect(.cropBox))
-			let size = pageRect.size
-			var c = 31.0 / size.width
-			var newSize = CGSize(width: size.width * c, height: size.height * c)
+		else if let pdfDoc = PDFDocument(url: pathURL), let page = pdfDoc.page(at: 0) {
+			coverImage = page.thumbnail(of: CGSize(width: 300, height: 400), for: .cropBox)
+		}
+		
+		guard let img = coverImage else { return nil }
+		
+		let targetSize = CGSize(width: 120, height: 160)
+		let renderer = UIGraphicsImageRenderer(size: targetSize)
+		let scaledImage = renderer.image { context in
+			UIColor.white.setFill()
+			context.fill(CGRect(origin: .zero, size: targetSize))
 			
-			if newSize.width > 31.0 {
-				c = 31.0 / newSize.width
-				newSize.width = 31.0
-				newSize.height *= c
+			let aspect = img.size.width / img.size.height
+			var drawSize = targetSize
+			if aspect > targetSize.width / targetSize.height {
+				drawSize.height = targetSize.width / aspect
+			}
+			else {
+				drawSize.width = targetSize.height * aspect
 			}
 			
-			if newSize.height > 40.0 {
-				c = 40.0 / newSize.height
-				newSize.height = 40.0
-				newSize.width *= c
-			}
-			
-			UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
-			
-			guard let context = UIGraphicsGetCurrentContext() else { return nil }
-			
-			let bounds = context.boundingBoxOfClipPath
-			context.translateBy(x: 0, y: bounds.size.height)
-			context.scaleBy(x: 1.0, y: -1.0)
-			
-			if let cg = UIColor.white.cgColor.components {
-				context.setFillColor(cg)
-				context.fill(CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-			}
-			
-			context.saveGState()
-			
-			let transformRect = CGRectMake(0, 0, newSize.width, newSize.height)
-			let pdfTransform = pdfPage.getDrawingTransform(.cropBox, rect: transformRect, rotate: 0, preserveAspectRatio: true)
-			
-			context.concatenate(pdfTransform)
-			
-			context.drawPDFPage(pdfPage)
-			
-			context.restoreGState()
-			
-			let newImage = UIGraphicsGetImageFromCurrentImageContext()
-			
-			UIGraphicsEndImageContext()
-			
-			if let newImage = newImage {
-				if let newCoverData = newImage.jpegData(compressionQuality: 0.8) {
-					let coverFile = "\(DOCPATH)/covers/\((path as NSString).lastPathComponent)_wcomics_cover_file"
-					try? newCoverData.write(to: URL(fileURLWithPath: coverFile))
-					return (newImage, coverFile)
-				}
-			}
+			let drawRect = CGRect(x: (targetSize.width - drawSize.width) / 2,
+								 y: (targetSize.height - drawSize.height) / 2,
+								 width: drawSize.width,
+								 height: drawSize.height)
+			img.draw(in: drawRect)
+		}
+		
+		if let data = scaledImage.jpegData(compressionQuality: 0.8) {
+			try? FileManager.default.createDirectory(at: URL(fileURLWithPath: "\(DOCPATH)/covers"), withIntermediateDirectories: true)
+			try? data.write(to: URL(fileURLWithPath: coverPath))
+			return (scaledImage, coverPath)
 		}
 		
 		return nil
 	}
+}
+
+private protocol ArchiveProvider {
+	func extractFile(_ inPath: String, toPath: String) -> Bool
+}
+
+extension MiniZip: ArchiveProvider {}
+extension UnRAR: ArchiveProvider {}
+
+private class ArchiveWrapper: ArchiveProvider {
+	private let zipArchive: MiniZip?
+	private let rarArchive: UnRAR?
 	
-	private class ArchiveWrapper {
-		private let zipArchive: MiniZip?
-		private let rarArchive: UnRAR?
+	init?(archiveAtPath path: String) {
+		zipArchive = MiniZip(archiveAtPath: path)
+		rarArchive = UnRAR(archiveAtPath: path)
 		
-		init?(archiveAtPath path: String) {
-			zipArchive = MiniZip(archiveAtPath: path)
-			rarArchive = UnRAR(archiveAtPath: path)
-			
-			if zipArchive == nil && rarArchive == nil {
-				return nil
-			}
-		}
-		
-		var skipInvisibleFiles: Bool {
-			set {
-				zipArchive?.skipInvisibleFiles = newValue
-				rarArchive?.skipInvisibleFiles = newValue
-			}
-			get {
-				zipArchive?.skipInvisibleFiles ?? rarArchive?.skipInvisibleFiles ?? false
-			}
-		}
-		
-		func retrieveFileList() -> [String]? {
-			return zipArchive?.retrieveFileList() as? [String] ?? rarArchive?.retrieveFileList() as? [String]
-		}
-		
-		func extractFile(_ inPath: String, toPath: String) -> Bool {
-			return zipArchive?.extractFile(inPath, toPath: toPath) ?? rarArchive?.extractFile(inPath, toPath: toPath) ?? false
+		if zipArchive == nil && rarArchive == nil {
+			return nil
 		}
 	}
 	
-	deinit {
-		filesList.removeAll()
-		zipArchive = nil
-		rarArchive = nil
-		pdfDoc = nil
+	var skipInvisibleFiles: Bool {
+		set {
+			zipArchive?.skipInvisibleFiles = newValue
+			rarArchive?.skipInvisibleFiles = newValue
+		}
+		get {
+			zipArchive?.skipInvisibleFiles ?? rarArchive?.skipInvisibleFiles ?? false
+		}
+	}
+	
+	func retrieveFileList() -> [String]? {
+		return (zipArchive?.retrieveFileList() as? [String]) ?? (rarArchive?.retrieveFileList() as? [String])
+	}
+	
+	func extractFile(_ inPath: String, toPath: String) -> Bool {
+		return zipArchive?.extractFile(inPath, toPath: toPath) ?? rarArchive?.extractFile(inPath, toPath: toPath) ?? false
 	}
 }

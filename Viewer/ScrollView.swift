@@ -145,13 +145,13 @@ class ScrollView: UIScrollView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 
 		switch recognizer.state {
 		case .began:
-			updateCursor(.closedHand)
+			updateCursor(1) // closedHand
 		case .changed:
 			let targetOffset = CGPoint(x: contentOffset.x - translation.x, y: contentOffset.y - translation.y)
 			setContentOffset(clampedContentOffset(targetOffset), animated: false)
 			recognizer.setTranslation(.zero, in: self)
 		case .ended, .cancelled, .failed:
-			refreshCursor()
+			updateCursor()
 		default:
 			break
 		}
@@ -161,10 +161,10 @@ class ScrollView: UIScrollView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 		switch recognizer.state {
 		case .began, .changed:
 			isPointerInside = true
-			refreshCursor()
+			updateCursor()
 		case .ended, .cancelled:
 			isPointerInside = false
-			refreshCursor()
+			updateCursor()
 		default:
 			break
 		}
@@ -188,7 +188,7 @@ class ScrollView: UIScrollView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 		)
 
 		setContentOffset(clampedContentOffset(targetOffset), animated: false)
-		refreshCursor()
+		updateCursor()
 	}
 
 	private func clampedContentOffset(_ offset: CGPoint) -> CGPoint {
@@ -201,19 +201,28 @@ class ScrollView: UIScrollView, UIScrollViewDelegate, UIGestureRecognizerDelegat
 		)
 	}
 
-	private func refreshCursor() {
+	private func updateCursor() {
 		#if targetEnvironment(macCatalyst)
+		let cursor: NSCursor
 		if isZoomedIn && isPointerInside {
-			updateCursor(.openHand)
+			cursor = .openHand
+		} else {
+			cursor = .arrow
 		}
-		else {
-			updateCursor(.arrow)
-		}
+		cursor.set()
 		#endif
 	}
 
-	private func updateCursor(_ cursor: NSCursor) {
+	private func updateCursor(_ cursorType: Int) {
 		#if targetEnvironment(macCatalyst)
+		let cursor: NSCursor
+		if cursorType == 1 {
+			cursor = .closedHand
+		} else if cursorType == 2 {
+			cursor = .openHand
+		} else {
+			cursor = .arrow
+		}
 		cursor.set()
 		#endif
 	}

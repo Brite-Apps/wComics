@@ -17,17 +17,18 @@ protocol LibraryViewControllerDelegate: AnyObject {
 	@MainActor func selectLibraryDirectory()
 }
 
-class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
+class LibraryViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UIDocumentPickerDelegate {
 	weak var delegate: LibraryViewControllerDelegate?
 	private let cellId = "cellId"
 	private var dataSource: [ComicItem]
 	private let showsLibraryRootActions: Bool
 	private let emptyLabel = UILabel()
+	private var collectionView: UICollectionView!
 	
 	init(dataSource: [ComicItem], showsLibraryRootActions: Bool = false) {
 		self.dataSource = dataSource
 		self.showsLibraryRootActions = showsLibraryRootActions
-		super.init(style: .plain)
+		super.init(nibName: nil, bundle: nil)
 	}
 	
 	required init?(coder: NSCoder) {
@@ -37,8 +38,57 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
+		view.backgroundColor = .systemBackground
 		preferredContentSize = CGSize(width: 600, height: 700)
 		
+		setupCollectionView()
+		setupNavigation()
+		setupEmptyLabel()
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(handleLibraryUpdated), name: LibraryDataSource.libraryUpdatedNotification, object: nil)
+		
+		reloadEmptyState()
+	}
+	
+	private func setupCollectionView() {
+		let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
+			let spacing: CGFloat = 16
+			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+			let item = NSCollectionLayoutItem(layoutSize: itemSize)
+			
+			let columns: Int
+			if layoutEnvironment.container.contentSize.width > 800 {
+				columns = 5
+			}
+			else if layoutEnvironment.container.contentSize.width > 500 {
+				columns = 3
+			}
+			else {
+				columns = 2
+			}
+			
+			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
+			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
+			group.interItemSpacing = .fixed(spacing)
+			
+			let section = NSCollectionLayoutSection(group: group)
+			section.interGroupSpacing = spacing
+			section.contentInsets = NSDirectionalEdgeInsets(top: spacing, leading: spacing, bottom: spacing, trailing: spacing)
+			return section
+		}
+		
+		collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		collectionView.backgroundColor = .clear
+		collectionView.delegate = self
+		collectionView.dataSource = self
+		collectionView.register(ItemCell.self, forCellWithReuseIdentifier: cellId)
+		
+		view.addSubview(collectionView)
+		collectionView.frame = view.bounds
+	}
+	
+	private func setupNavigation() {
 		if showsLibraryRootActions {
 			if IS_MAC_CATALYST {
 				let folderItem = UIBarButtonItem(image: UIImage(systemName: "folder"), style: .plain, target: self, action: #selector(selectLibraryDirectory))
@@ -52,7 +102,9 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		
 		let closeItem = UIBarButtonItem(title: "CLOSE".localized(), style: .done, target: self, action: #selector(close))
 		navigationItem.rightBarButtonItem = closeItem
-		
+	}
+	
+	private func setupEmptyLabel() {
 		emptyLabel.text = "EMPTY_LIBRARY".localized()
 		emptyLabel.translatesAutoresizingMaskIntoConstraints = false
 		emptyLabel.backgroundColor = .clear
@@ -70,10 +122,6 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 			emptyLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -32),
 			emptyLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -64),
 		])
-		
-		NotificationCenter.default.addObserver(self, selector: #selector(handleLibraryUpdated), name: LibraryDataSource.libraryUpdatedNotification, object: nil)
-		
-		reloadEmptyState()
 	}
 
 	deinit {
@@ -81,15 +129,10 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	}
 	
 	@objc private func pickFromCloud() {
-		var contentTypes = [UTType]()
-		contentTypes.append(.archive)
-		contentTypes.append(.pdf)
-		contentTypes.append(.zip)
-		
+		var contentTypes: [UTType] = [.archive, .pdf, .zip]
 		if let cbz = UTType(filenameExtension: "cbz", conformingTo: .zip) {
 			contentTypes.append(cbz)
 		}
-		
 		if let rar = UTType(filenameExtension: "rar", conformingTo: .archive) {
 			contentTypes.append(rar)
 		}
@@ -97,7 +140,6 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: contentTypes)
 		documentPickerController.allowsMultipleSelection = false
 		documentPickerController.delegate = self
-		
 		present(documentPickerController, animated: true)
 	}
 	
@@ -112,79 +154,39 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	@objc private func handleLibraryUpdated() {
 		guard showsLibraryRootActions else { return }
 		dataSource = LibraryDataSource.instance.library
-		tableView.reloadData()
+		collectionView.reloadData()
 		reloadEmptyState()
 	}
 	
 	private func reloadEmptyState() {
 		emptyLabel.isHidden = !dataSource.isEmpty
+		collectionView.isHidden = dataSource.isEmpty
 	}
 	
-	override func numberOfSections(in tableView: UITableView) -> Int {
-		return 1
-	}
-	
-	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return dataSource.count
 	}
 	
-	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCell(withIdentifier: cellId) as? ItemCell ?? ItemCell(style: .default, reuseIdentifier: cellId)
-		
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ItemCell
 		let item = dataSource[indexPath.row]
-		
 		cell.item = item
-
-		if item.isDir {
-			cell.accessoryType = .none
-		}
-		else {
+		
+		if !item.isDir {
 			let currentComic = delegate?.currentComic()
-			
-			if (currentComic?.file as? NSString)?.resolvingSymlinksInPath == (item.path as NSString).resolvingSymlinksInPath {
-				cell.accessoryType = .checkmark
-			}
-			else {
-				cell.accessoryType = .none
-			}
+			cell.isCurrent = (currentComic?.file as? NSString)?.resolvingSymlinksInPath == (item.path as NSString).resolvingSymlinksInPath
 		}
 		
 		return cell
 	}
 	
-	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-		return !IS_MAC_CATALYST
-	}
-	
-	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-		if editingStyle == .delete {
-			let item = dataSource[indexPath.row]
-			
-			delegate?.comicRemoved(item)
-			
-			SettingsStorage.instance.removeSettings(for: item.path)
-			
-			let coverFile = "\(DOCPATH)/covers/\((item.path as NSString).lastPathComponent)_wcomics_cover_file"
-			
-			try? FileManager.default.removeItem(atPath: coverFile)
-			try? FileManager.default.removeItem(atPath: item.path)
-
-			dataSource.remove(at: indexPath.row)
-			
-			tableView.deleteRows(at: [indexPath], with: .fade)
-			
-			reloadEmptyState()
-		}
-	}
-	
-	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		let item = dataSource[indexPath.row]
 		
 		if item.isDir {
 			let v = LibraryViewController(dataSource: item.children)
 			v.title = (item.path as NSString).lastPathComponent
 			v.delegate = self.delegate
-			
 			navigationController?.pushViewController(v, animated: true)
 		}
 		else {
@@ -199,7 +201,6 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		do {
 			if fileUrl.startAccessingSecurityScopedResource() {
 				try FileManager.default.copyItem(at: fileUrl, to: destinationUrl)
-				
 				fileUrl.stopAccessingSecurityScopedResource()
 				
 				let item = ComicItem(path: destinationUrl.path, isDir: false)
@@ -207,15 +208,17 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 				delegate?.forceUpdateLibrary()
 			}
 			else {
-				let alert = UIAlertController(title: "WARNING".localized(), message: "\("CANNOT_OPEN_FILE".localized()): \("YOU_DO_NOT_HAVE_ACCESS_TO_THIS_FILE".localized())", preferredStyle: .alert)
-				alert.addAction(UIAlertAction(title: "OK".localized(), style: .default))
-				present(alert, animated: true)
+				showErrorAlert(message: "YOU_DO_NOT_HAVE_ACCESS_TO_THIS_FILE".localized())
 			}
 		}
 		catch {
-			let alert = UIAlertController(title: "WARNING".localized(), message: "\("CANNOT_OPEN_FILE".localized()): \(error.localizedDescription)", preferredStyle: .alert)
-			alert.addAction(UIAlertAction(title: "OK".localized(), style: .default))
-			present(alert, animated: true)
+			showErrorAlert(message: error.localizedDescription)
 		}
+	}
+	
+	private func showErrorAlert(message: String) {
+		let alert = UIAlertController(title: "WARNING".localized(), message: "\("CANNOT_OPEN_FILE".localized()): \(message)", preferredStyle: .alert)
+		alert.addAction(UIAlertAction(title: "OK".localized(), style: .default))
+		present(alert, animated: true)
 	}
 }

@@ -569,36 +569,30 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 		currentPageView.viewForZoom = nil
 		currentPageView.pageRect = .zero
 
-		guard let img = comic.imageAtIndex(currentPage, screenSize: pagesView.bounds.size) else { return }
+		let scale = UIScreen.main.scale
+		guard let img = comic.imageAtIndex(currentPage, screenSize: pagesView.bounds.size, scale: scale) else { return }
 
-		var pageRect = CGRect(origin: .zero, size: img.size)
-		let c = pagesView.bounds.height / pageRect.height
-		pageRect.size.width = floor(c * pageRect.width * 0.5)
-		pageRect.size.height = floor(c * pageRect.height * 0.5)
-
+		let imageView = UIImageView(image: img)
+		imageView.contentMode = .scaleAspectFit
+		
+		let pageRect = CGRect(origin: .zero, size: img.size)
 		currentPageView.pageRect = pageRect
+		imageView.frame = pageRect
 
-		let pageContentView = UIView(frame: pageRect)
-		pageContentView.backgroundColor = .white
-
-		let tiledLayer = CATiledLayer()
-		tiledLayer.bounds = pageRect
-		tiledLayer.delegate = nil
-		tiledLayer.tileSize = CGSize(width: 256, height: 256)
-		tiledLayer.levelsOfDetail = 5
-		tiledLayer.levelsOfDetailBias = 5
-		tiledLayer.backgroundColor = UIColor.white.cgColor
-		tiledLayer.frame = pageRect
-
-		pageContentView.layer.addSublayer(tiledLayer)
-
-		tiledLayer.contents = img.cgImage
-
-		currentPageView.addSubview(pageContentView)
-
-		currentPageView.viewForZoom = pageContentView
+		currentPageView.addSubview(imageView)
+		currentPageView.viewForZoom = imageView
+		currentPageView.contentSize = pageRect.size
 
 		updateZoomParamsScaling(scaleWidth: shouldScalePageToWidth(for: pagesView.bounds.size))
+		
+		// Preload next page
+		if currentPage + 1 < totalPages {
+			let nextPage = currentPage + 1
+			let size = pagesView.bounds.size
+			Task.detached(priority: .background) {
+				_ = comic.imageAtIndex(nextPage, screenSize: size, scale: scale)
+			}
+		}
 	}
 
 	private func refreshCurrentPageLayoutIfNeeded(for size: CGSize) {
