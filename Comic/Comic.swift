@@ -153,7 +153,7 @@ class Comic: Comparable, @unchecked Sendable {
 	
 	static func createCoverImage(for path: String) async -> (UIImage, String)? {
 		let pathURL = URL(fileURLWithPath: path)
-		let coverPath = "\(DOCPATH)/covers/\(pathURL.lastPathComponent)_wcomics_cover_file"
+		let coverPath = (COVERSPATH as NSString).appendingPathComponent("\(pathURL.lastPathComponent)_wcomics_cover_file")
 		
 		if let data = try? Data(contentsOf: URL(fileURLWithPath: coverPath)), let image = UIImage(data: data) {
 			return (image, coverPath)
@@ -211,7 +211,7 @@ class Comic: Comparable, @unchecked Sendable {
 		}
 		
 		if let data = scaledImage.jpegData(compressionQuality: 0.8) {
-			try? FileManager.default.createDirectory(at: URL(fileURLWithPath: "\(DOCPATH)/covers"), withIntermediateDirectories: true)
+			try? FileManager.default.createDirectory(at: URL(fileURLWithPath: COVERSPATH), withIntermediateDirectories: true)
 			try? data.write(to: URL(fileURLWithPath: coverPath))
 			return (scaledImage, coverPath)
 		}

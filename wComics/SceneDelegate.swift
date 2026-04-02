@@ -85,9 +85,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		updateTask?.cancel()
 
 		updateTask = Task {
-			let coverDir = (DOCPATH as NSString).appendingPathComponent("covers")
-
-			try? FileManager.default.createDirectory(atPath: coverDir, withIntermediateDirectories: true)
+			try? FileManager.default.createDirectory(atPath: COVERSPATH, withIntermediateDirectories: true)
 
 			let libraryDirectoryState = await MainActor.run { () -> LibraryDirectoryState in
 				if IS_MAC_CATALYST {

@@ -38,7 +38,7 @@ class ItemCell: UICollectionViewCell {
 				}
 				else {
 					imageView.contentMode = .scaleAspectFill
-					let coverFile = "\(DOCPATH)/covers/\((item.path as NSString).lastPathComponent)_wcomics_cover_file"
+					let coverFile = (COVERSPATH as NSString).appendingPathComponent("\((item.path as NSString).lastPathComponent)_wcomics_cover_file")
 					
 					if let data = try? Data(contentsOf: URL(fileURLWithPath: coverFile)), 
 					   let cover = UIImage(data: data, scale: UIScreen.main.scale), cover.size.width > 0 {

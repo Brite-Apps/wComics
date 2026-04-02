@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 
 let DOCPATH = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+let CACHEPATH = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!
+let COVERSPATH = (CACHEPATH as NSString).appendingPathComponent("covers")
 let IS_MAC_CATALYST: Bool = {
 #if targetEnvironment(macCatalyst)
 	return true
