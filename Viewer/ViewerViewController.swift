@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
+class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestureRecognizerDelegate  {
 	override var canBecomeFirstResponder: Bool { true }
 
 	override var keyCommands: [UIKeyCommand]? {
@@ -79,6 +79,8 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 	private let libraryButton = UIButton(type: .custom)
 	private let wifiButton = UIButton(type: .custom)
 	private let infoButton = UIButton(type: .custom)
+	private let swipeLeftRecognizer = UISwipeGestureRecognizer()
+	private let swipeRightRecognizer = UISwipeGestureRecognizer()
 	private var toolbarHidden = true
 	private var libraryNavigationController: UINavigationController?
 	private var hasPresentedLibraryDirectoryPrompt = false
@@ -162,15 +164,17 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		
 		pagesView.addGestureRecognizer(singleTapRecognizer)
 		
-		let swipeLeftRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+		swipeLeftRecognizer.addTarget(self, action: #selector(handleSwipe(_:)))
 		swipeLeftRecognizer.numberOfTouchesRequired = 1
 		swipeLeftRecognizer.direction = .left
+		swipeLeftRecognizer.delegate = self
 		
 		pagesView.addGestureRecognizer(swipeLeftRecognizer)
 		
-		let swipeRightRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+		swipeRightRecognizer.addTarget(self, action: #selector(handleSwipe(_:)))
 		swipeRightRecognizer.numberOfTouchesRequired = 1
 		swipeRightRecognizer.direction = .right
+		swipeRightRecognizer.delegate = self
 		
 		pagesView.addGestureRecognizer(swipeRightRecognizer)
 		
@@ -659,6 +663,14 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 
 	@objc private func handleTogglePanelsKeyCommand() {
 		togglePanelsIfNeeded()
+	}
+
+	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		if gestureRecognizer === swipeLeftRecognizer || gestureRecognizer === swipeRightRecognizer {
+			return !currentPageView.isZoomedIn
+		}
+
+		return true
 	}
 }
 
