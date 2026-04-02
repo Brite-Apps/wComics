@@ -21,10 +21,12 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 	weak var delegate: LibraryViewControllerDelegate?
 	private let cellId = "cellId"
 	private var dataSource: [ComicItem]
+	private let showsLibraryRootActions: Bool
 	private let emptyLabel = UILabel()
 	
-	init(dataSource: [ComicItem]) {
+	init(dataSource: [ComicItem], showsLibraryRootActions: Bool = false) {
 		self.dataSource = dataSource
+		self.showsLibraryRootActions = showsLibraryRootActions
 		super.init(style: .plain)
 	}
 	
@@ -37,7 +39,7 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 		
 		preferredContentSize = CGSize(width: 600, height: 700)
 		
-		if self.dataSource == LibraryDataSource.instance.library {
+		if showsLibraryRootActions {
 			if IS_MAC_CATALYST {
 				let folderItem = UIBarButtonItem(image: UIImage(systemName: "folder"), style: .plain, target: self, action: #selector(selectLibraryDirectory))
 				navigationItem.leftBarButtonItem = folderItem
@@ -69,7 +71,13 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 			emptyLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -64),
 		])
 		
+		NotificationCenter.default.addObserver(self, selector: #selector(handleLibraryUpdated), name: LibraryDataSource.libraryUpdatedNotification, object: nil)
+		
 		reloadEmptyState()
+	}
+
+	deinit {
+		NotificationCenter.default.removeObserver(self)
 	}
 	
 	@objc private func pickFromCloud() {
@@ -99,6 +107,13 @@ class LibraryViewController: UITableViewController, UIDocumentPickerDelegate {
 
 	@objc private func selectLibraryDirectory() {
 		delegate?.selectLibraryDirectory()
+	}
+
+	@objc private func handleLibraryUpdated() {
+		guard showsLibraryRootActions else { return }
+		dataSource = LibraryDataSource.instance.library
+		tableView.reloadData()
+		reloadEmptyState()
 	}
 	
 	private func reloadEmptyState() {

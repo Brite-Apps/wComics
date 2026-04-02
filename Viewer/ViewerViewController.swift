@@ -359,7 +359,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate  {
 		}
 
 		if libraryNavigationController == nil {
-			let libraryViewController = LibraryViewController(dataSource: LibraryDataSource.instance.library)
+			let libraryViewController = LibraryViewController(dataSource: LibraryDataSource.instance.library, showsLibraryRootActions: true)
 			libraryViewController.title = "LIBRARY".localized()
 			libraryViewController.delegate = self
 			
