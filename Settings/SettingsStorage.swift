@@ -22,6 +22,7 @@ enum LibraryPresentationMode: Int {
 @MainActor
 class SettingsStorage {
 	static let instance = SettingsStorage()
+	private static let libraryDirectoryBookmarkKey = "libraryDirectoryBookmark"
 	private let settings = UserDefaults.standard
 
 	var libraryDirectoryPath: String? {
@@ -66,10 +67,14 @@ class SettingsStorage {
 	}
 
 	private func storedLibraryDirectoryURL() -> URL? {
+#if targetEnvironment(macCatalyst)
+		return nil
+#else
 		guard let libraryDirectoryPath = libraryDirectoryPath else {
 			return nil
 		}
 		return URL(fileURLWithPath: libraryDirectoryPath, isDirectory: true)
+#endif
 	}
 
 	private func libraryDirectoryBookmarkResolutionOptions() -> URL.BookmarkResolutionOptions {
@@ -82,27 +87,30 @@ class SettingsStorage {
 
 	private func libraryDirectoryBookmarkCreationOptions() -> URL.BookmarkCreationOptions {
 #if targetEnvironment(macCatalyst)
-		return [.withSecurityScope]
+		return [.withSecurityScope, .securityScopeAllowOnlyReadAccess]
 #else
 		return []
 #endif
 	}
 
 	func libraryDirectoryURL() -> URL? {
-		guard let bookmarkData = settings.data(forKey: "libraryDirectoryBookmark") else {
+		guard let bookmarkData = settings.data(forKey: Self.libraryDirectoryBookmarkKey) else {
 			return storedLibraryDirectoryURL()
 		}
 
 		var isStale = false
-		guard let url = try? URL(resolvingBookmarkData: bookmarkData, options: libraryDirectoryBookmarkResolutionOptions(), relativeTo: nil, bookmarkDataIsStale: &isStale) else {
+		do {
+			let url = try URL(resolvingBookmarkData: bookmarkData, options: libraryDirectoryBookmarkResolutionOptions(), relativeTo: nil, bookmarkDataIsStale: &isStale)
+
+			if isStale {
+				saveLibraryDirectory(url)
+			}
+
+			return url
+		}
+		catch {
 			return storedLibraryDirectoryURL()
 		}
-
-		if isStale {
-			saveLibraryDirectory(url)
-		}
-
-		return url
 	}
 
 	func libraryDirectoryState() -> LibraryDirectoryState {
@@ -118,7 +126,9 @@ class SettingsStorage {
 		}
 
 		var isDirectory: ObjCBool = false
-		let isReachable = ((try? url.checkResourceIsReachable()) ?? false) && FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
+		let resourceReachable = (try? url.checkResourceIsReachable()) ?? false
+		let fileExists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
+		let isReachable = resourceReachable && fileExists && isDirectory.boolValue
 
 		if isReachable {
 			return .available(url)
@@ -128,12 +138,24 @@ class SettingsStorage {
 	}
 
 	func saveLibraryDirectory(_ url: URL) {
+#if !targetEnvironment(macCatalyst)
 		libraryDirectoryPath = url.path
-		if let bookmarkData = try? url.bookmarkData(options: libraryDirectoryBookmarkCreationOptions(), includingResourceValuesForKeys: nil, relativeTo: nil) {
-			settings.set(bookmarkData, forKey: "libraryDirectoryBookmark")
+#endif
+		let didAccessSecurityScopedResource = url.startAccessingSecurityScopedResource()
+		defer {
+			if didAccessSecurityScopedResource {
+				url.stopAccessingSecurityScopedResource()
+			}
 		}
-		else {
-			settings.removeObject(forKey: "libraryDirectoryBookmark")
+		do {
+			let bookmarkData = try url.bookmarkData(options: libraryDirectoryBookmarkCreationOptions(), includingResourceValuesForKeys: nil, relativeTo: nil)
+			settings.set(bookmarkData, forKey: Self.libraryDirectoryBookmarkKey)
+		}
+		catch {
+			settings.removeObject(forKey: Self.libraryDirectoryBookmarkKey)
+#if targetEnvironment(macCatalyst)
+			libraryDirectoryPath = nil
+#endif
 		}
 	}
 	

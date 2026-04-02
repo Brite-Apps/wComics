@@ -7,8 +7,20 @@
 //
 
 import UIKit
+import UniformTypeIdentifiers
 
 class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestureRecognizerDelegate  {
+	private var libraryDirectoryPickerController: UIDocumentPickerViewController?
+
+	private func updateWindowHeader() {
+		guard IS_MAC_CATALYST, let windowScene = view.window?.windowScene else {
+			return
+		}
+
+		windowScene.title = comic?.title ?? "wComics"
+		windowScene.subtitle = (SettingsStorage.instance.libraryDirectoryURL()?.path as NSString?)?.abbreviatingWithTildeInPath ?? ""
+	}
+
 	override var canBecomeFirstResponder: Bool { true }
 
 	override var keyCommands: [UIKeyCommand]? {
@@ -45,6 +57,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 					SettingsStorage.instance.lastDocument = newValue.file
 					
 					topLabel.text = newValue.title
+					updateWindowHeader()
 					
 					currentPageView.viewForZoom?.removeFromSuperview()
 					currentPageView.viewForZoom = nil
@@ -56,6 +69,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 				SettingsStorage.instance.lastDocument = nil
 				bottomToolbar.pageNumber = -1
 				topLabel.text = "wComics"
+				updateWindowHeader()
 				
 				if toolbarHidden {
 					toggleToolbars()
@@ -225,6 +239,7 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		becomeFirstResponder()
+		updateWindowHeader()
 		presentLibraryDirectorySetupIfNeeded()
 	}
 
@@ -275,6 +290,16 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 		return self
 	}
 
+	private func libraryDirectoryPickerPresenter() -> UIViewController {
+		var presenter: UIViewController = self
+		while let presented = presenter.presentedViewController,
+			  !(presented is UIAlertController),
+			  !(presented is UIDocumentPickerViewController) {
+			presenter = presented
+		}
+		return presenter
+	}
+
 	@MainActor
 	func presentLibraryDirectorySetupIfNeeded() {
 		guard IS_MAC_CATALYST else {
@@ -296,7 +321,9 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 		let alert = UIAlertController(title: "Select Library Folder", message: "Choose the folder that contains your comics to build the library.", preferredStyle: .alert)
 		alert.addAction(UIAlertAction(title: "Select Folder", style: .default) { [weak self] _ in
 			self?.hasPresentedLibraryDirectoryPrompt = false
-			self?.presentLibraryDirectoryPicker()
+			DispatchQueue.main.async {
+				self?.presentLibraryDirectoryPicker()
+			}
 		})
 		alert.addAction(UIAlertAction(title: "Later", style: .cancel) { [weak self] _ in
 			self?.hasPresentedLibraryDirectoryPrompt = false
@@ -324,7 +351,9 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 		})
 		alert.addAction(UIAlertAction(title: "Select New Folder", style: .default) { [weak self] _ in
 			self?.hasPresentedLibraryDirectoryUnavailableAlert = false
-			self?.presentLibraryDirectoryPicker()
+			DispatchQueue.main.async {
+				self?.presentLibraryDirectoryPicker()
+			}
 		})
 		presenter.present(alert, animated: true)
 	}
@@ -375,10 +404,17 @@ class ViewerViewController: UIViewController, UIDocumentPickerDelegate, UIGestur
 	}
 
 	private func presentLibraryDirectoryPicker() {
+#if targetEnvironment(macCatalyst)
+		let picker = UIDocumentPickerViewController(documentTypes: [UTType.folder.identifier], in: .open)
+#else
 		let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder], asCopy: false)
+#endif
+		libraryDirectoryPickerController = picker
 		picker.allowsMultipleSelection = false
 		picker.delegate = self
-		let presenter = presentedViewController ?? self
+		picker.presentationController?.delegate = self
+		picker.directoryURL = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+		let presenter = libraryDirectoryPickerPresenter()
 		presenter.present(picker, animated: true)
 	}
 	
@@ -749,17 +785,37 @@ extension ViewerViewController: LibraryViewControllerDelegate {
 	}
 }
 
+extension ViewerViewController: UIAdaptivePresentationControllerDelegate {
+	func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+		if presentationController.presentedViewController is UIDocumentPickerViewController {
+			libraryDirectoryPickerController = nil
+		}
+	}
+}
+
 extension ViewerViewController {
 	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
 		guard let url = urls.first else { return }
 
+		libraryDirectoryPickerController = nil
 		SettingsStorage.instance.saveLibraryDirectory(url)
 		hasPresentedLibraryDirectoryPrompt = false
 		hasPresentedLibraryDirectoryUnavailableAlert = false
+		updateWindowHeader()
+		forceUpdateLibrary()
+	}
+
+	func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+		libraryDirectoryPickerController = nil
+		SettingsStorage.instance.saveLibraryDirectory(url)
+		hasPresentedLibraryDirectoryPrompt = false
+		hasPresentedLibraryDirectoryUnavailableAlert = false
+		updateWindowHeader()
 		forceUpdateLibrary()
 	}
 
 	func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+		libraryDirectoryPickerController = nil
 		hasPresentedLibraryDirectoryPrompt = false
 		hasPresentedLibraryDirectoryUnavailableAlert = false
 	}
