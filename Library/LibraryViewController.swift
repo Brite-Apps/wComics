@@ -24,6 +24,8 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 	private let showsLibraryRootActions: Bool
 	private let emptyLabel = UILabel()
 	private var collectionView: UICollectionView!
+	private var presentationMode = SettingsStorage.instance.libraryPresentationMode
+	private var presentationBarButtonItem: UIBarButtonItem?
 	
 	init(dataSource: [ComicItem], showsLibraryRootActions: Bool = false) {
 		self.dataSource = dataSource
@@ -51,33 +53,7 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 	}
 	
 	private func setupCollectionView() {
-		let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
-			let spacing: CGFloat = 16
-			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-			let item = NSCollectionLayoutItem(layoutSize: itemSize)
-			
-			let columns: Int
-			if layoutEnvironment.container.contentSize.width > 800 {
-				columns = 5
-			}
-			else if layoutEnvironment.container.contentSize.width > 500 {
-				columns = 3
-			}
-			else {
-				columns = 2
-			}
-			
-			let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
-			let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
-			group.interItemSpacing = .fixed(spacing)
-			
-			let section = NSCollectionLayoutSection(group: group)
-			section.interGroupSpacing = spacing
-			section.contentInsets = NSDirectionalEdgeInsets(top: spacing, leading: spacing, bottom: spacing, trailing: spacing)
-			return section
-		}
-		
-		collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
 		collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		collectionView.backgroundColor = .clear
 		collectionView.delegate = self
@@ -89,6 +65,9 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 	}
 	
 	private func setupNavigation() {
+		let presentationItem = UIBarButtonItem(image: presentationToggleImage(), style: .plain, target: self, action: #selector(togglePresentationMode))
+		presentationBarButtonItem = presentationItem
+
 		if showsLibraryRootActions {
 			if IS_MAC_CATALYST {
 				let folderItem = UIBarButtonItem(image: UIImage(systemName: "folder"), style: .plain, target: self, action: #selector(selectLibraryDirectory))
@@ -101,7 +80,7 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 		}
 		
 		let closeItem = UIBarButtonItem(title: "CLOSE".localized(), style: .done, target: self, action: #selector(close))
-		navigationItem.rightBarButtonItem = closeItem
+		navigationItem.rightBarButtonItems = [closeItem, presentationItem]
 	}
 	
 	private func setupEmptyLabel() {
@@ -147,6 +126,15 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 		dismiss(animated: true)
 	}
 
+	@objc private func togglePresentationMode() {
+		presentationMode = presentationMode == .grid ? .list : .grid
+		SettingsStorage.instance.libraryPresentationMode = presentationMode
+		collectionView.setCollectionViewLayout(makeLayout(), animated: true)
+		collectionView.reloadData()
+		collectionView.visibleCells.compactMap { $0 as? ItemCell }.forEach { $0.presentationMode = presentationMode }
+		presentationBarButtonItem?.image = presentationToggleImage()
+	}
+
 	@objc private func selectLibraryDirectory() {
 		delegate?.selectLibraryDirectory()
 	}
@@ -162,6 +150,50 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 		emptyLabel.isHidden = !dataSource.isEmpty
 		collectionView.isHidden = dataSource.isEmpty
 	}
+
+	private func makeLayout() -> UICollectionViewLayout {
+		UICollectionViewCompositionalLayout { (_, layoutEnvironment) -> NSCollectionLayoutSection? in
+			let spacing: CGFloat = 16
+			let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+			let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+			let group: NSCollectionLayoutGroup
+			switch self.presentationMode {
+			case .grid:
+				let columns: Int
+				if layoutEnvironment.container.contentSize.width > 800 {
+					columns = 5
+				}
+				else if layoutEnvironment.container.contentSize.width > 500 {
+					columns = 3
+				}
+				else {
+					columns = 2
+				}
+
+				let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(200))
+				group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
+				group.interItemSpacing = .fixed(spacing)
+			case .list:
+				let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(84))
+				group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+			}
+
+			let section = NSCollectionLayoutSection(group: group)
+			section.interGroupSpacing = spacing
+			section.contentInsets = NSDirectionalEdgeInsets(top: spacing, leading: spacing, bottom: spacing, trailing: spacing)
+			return section
+		}
+	}
+
+	private func presentationToggleImage() -> UIImage? {
+		switch presentationMode {
+		case .grid:
+			return UIImage(systemName: "list.bullet")
+		case .list:
+			return UIImage(systemName: "square.grid.2x2")
+		}
+	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return dataSource.count
@@ -170,6 +202,7 @@ class LibraryViewController: UIViewController, UICollectionViewDelegate, UIColle
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ItemCell
 		let item = dataSource[indexPath.row]
+		cell.presentationMode = presentationMode
 		cell.item = item
 		
 		if !item.isDir {

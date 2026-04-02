@@ -14,6 +14,11 @@ enum LibraryDirectoryState {
 	case unavailable(URL)
 }
 
+enum LibraryPresentationMode: Int {
+	case grid
+	case list
+}
+
 @MainActor
 class SettingsStorage {
 	static let instance = SettingsStorage()
@@ -44,6 +49,15 @@ class SettingsStorage {
 		}
 		get {
 			settings.string(forKey: "lastDocument")
+		}
+	}
+
+	var libraryPresentationMode: LibraryPresentationMode {
+		get {
+			LibraryPresentationMode(rawValue: settings.integer(forKey: "libraryPresentationMode")) ?? .grid
+		}
+		set {
+			settings.set(newValue.rawValue, forKey: "libraryPresentationMode")
 		}
 	}
 	
