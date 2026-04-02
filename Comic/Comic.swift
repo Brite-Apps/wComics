@@ -35,6 +35,12 @@ class Comic: Comparable, @unchecked Sendable {
 	
 	nonisolated(unsafe) private static let imageCache = NSCache<NSString, UIImage>()
 	private static let validExtensions = ["jpg", "jpeg", "png", "gif", "tiff", "tif"]
+	private static let supportedArchiveExtensions = ["cbz", "zip", "cbr", "rar", "pdf"]
+
+	static func isSupportedFile(at path: String) -> Bool {
+		let fileExtension = (path as NSString).pathExtension.lowercased()
+		return supportedArchiveExtensions.contains(fileExtension)
+	}
 	
 	init?(file: String) {
 		let fileURL = URL(fileURLWithPath: file)

@@ -16,6 +16,10 @@ final class LibraryDataSource: @unchecked Sendable {
 	}
 
 	private static func processItem(path: String, isDirectory: Bool, rootItems: inout [ComicItem], parent: ComicItem?) {
+		if !isDirectory && !Comic.isSupportedFile(at: path) {
+			return
+		}
+
 		let item = ComicItem(path: path, isDir: isDirectory)
 		
 		if let parent = parent {
@@ -74,6 +78,9 @@ final class LibraryDataSource: @unchecked Sendable {
 				var isDirectory: ObjCBool = false
 				
 				if FileManager.default.fileExists(atPath: itemPath, isDirectory: &isDirectory) {
+					if !isDirectory.boolValue && !Comic.isSupportedFile(at: itemPath) {
+						continue
+					}
 					Self.processItem(path: itemPath, isDirectory: isDirectory.boolValue, rootItems: &updatedLibrary, parent: nil)
 				}
 			}
