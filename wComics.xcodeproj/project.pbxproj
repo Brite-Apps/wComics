@@ -21,7 +21,6 @@
 		AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6D17A032570046F92A /* CoreGraphics.framework */; };
 		AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6F17A032570046F92A /* UIKit.framework */; };
 		AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AF9B6BC117A033AE0046F92A /* Localizable.strings */; };
-		AFC0DE010000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AFC0DE010000000000000001 /* InfoPlist.strings */; };
 		AF9B84DF2F04168800FA1AA3 /* GCDWebServerResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84C32F04168800FA1AA3 /* GCDWebServerResponse.m */; };
 		AF9B84E02F04168800FA1AA3 /* GCDWebServerFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84BD2F04168800FA1AA3 /* GCDWebServerFunctions.m */; };
 		AF9B84E12F04168800FA1AA3 /* GCDWebServer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84B92F04168800FA1AA3 /* GCDWebServer.m */; };
@@ -39,6 +38,7 @@
 		AF9B84ED2F04168800FA1AA3 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = AF9B84DC2F04168800FA1AA3 /* LICENSE */; };
 		AF9B84EE2F04168800FA1AA3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AF9B84DD2F04168800FA1AA3 /* README.md */; };
 		AF9B84EF2F04168800FA1AA3 /* GCDWebUploader.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF9B84D92F04168800FA1AA3 /* GCDWebUploader.bundle */; };
+		AFC0DE010000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AFC0DE010000000000000001 /* InfoPlist.strings */; };
 		AFCB35382CA749FB005D8574 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB35372CA749F6005D8574 /* AppDelegate.swift */; };
 		AFCB353B2CA74A6C005D8574 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353A2CA74A69005D8574 /* Common.swift */; };
 		AFCB353D2CA74AB9005D8574 /* ViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCB353C2CA74AB4005D8574 /* ViewerViewController.swift */; };
@@ -117,8 +117,6 @@
 		AF9B6B7317A032570046F92A /* wComics-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "wComics-Info.plist"; sourceTree = "<group>"; };
 		AF9B6BC217A033AE0046F92A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF9B6BC417A033AE0046F92A /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		AFC0DE010000000000000002 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		AFC0DE010000000000000003 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AF9B84B82F04168800FA1AA3 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
 		AF9B84B92F04168800FA1AA3 /* GCDWebServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebServer.m; sourceTree = "<group>"; };
 		AF9B84BA2F04168800FA1AA3 /* GCDWebServerConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServerConnection.h; sourceTree = "<group>"; };
@@ -152,6 +150,8 @@
 		AF9B84DA2F04168800FA1AA3 /* GCDWebUploader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebUploader.m; sourceTree = "<group>"; };
 		AF9B84DC2F04168800FA1AA3 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		AF9B84DD2F04168800FA1AA3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AFC0DE010000000000000002 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AFC0DE010000000000000003 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AFCB35372CA749F6005D8574 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AFCB35392CA749FE005D8574 /* wComics-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "wComics-Bridging-Header.h"; sourceTree = "<group>"; };
 		AFCB353A2CA74A69005D8574 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -949,7 +949,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = wComics/wComics.entitlements;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
@@ -990,7 +990,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = wComics/wComics.entitlements;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
