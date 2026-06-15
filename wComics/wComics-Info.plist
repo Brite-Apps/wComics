@@ -69,20 +69,32 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.books</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.books</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is inside your Music folder, macOS asks for this permission so wComics can list and open comic files stored there — for example, opening a CBZ you saved in your Music folder. wComics does not read, play or collect your songs, playlists or listening activity.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is on your Desktop, macOS asks for this permission so wComics can list and open the comic files there — for example, opening a CBZ you keep on your Desktop. wComics only reads the comic files in the folder you select.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is in your Documents folder, macOS asks for this permission so wComics can list and open the comic files there — for example, opening a CBZ stored in your Documents folder. wComics only reads the comic files in the folder you select.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is your Downloads folder, macOS asks for this permission so wComics can list and open the comic files there — for example, opening a CBZ you just downloaded. wComics only reads the comic files in the folder you select.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is on a network volume, macOS asks for this permission so wComics can list and open the comic files there — for example, opening comics stored on a shared network drive. wComics only reads the comic files in the folder you select.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>wComics opens comic books (CBZ, CBR and PDF files) from folders you choose. When the folder you select is on a removable volume such as a USB drive, macOS asks for this permission so wComics can list and open the comic files there — for example, opening comics from a USB drive. wComics only reads the comic files in the folder you select.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

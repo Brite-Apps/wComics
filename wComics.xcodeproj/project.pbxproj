@@ -21,6 +21,7 @@
 		AF9B6B6E17A032570046F92A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6D17A032570046F92A /* CoreGraphics.framework */; };
 		AF9B6B7017A032570046F92A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF9B6B6F17A032570046F92A /* UIKit.framework */; };
 		AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AF9B6BC117A033AE0046F92A /* Localizable.strings */; };
+		AFC0DE010000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AFC0DE010000000000000001 /* InfoPlist.strings */; };
 		AF9B84DF2F04168800FA1AA3 /* GCDWebServerResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84C32F04168800FA1AA3 /* GCDWebServerResponse.m */; };
 		AF9B84E02F04168800FA1AA3 /* GCDWebServerFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84BD2F04168800FA1AA3 /* GCDWebServerFunctions.m */; };
 		AF9B84E12F04168800FA1AA3 /* GCDWebServer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9B84B92F04168800FA1AA3 /* GCDWebServer.m */; };
@@ -116,6 +117,8 @@
 		AF9B6B7317A032570046F92A /* wComics-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "wComics-Info.plist"; sourceTree = "<group>"; };
 		AF9B6BC217A033AE0046F92A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF9B6BC417A033AE0046F92A /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AFC0DE010000000000000002 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AFC0DE010000000000000003 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AF9B84B82F04168800FA1AA3 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
 		AF9B84B92F04168800FA1AA3 /* GCDWebServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebServer.m; sourceTree = "<group>"; };
 		AF9B84BA2F04168800FA1AA3 /* GCDWebServerConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServerConnection.h; sourceTree = "<group>"; };
@@ -409,6 +412,7 @@
 			children = (
 				AFD1C78F1C2B7DBD00659B82 /* Images.xcassets */,
 				AF9B6BC117A033AE0046F92A /* Localizable.strings */,
+				AFC0DE010000000000000001 /* InfoPlist.strings */,
 				AF149D9B2379FAA500CFF0C0 /* Launch Screen.storyboard */,
 				AFD69D652F7D98BA001E5A68 /* AppIcon.icon */,
 			);
@@ -704,6 +708,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9B6BC617A033AE0046F92A /* Localizable.strings in Resources */,
+				AFC0DE010000000000000004 /* InfoPlist.strings in Resources */,
 				AFD1C7901C2B7DBD00659B82 /* Images.xcassets in Resources */,
 				AF149D9C2379FAA500CFF0C0 /* Launch Screen.storyboard in Resources */,
 				AFD69D662F7D98BA001E5A68 /* AppIcon.icon in Resources */,
@@ -812,6 +817,15 @@
 				AF9B6BC417A033AE0046F92A /* ru */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		AFC0DE010000000000000001 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AFC0DE010000000000000002 /* en */,
+				AFC0DE010000000000000003 /* ru */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

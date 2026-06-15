@@ -1,0 +1,17 @@
+/* Shown when the comics library folder is inside the Music folder. */
+"NSAppleMusicUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если выбранная папка находится внутри папки «Музыка», macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть CBZ, сохранённый в папке «Музыка». wComics не читает, не воспроизводит и не собирает ваши песни, плейлисты и историю прослушивания.";
+
+/* Shown when the comics library folder is on the Desktop. */
+"NSDesktopFolderUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если выбранная папка находится на Рабочем столе, macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть CBZ, который лежит на Рабочем столе. wComics читает только файлы комиксов в выбранной вами папке.";
+
+/* Shown when the comics library folder is in the Documents folder. */
+"NSDocumentsFolderUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если выбранная папка находится в папке «Документы», macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть CBZ, сохранённый в папке «Документы». wComics читает только файлы комиксов в выбранной вами папке.";
+
+/* Shown when the comics library folder is the Downloads folder. */
+"NSDownloadsFolderUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если вы выбрали папку «Загрузки», macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть только что загруженный CBZ. wComics читает только файлы комиксов в выбранной вами папке.";
+
+/* Shown when the comics library folder is on a network volume. */
+"NSNetworkVolumesUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если выбранная папка находится на сетевом томе, macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть комиксы, которые хранятся на общем сетевом диске. wComics читает только файлы комиксов в выбранной вами папке.";
+
+/* Shown when the comics library folder is on a removable volume. */
+"NSRemovableVolumesUsageDescription" = "wComics открывает комиксы (файлы CBZ, CBR и PDF) из выбранных вами папок. Если выбранная папка находится на съёмном носителе, например на USB-накопителе, macOS запрашивает это разрешение, чтобы wComics мог показать и открыть файлы комиксов оттуда — например, открыть комиксы с USB-накопителя. wComics читает только файлы комиксов в выбранной вами папке.";
