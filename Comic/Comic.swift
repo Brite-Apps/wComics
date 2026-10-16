@@ -60,7 +60,7 @@ class Comic: Comparable, @unchecked Sendable {
 				}
 				
 				if !filteredFiles.isEmpty {
-					filesList = filteredFiles.sorted()
+					filesList = filteredFiles.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
 					numberOfPages = filesList.count
 					archType = .zip
 				}
@@ -79,7 +79,7 @@ class Comic: Comparable, @unchecked Sendable {
 					}
 					
 					if !filteredFiles.isEmpty {
-						filesList = filteredFiles.sorted()
+						filesList = filteredFiles.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
 						numberOfPages = filesList.count
 						archType = .rar
 					}
