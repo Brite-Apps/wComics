@@ -78,7 +78,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.books</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>13.0</string>
+	<string>14.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
